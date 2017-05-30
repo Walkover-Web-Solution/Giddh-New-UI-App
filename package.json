@@ -140,14 +140,14 @@
     "webpack-hot-middleware": "^2.16.1"
   },
   "scripts": {
-    "build:routs": "babel ./routes -d dist/public/routes --copy-files",
+    "build:routes": "babel ./routes -d dist/public/routes --copy-files",
     "build:server": "babel ./server.js -d dist/ --copy-files",
     "bundle:dev": "webpack --config ./config/webpack.webapp.config.js --env=development --progress --profile --colors --display-error-details",
     "lint": "eslint ./{server,app,config}/**/*{config,''}.js",
     "start": "node server",
     "webpack-dev-server": "node --max_old_space_size=4096 node_modules/webpack-dev-server/bin/webpack-dev-server.js",
     "server:webapp": "npm run webpack-dev-server -- --config ./config/webpack.webapp.config.js --open --progress --profile --watch --content-base app/",
-    "server:dev": "npm run build:routs && npm run build:server && concurrently --kill-others \" set NODE_ENV=development && node dist/server.js\" \"npm run server:webapp\""
+    "server:dev": "npm run build:routes && npm run build:server && concurrently --kill-others \" set NODE_ENV=development && node dist/server.js\" \"npm run server:webapp\""
   },
   "engines": {
     "node": ">= 4.2.1",
