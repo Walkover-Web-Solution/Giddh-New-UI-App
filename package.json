@@ -146,7 +146,7 @@
     "postinstall": "npm run build:production",
     "start": "node server",
     "webpack-dev-server": "node --max_old_space_size=4096 node_modules/webpack-dev-server/bin/webpack-dev-server.js",
-    "server:dev": "npm run webpack-dev-server -- --config ./config/webpack.css.config.js --open --progress --profile --watch --content-base app/"
+    "server:dev": "npm run webpack-dev-server -- --config ./config/webpack.webapp.config.js --open --progress --profile --watch --content-base app/"
   },
   "engines": {
     "node": ">= 4.2.1",
