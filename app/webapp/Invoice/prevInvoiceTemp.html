@@ -1,0 +1,572 @@
+<style type="text/css">
+@page {
+  size: 8.5in 11in; 
+  margin: 2cm
+}
+@page :left {
+  margin-left: 3cm;
+}
+
+@page :right {
+  margin-left: 4cm;
+}
+h1 {
+  page-break-before: always;
+}
+/*end of print css*/
+.invoiceContainer .row{
+  margin-bottom: 20px;
+}
+.previewMode .form-control{
+  border: 0;
+  padding-left: 0;
+  padding-right: 0;
+  box-shadow: none;
+}
+.previewMode .txtAreaWrap .form-control{
+  padding: 0
+}
+.previewMode .txtAreaWrap input.form-control{
+  height: 24px
+}
+.previewMode #two .form-control{
+  padding: 0;
+  height: 20px;
+}
+.previewMode .form-control.wid80{
+  width: 80px
+}
+.editMode .form-control.wid80{
+  width: 100px
+}
+.txtAreaWrap textarea.form-control{
+  overflow: hidden;
+  /*height: 1.2in*/
+}
+#one, #two {
+  height: .6in;
+  overflow:hidden;
+}
+#three, #four{
+  height: 2in;
+  overflow:auto !important;
+}
+#five{
+  height: 2.5in;
+}
+#six, #seven{
+  height: 1.2in;
+}
+#eight{
+  height: 2in;
+}
+#two label{
+  display: block;
+  text-align: left;
+}
+.form-inline .form-control.smlInp{
+  width: 100px;
+  padding: 6px 0 6px 4px;
+}
+.form-inline input[disabled].form-control.smlInp{
+  width: 100px;
+  padding: 0;
+  background-color: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.template_b #three, #four{
+  height: 2.5in;
+  overflow: visible;
+}
+.vcenter {
+  display: block;
+  vertical-align: middle;
+}
+.modal-dialog.modal-a4{
+  /*margin: 0;*/
+  width: 8.5in;
+}
+.modal-dialog.modal-a4 .modal-body{
+  min-height: 11.5in
+}
+.modal-dialog.modal-a4 .modal-content{
+  border-radius: 0
+}
+.modal-dialog.modal-a4 .modal-header span{
+  position: absolute;
+  left: 15px;
+}
+hr{
+  margin: 10px 0 20px;
+}
+fieldset[disabled] .form-control{
+  cursor: default;
+  background-color: white
+}
+.thumb{
+  height: 50px;
+}
+.modal-header.genPrevMode{
+  height: 80px;
+}
+.genPrevMode span{
+  top: 5px;
+}
+.genPrevMode .form-group{
+  margin-bottom: 0;
+}
+textarea{
+  resize:none;
+}
+textarea:disabled, input:disabled{
+  background:#fff !important;
+}
+
+</style>
+
+<div id="InvoiceTemplate" class="templateClass no-border">
+  <div class="modal-header" ng-class="genPrevMode ? 'genPrevMode': ''">
+    <button type="button" class="close" data-dismiss="modal" ng-click="$dismiss(); closePop()" aria-label="Close"><i aria-hidden="true">&times;</i></button>
+    
+    <span ng-if="!editMode && !genPrevMode">
+      <a ng-if="withSampleData" ng-click="switchTempData()" class="btn btn-default btn-sm" href="javascript:void(0)">View as your data</a>
+      <a ng-if="!withSampleData" ng-click="switchTempData()" class="btn btn-primary btn-sm" href="javascript:void(0)">View as sample data</a>
+    </span>
+    <h3 class="modal-title alC" ng-if="!editMode && !genPrevMode">
+      View Invoice
+    </h3>
+
+
+    <span ng-if="!editMode && genPrevMode">
+      <aside class="form-inline">
+        <p><small>View Invoice in different templates</small></p>
+        <div class="form-group mrR">
+          <select 
+            class="form-control"
+            ng-model="tempType.uniqueName"
+            ng-options="item.uniqueName as item.name for item in templateList"
+            ng-change="setDiffView()"
+            >
+          </select>
+        </div>
+        <div class="form-group mrR">
+          <button ng-disabled="editGenInvoice" ng-click="downloadInv()" class="btn btn-primary">Download</button>
+        </div>
+        <div class="form-group mrR" ng-if="genPrevMode">
+          <button ng-click="updateGeneratedInvoice()" class="btn btn-primary"><span style="position:relative;left:0;top:0" ng-if="!editGenInvoice">Edit</span><span style="position:relative;left:0;top:0" ng-if="editGenInvoice">Save</span></button>
+        </div>
+        <div class="form-group mrR" uib-dropdown  auto-close="outsideClick">
+          <button ng-disabled="editGenInvoice" id="button-template-url" type="button" class="btn btn-primary" uib-dropdown-toggle>Send Email</button>
+          <ul class="dropdown-menu" uib-dropdown-menu template-url="invDropdown.html" aria-labelledby="button-template-url">
+          </ul>
+        </div>
+        <div class="form-group">
+          <h3 class="modal-title">Invoice</h3>
+        </div>
+      </aside>
+    </span>
+
+    <span ng-if="editMode && defTempData.entries === null">
+      <a ng-click="saveTemp('save', false)" class="btn btn-success btn-sm" href="javascript:void(0)" ng-disabled="updatingTempData">Save Changes</a>
+    </span>
+
+    <span ng-if="editMode && defTempData.entries !== null">
+      <a ng-click="saveTemp('generate', false)" class="btn btn-success btn-sm" href="javascript:void(0)" ng-disabled="updatingTempData">Generate Invoice</a>
+    </span>
+
+  </div>
+  <div class="modal-body">
+
+    <div class="search-loading" ng-if="updatingTempData">
+      <span class="spinner small"></span> Loading…
+    </div>
+      
+    <div class="invoiceContainer" ng-class="editMode ? 'editMode' : 'previewMode'" ng-if="!updatingTempData">
+
+      <!-- sample preview mode start -->
+
+      <fieldset>
+        <section ng-if="tempSet.logo && tempSet.invoiceDetails">
+          <div class="row">
+            <section id="one" class="col-xs-6">
+              <h1 ng-if="!editMode">
+                <img src="{{defTempData.logo.path}}" alt="" height="50px">
+              </h1>
+
+              <h1 ng-if="editMode && defTempData.entries !== null">
+                <img src="{{defTempData.logo.path}}" alt="" height="50px">
+              </h1>
+
+              <aside ng-if="editMode && defTempData.entries === null">
+                <form class="form-inline" enctype="multipart/form-data">
+                  <div class="form-group" ng-show="logoWrapShow || defTempData.logo.path === ''">
+                    <span ng-hide="logoUpldComplt">
+<!--                       <button type="file"
+                        id="invoiceLogo" 
+                        ng-model="logoFile"
+                        class="btn btn-primary" 
+                        ngf-select="uploadLogo($files,'logo')"
+                        ngf-pattern="image/*"
+                        accept="image/*"
+                        ngf-max-size="200KB"
+                        ngf-multiple="false"
+                      >
+                        <i class="glyphicon glyphicon-folder-open"></i> 
+                        &nbsp; Upload Logo</button><br/>
+                      <small>* Logo size should be max 200KB</small> -->
+
+                    <div class="upload_div">
+                      <input type="file" name="invoiceLogo" id="invoiceLogo" file-model="logoFile" ng-click="$event.stopPropagation()">
+                      <label for="invoiceLogo" class="upload-btn" ng-click="$event.stopPropagation()" style="margin-top:0;margin-left:10px "><i class="glyphicon glyphicon-upload" ></i> Select Image</label>
+                      <button class="btn btn-md btn-default" ng-click="uploadLogo('logo')">Upload</button>
+                    </div>
+                      <!-- <input type="file" name="invoiceLogo" id="invoiceLogo" file-model="logoFile" ng-click="$event.stopPropagation()">
+                      <button class="btn btn-sm btn-default" ng-click="uploadLogo('logo')">upload</button> -->
+                    </span>
+                  </div>
+                  <div class="form-group" ng-show="logoUpldComplt">
+                    <img ngf-src="logoFile" class="thumb">
+                    <button class="btn btn-md btn-default" ng-click="resetLogo()">Reset Logo</button>
+                    <!-- <a href="javascript:void(0)" ng-click="resetLogo()">Reset Logo</a> -->
+                  </div>
+                </form>
+                <div ng-show="defTempData.logo.path !== ''" ng-hide="logoWrapShow">
+                  <img src="{{defTempData.logo.path}}" class="" height="50px">
+                  <button class="btn btn-md btn-default" ng-click="showUploadWrap()">Change Logo</button>
+                  <!-- <a href="javascript:void(0)" ng-click="showUploadWrap()">Change Logo</a> -->
+                </div>
+              </aside>
+            </section>
+            <section id="two" class="col-xs-6 text-right">
+              <section class="form-inline clearfix">
+                <div class="form-group pull-right mrL2">
+                  <label>Invoice #:</label>
+                  {{defTempData.invoiceDetails.invoiceNumber}}
+                </div>
+                <div class="form-group pull-right">
+                  <label>Date:</label>
+                  <input ng-disabled="!genMode" class="smlInp form-control" ng-model="defTempData.invoiceDetails.invoiceDate" valid-date>
+                </div>
+              </section>
+            </section>
+          </div>
+          <hr>
+        </section>
+        <!-- section one or two end -->
+        
+        <div class="row">
+          <section class="col-xs-5" id="three">
+            <h4 class="mrB">From:</h4>
+            <div class="txtAreaWrap">
+              <input ng-disabled="genMode && editMode || genPrevMode" class="form-control" ng-model="defTempData.company.name" placeholder="Your company name">
+              <textarea ng-disabled="genMode && editMode || genPrevMode" class="form-control" ng-model="defTempData.company.data" placeholder="Address and other details" rows="5"></textarea>
+            </div>
+          </section>
+          <section class="col-xs-2 no-border" id="ten">
+            <div class="txtAreaWrap" ng-if="!genPrevMode">
+              <h4 class="mrB">Due Date:</h4>
+              <input ng-disabled="!genMode && !editMode" type="text" class="form-control"
+                     uib-datepicker-popup="{{format}}" required
+                     datepicker-options="dateOptions"
+                     is-open="fromDatePickerIsOpen"
+                     ng-click="fromDatePickerOpen()"
+                     ng-model="defTempData.invoiceDetails.dueDate"
+                     min-date="today"
+                     placeholder="due date"
+                  />
+              <!--<input ng-disabled="!genMode && !editMode" ng-model="defTempData.invoiceDetails.dueDate">-->
+            </div>
+            <div class="txtAreaWrap" ng-if="genPrevMode">
+              <h4 class="mrB">Due Date:</h4>
+              <input ng-disabled="!editGenInvoice" type="text" class="form-control"
+                     uib-datepicker-popup="{{format}}" required
+                     datepicker-options="dateOptions"
+                     is-open="fromDatePickerIsOpen"
+                     ng-click="fromDatePickerOpen()"
+                     ng-model="defTempData.invoiceDetails.dueDate"
+                     min-date="today"
+                     placeholder="due date"
+                  />
+              <!--<input ng-disabled="!editGenInvoice" ng-model="defTempData.invoiceDetails.dueDate">-->
+            </div>
+          </section>
+          <section class="col-xs-5 no-border" id="four">
+            <!-- if logo or invoiceDetails false then show invoice no -->
+            <section class="form-inline clearfix mrB1" ng-if="!tempSet.logo">
+              <div class="form-group mrR">
+                <label>Invoice # :&nbsp;</label>
+                <b>{{defTempData.invoiceDetails.invoiceNumber}}</b>
+              </div>
+              <div class="form-group">
+                <label>Date :&nbsp;</label>
+                <input ng-disabled="!genMode" class="smlInp form-control" ng-model="defTempData.invoiceDetails.invoiceDate" valid-date>
+              </div>
+            </section>
+            <!-- end if -->
+
+            <h4 class="mrB">To,</h4>
+            <div class="txtAreaWrap" ng-if="!genPrevMode">
+              <!--<div class="form-inline">-->
+                <!--<label>To, : </label>-->
+                <input ng-disabled="!genMode && !editMode" class="form-control" ng-model="defTempData.account.name" placeholder="Buyer Name">
+              <!--</div>-->
+              <!--<div class="form-inline" ng-if="defTempData.account.attentionTo.length > 0 || genMode">-->
+                <!--<label>Att. : </label>-->
+                <input ng-if="defTempData.account.attentionTo.length > 0 || genMode" ng-disabled="!genMode" class="form-control" ng-model="defTempData.account.attentionTo" placeholder="Attention To">
+              <!--</div>-->
+              <textarea ng-disabled="!genMode && !editMode" class="form-control" ng-model="defTempData.account.data" rows="4"  placeholder="Buyer Address and other details"></textarea>
+              <input ng-disabled="!genMode && !editMode" class="form-control" ng-model="defTempData.account.email" placeholder="Buyer email">
+              <input ng-disabled="!genMode && !editMode" class="form-control" ng-model="defTempData.account.mobileNumber" placeholder="Buyer mobile number" maxlength="15">
+            </div>
+            <div class="txtAreaWrap" ng-if="genPrevMode">
+              <!--<div class="form-inline">-->
+                <!--<label>To : </label>-->
+                <input ng-disabled="!editGenInvoice" class="form-control" ng-model="defTempData.account.name" placeholder="Buyer Name">
+              <!--</div>-->
+              <!--<div class="form-inline" ng-if="defTempData.account.attentionTo.length > 0">-->
+                <!--<label>Att. : </label>-->
+                <input ng-disabled="!editGenInvoice" class="form-control" ng-model="defTempData.account.attentionTo" placeholder="Attention To">
+              <!--</div>-->
+              <textarea ng-disabled="!editGenInvoice" class="form-control" ng-model="defTempData.account.data"  placeholder="Buyer Address and other details" rows="4"></textarea>
+              <input ng-disabled="!editGenInvoice" class="form-control" ng-model="defTempData.account.email" placeholder="Buyer email">
+              <input ng-disabled="!editGenInvoice" class="form-control" ng-model="defTempData.account.mobileNumber" placeholder="Buyer mobile number" maxlength="15">
+            </div>
+          </section>
+          <!--<section class="col-xs-5" ng-if="defTempData.account.attentionTo.length > 0 || genMode">-->
+            <!--<div class="form-inline">-->
+              <!--<label>Attention To : </label>-->
+              <!--<input ng-disabled="!genMode" class="form-control" ng-model="defTempData.account.attentionTo" placeholder="Attention To">-->
+            <!--</div>-->
+          <!--</section>-->
+        </div>
+        <!-- section three or four end -->
+        
+        <!-- / end client and company details section -->
+        
+        
+
+        <section ng-if="defTempData.entries !== null || !editMode && genPrevMode">
+          <table class="table table-bordered vAlMid" ng-init="start = 1">
+            <thead>
+              <tr>
+                <th class="col-xs-1">
+                  <h4>S No.</h4>
+                </th>
+                <th class="col-xs-9">
+                  <h4>Description</h4>
+                </th>
+                <th class="col-xs-2 alR">
+                  <h4>Amount</h4>
+                </th>
+              </tr>
+            </thead>
+          
+            <tbody ng-repeat="item in defTempData.entries track by $index" ng-init="current = $parent.start; $parent.start=$parent.start+ item.transactions.length;">
+              <tr ng-repeat="entry in item.transactions">
+                <td>{{current + $index | number}}</td>
+                <td>
+                  <input ng-disabled="genPrevMode && !editGenInvoice" type="text" ng-model="entry.description" class="form-control">
+                </td>
+                <td class="text-right">
+                  {{entry.amount  | currency: "" : 2}}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <table class="table invGenTbl">
+            <tfoot>
+              <tr>
+                <th class="col-xs-1">
+                  &nbsp;
+                </th>
+                <th class="col-xs-9">
+                  Sub Total :
+                </th>
+                <th class="col-xs-2">
+                  {{defTempData.subTotal  | currency: "" : 2}}
+                </th>
+              </tr>
+              <!-- tax repeat -->
+              <tr ng-if="defTempData.taxes.length > 0" ng-repeat="tax in defTempData.taxes">
+                <th class="col-xs-1">
+                  &nbsp;
+                </th>
+                <th class="col-xs-9">
+                  <div class="form-inline clearfix">
+                    <div class="form-group" ng-class="tax.hasError ? 'has-error' : ''">
+                      <label class="splLbl">{{tax.accountName}} - </label>
+                      <input ng-disabled="!editMode" type="text" ng-model="tax.visibleTaxRate" class="form-control pull-left" valid-number id="splInvInpt">
+                      <label class="splLbl">%</label>
+                    </div>
+                    <div class="form-group" ng-if="tax.hasError">
+                      <i style="font-size:18px; cursor:pointer" tooltip-placement="top" uib-tooltip="{{tax.errorMessage}}" class="glyphicon glyphicon-info-sign"></i>
+                    </div>
+                    <div class="form-group">
+                      &nbsp;:
+                    </div>
+                  </div>
+                </th>
+                <th class="col-xs-2">
+                  {{tax.amount | currency: "" : 2}}
+                </th>
+              </tr>
+              <!-- end of tax repeat -->
+              <tr ng-if="defTempData.roundOff">
+                <th class="col-xs-1">
+                  &nbsp;
+                </th>
+                <th class="col-xs-9">
+                  Round Off :
+                </th>
+                <th class="col-xs-2">
+                  <span ng-if="defTempData.roundOff.balanceType == 'CREDIT'">-</span>{{defTempData.roundOff.transaction.amount  | currency: "" : 2}}
+                </th>
+              </tr>
+              <tr>
+                <td colspan="3">
+                  <hr>
+                </td>
+              </tr>
+              <tr>
+                <th class="col-xs-1">
+                  &nbsp;
+                </th>
+                <th class="col-xs-9 bold">
+                  Total :
+                </th>
+                <th class="col-xs-2 bold">
+                  {{defTempData.grandTotal  | currency: "" : 2}}
+                </th>
+              </tr>
+
+              <tr>
+                <td colspan="3">
+                  <hr>
+                  <p>Amount in words</p>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="3">
+                  <span class="text-capitalize">{{defTempData.grandTotal | numtowords }}</span>
+                </td>
+              </tr>
+              <tr>
+              </tr>
+            </tfoot>
+          </table>
+          
+          <hr>
+        </section>
+
+        <section ng-if="editMode && defTempData.entries === null || !editMode && defTempData.entries === null">
+          <div class="row">
+            <div class="greyBg alC" id="five">
+              <div class="mrT4">Particulars will shown here</div>
+            </div>
+          </div>
+        </section>
+
+        
+         
+        <!-- end of list section entries -->
+
+
+
+        <div class="row">
+          <section class="col-xs-5" id="six">
+            <div class="txtAreaWrap">
+              <textarea ng-disabled="!editMode" class="form-control" ng-model="defTempData.companyIdentities.data" placeholder="Company other details" rows="5"></textarea>
+            </div>
+          </section>
+          <section class="col-xs-7" id="seven" ng-if="defTempData.signatureType == 'text' || tempSet.signatureType == 'text'">
+            <div class="txtAreaWrap">
+              <input ng-disabled="!editMode" class="form-control mrB alR" ng-model="defTempData.signature.name"  placeholder="Your Company name">
+              <div class="row"></div>
+              <div class="row"></div>
+              <input ng-if="defTempData.signatureType == 'text'" ng-disabled="!editMode" class="form-control alR" ng-model="defTempData.signature.data" placeholder="Signatory slogan">
+            </div>
+          </section>
+          <section id="nine" class="col-xs-7" ng-if="defTempData.signatureType == 'image' || tempSet.signatureType == 'image'">
+            <h1 ng-if="!editMode" class="pull-right mrR2">
+              <img src="{{defTempData.signature.path}}" alt="" height="50px">
+            </h1>
+
+            <h1 ng-if="editMode && defTempData.entries !== null">
+              <img src="{{defTempData.signature.path}}" alt="" height="50px" class="pull-right">
+            </h1>
+
+            <aside ng-if="editMode && defTempData.entries === null">
+              <form class="form-inline" enctype="multipart/form-data">
+                <div class="form-group" ng-show="signatureWrapShow || defTempData.signature.path === ''">
+                    <span ng-hide="signatureUpldComplt">
+                     <!--  <button type="file"
+                              ng-model="logoFile"
+                              class="btn btn-primary"
+                              ngf-select="uploadLogo($files,'signature')"
+                              ngf-pattern="image/*"
+                              accept="image/*"
+                              ngf-max-size="200KB"
+                              ngf-multiple="false"
+                          >
+                        <i class="glyphicon glyphicon-folder-open"></i>
+                        &nbsp; Upload Signature</button><br/>
+                      <small>* Signature size should be max 200KB</small> -->
+
+                    <div class="upload_div">
+                      <input type="file" name="invoiceSign" id="invoiceSign" file-model="logoFile" ng-click="$event.stopPropagation()">
+                      <label for="invoiceSign" class="upload-btn" ng-click="$event.stopPropagation()" style="margin-top:0;margin-left:10px "><i class="glyphicon glyphicon-upload" ></i> Select Image</label>
+                      <button class="btn btn-md btn-default" ng-click="uploadLogo('signature')">Upload</button>
+                    </div>
+
+<!--                       <input type="file" name="invoiceSign" id="invoiceSign" file-model="logoFile" ng-click="$event.stopPropagation()">
+                      <button class="btn btn-sm btn-default" ng-click="uploadLogo('signature')">upload</button> -->
+                    </span>
+                </div>
+                <div class="form-group" ng-show="signatureUpldComplt">
+                  <img ngf-src="logoFile" class="thumb">
+                  <button class="btn btn-md btn-default" ng-click="resetSignature()">Reset Signature</button>
+                  <!-- <a href="javascript:void(0)" ng-click="resetSignature()">Reset Signature</a> -->
+                </div>
+              </form>
+              <div ng-show="defTempData.signature.path !== ''" ng-hide="signatureWrapShow">
+                <img src="{{defTempData.signature.path}}" class="" height="50px">
+                <button class="btn btn-md btn-default" ng-click="showUploadSignatureWrap()">Change Signature</button>
+               <!--  <a href="javascript:void(0)" ng-click="showUploadSignatureWrap()">Change Signature</a> -->
+              </div>
+            </aside>
+          </section>
+        </div>
+        <!-- end of section six or seven -->
+        <section ng-if="tempSet.terms">
+          <hr>
+          <div class="row">
+            <section class="col-xs-12" id="eight">
+              <div class="txtAreaWrap pos-rel" style="height:100%">
+                
+                <div ng-if="editMode" style="height:100%;">
+                  <textarea ng-disabled="!editMode" class="form-control" ng-model="defTempData.termsStr" placeholder="Enter your terms" style="width:100%;height:100%"></textarea>
+                </div>
+                <!-- end if editmode -->
+
+                <textarea ng-if="!editMode" ng-disabled="!editGenInvoice" style="width:100%;height:100%" ng-model="defTempData.termsStr">
+                  <!--<ol style="list-style: none">-->
+                    <!--<li ng-repeat="item in defTempData.terms track by $index">{{item}}</li>-->
+                  <!--</ol>-->
+                </textarea>
+
+              </div>
+            </section>
+          </div>
+        </section>
+        <!-- end of section eight -->
+      </fieldset>
+      <!-- end of preview mode -->
+
+    </div>
+    <!-- end of invoiceContainer -->
+  </div>
+  <!-- end of modal body -->
+</div>

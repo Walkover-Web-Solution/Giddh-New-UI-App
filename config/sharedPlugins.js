@@ -3,7 +3,7 @@ const path = require('path');
 
 const plugins = [
   new HtmlWebpackPlugin({
-    template: path.join(__dirname, '/../app/index.html'),
+    template: path.join(__dirname, '/../app/webapp/views/index.html'),
     inject: 'body',
     filename: 'index.html',
   }),
