@@ -9,8 +9,11 @@ const pkg = require('../package.json')
 const moment = require('moment');
 
 const vendoreArray = [
+     path.resolve(__dirname, '../app/webapp/Globals/modified_lib/moment.js'),
     'script-loader!jquery',
     'jquery-ui',
+    'script-loader!' + path.resolve(__dirname, '../node_modules/perfect-scrollbar/dist/js/perfect-scrollbar.min.js'),
+    'script-loader!' + path.resolve(__dirname, '../node_modules/perfect-scrollbar/dist/js/perfect-scrollbar.jquery.min.js'),
     'angular',
     'bootstrap',
     'angular-ui-bootstrap',
@@ -24,8 +27,6 @@ const vendoreArray = [
     'angular-filter',
     'angular-mocks',
     'angular-local-storage',
-    'perfect-scrollbar',
-    'moment',
     'angular-toastr',
     'angular-ui-tree',
     'ng-file-upload',
@@ -56,7 +57,11 @@ const vendoreArray = [
 ];
 const filesArray = [];
 
-var f = glob.sync(path.resolve(__dirname, '../app/webapp/Globals/modified_lib/**/*.js')).map((i) => { return 'script-loader!'+i })
+var f = glob.sync(path.resolve(__dirname, '../app/webapp/Globals/modified_lib/**/*.js'), {
+    ignore: [
+        path.resolve(__dirname, '../app/webapp/Globals/modified_lib/moment.js')
+    ]
+}).map((i) => { return 'script-loader!'+i })
 filesArray.push(...f);
 filesArray.push('script-loader!' + path.resolve(__dirname, '../node_modules/rxjs/bundles/Rx.umd.js'))
 filesArray.push('script-loader!' + path.resolve(__dirname, '../node_modules/es6-shim/es6-shim.js'))
@@ -82,7 +87,7 @@ module.exports = {
     resolve: {
         extensions: ['.js', '.less', '.css'],
         alias: {
-            modernizr: "modernizr",
+            // modernizr: "modernizr",
             'intl-tel-input': path.resolve(__dirname, '../node_modules/international-phone-number/releases/international-phone-number.js'),
             'international-phone-number': path.resolve(__dirname, '../node_modules/international-phone-number/releases/international-phone-number.js'),
             'ment.io': path.resolve(__dirname, '../node_modules/ment.io/dist/mentio.js'),
@@ -127,7 +132,7 @@ module.exports = {
             use: [{
                 loader: 'babel-loader',
                 options: {
-                    presets: ['es2015'],
+                    presets: ['es2015']
                 },
             }],
         },
@@ -144,14 +149,12 @@ module.exports = {
             'jquery': 'jquery',
             'jQuery': 'jquery',
             'window.jQuery': 'jquery',
-            'moment': 'moment',
-            'window.moment': 'moment'
-            // 'chart.js': 'chart.js',
+            // "window.moment": path.resolve(__dirname, '../node_modules/moment/moment.js')
         }),
         new HtmlWebpackPlugin({
             template: path.join(__dirname, '/../app/webapp/views/index.html'),
             inject: 'body',
-            filename: 'index.html',
+            filename: 'index.html'
         }),
         new webpack.optimize.CommonsChunkPlugin({
             name: 'vendor', filename: 'core_bower.min.js', minChunks: function (module) {

@@ -1,5 +1,4 @@
 //Service : Audit Logs : HttpService
-debugger
 window.app = giddh.webApp;
 (function(app){
 
@@ -7,15 +6,15 @@ window.app = giddh.webApp;
 	    constructor: [ng.http.Http,  function(http){
 		    this.http = http;
 		    this.selectedCompany = {};
-		    this.update = new ng.core.EventEmitter(); 
+		    this.update = new ng.core.EventEmitter();
 	    }],
 
-	    getLogs: function(reqBody){		
+	    getLogs: function(reqBody){
 		  	// get and set selected Company
 		  	var selectedCompany;
 	        var usrInfo = JSON.parse(window.localStorage.getItem('giddh._selectedCompany'));
-	        
-	        usrInfo != null ? selectedCompany = usrInfo : selectedCompany = app.logs.selectedCompany;	
+
+	        usrInfo != null ? selectedCompany = usrInfo : selectedCompany = app.logs.selectedCompany;
 
 	        // Define request variables
 		  	var body = JSON.stringify(reqBody.body)
@@ -25,7 +24,7 @@ window.app = giddh.webApp;
 		  	var url = '/company/' + selectedCompany.uniqueName + '/logs/' + page;
 
 		    // return http request as observer
-		    return this.http.post(url,body, options)	
+		    return this.http.post(url,body, options)
 		      .map(function (res) {
 		          return res;
 		    });

@@ -6,9 +6,8 @@ angular.module('exportDirectives', [])
   ($rootScope, $compile, $filter) =>
     ({
       restrict: 'A',
-      link(scope, elem, attr) { debugger;
+      link(scope, elem, attr) {
         return elem.on('click', function(e) {
-            debugger;
           let pdf = new jsPDF('p','pt');
           let groups = [];
           let accounts = [];
@@ -187,7 +186,6 @@ angular.module('exportDirectives', [])
     ({
       restrict: 'A',
       link(scope, elem, attr) {
-          debugger;
         return elem.on('click', function(e) {
           let pdf = new jsPDF('p','pt');
           let groups = [];

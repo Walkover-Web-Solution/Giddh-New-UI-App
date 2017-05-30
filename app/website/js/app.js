@@ -104,7 +104,6 @@ angular.module('razor-pay', []).
 app.controller('paymentCtrl', [
     '$scope', 'toastr', '$http', '$location', '$rootScope', '$filter', '$sce',
     function ($scope, toastr, $http, $location, $rootScope, $filter, $sce) {
-        debugger
         let urlSearch = window.location.search;
         let searchArr = urlSearch.split("=");
         $scope.randomUniqueName = searchArr[1];
@@ -186,7 +185,6 @@ app.controller('paymentCtrl', [
 app.controller('homeCtrl', [
     '$scope', 'toastr', '$http', 'vcRecaptchaService', '$rootScope', '$location',
     function ($scope, toastr, $http, vcRecaptchaService, $rootScope, $location) {
-        debugger;
         $scope.showLoginBox = false;
         $scope.toggleLoginBox = function (e) {
             $scope.showLoginBox = !$scope.showLoginBox;
@@ -320,7 +318,6 @@ app.controller('homeCtrl', [
 app.config([
     '$authProvider',
     function ($authProvider) {
-        debugger;
         $authProvider.google({
             clientId: '641015054140-3cl9c3kh18vctdjlrt9c8v0vs85dorv2.apps.googleusercontent.com',
             url: '/app/auth/google'
@@ -350,11 +347,10 @@ app.config([
     }
 ]);
 
-app.config(localStorageServiceProvider => { debugger; localStorageServiceProvider.setPrefix('giddh') });
+app.config(localStorageServiceProvider => { localStorageServiceProvider.setPrefix('giddh') });
 
 
 app.config(vcRecaptchaServiceProvider => {
-    debugger;
     return vcRecaptchaServiceProvider.setDefaults({
         key: '6LcgBiATAAAAAMhNd_HyerpTvCHXtHG6BG-rtcmi'
         // theme: 'dark'
@@ -377,7 +373,6 @@ app.run([
     '$rootScope',
     '$window',
     function ($rootScope, $window) {
-        debugger;
         $rootScope.magicLinkPage = false;
         $rootScope.whiteLinks = false;
         $rootScope.loginPage = false;

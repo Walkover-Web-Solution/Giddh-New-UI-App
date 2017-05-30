@@ -1,10 +1,9 @@
 /* eslint-disable */
 
 window.giddh = {};
-
+window.moment = require('moment')
 import * as daterangepicker from 'bootstrap-daterangepicker';
 window.daterangepicker = daterangepicker
-debugger;
 giddh.serviceModule = angular.module("serviceModule", ["LocalStorageModule", "ngResource", "ui.bootstrap"]);
 
 giddh.webApp = angular.module("giddhWebApp",
@@ -48,11 +47,10 @@ giddh.webApp = angular.module("giddhWebApp",
   ]
 );
 
-giddh.webApp.config(localStorageServiceProvider => {debugger; localStorageServiceProvider.setPrefix('giddh')});
+giddh.webApp.config(localStorageServiceProvider => {localStorageServiceProvider.setPrefix('giddh')});
 
 
 giddh.webApp.config(function($stateProvider, $urlRouterProvider, $locationProvider) {
-    debugger;
   $urlRouterProvider.otherwise('/home');
   $locationProvider.hashPrefix('');
   // $rootScope.prefixThis = "https://test-fs8eefokm8yjj.stackpathdns.com"
@@ -327,7 +325,6 @@ giddh.webApp.config(function($stateProvider, $urlRouterProvider, $locationProvid
   );
   $locationProvider.html5Mode(true);
 });
-debugger;
 giddh.webApp.run([
   '$rootScope',
   '$state',
@@ -340,9 +337,7 @@ giddh.webApp.run([
   'groupService',
   '$http',
   function($rootScope, $state, $stateParams, $location, $window, toastr, localStorageService, DAServices, groupService, $http) {
-debugger;
     $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){
-        debugger;
       $rootScope.showLedgerBox = false;
       if (_.isEmpty(toParams)) {
         return $rootScope.selAcntUname = undefined;
@@ -498,7 +493,6 @@ giddh.webApp.factory('appInterceptor', ['$q', '$location', '$log', 'toastr', '$t
 
 // toastr setting
 giddh.webApp.config(function(toastrConfig) {
-    debugger;
   angular.extend(toastrConfig, {
     maxOpened: 3,
     closeButton: true,
