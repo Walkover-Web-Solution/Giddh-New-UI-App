@@ -97,13 +97,7 @@ module.exports = {
     },
     entry: {
         'vendor': vendoreArray,
-        'app.js': filesArray,
-        'giddh.min.css': [
-            path.join(__dirname, '../app/webapp/Globals/css/bootstrap.css'),
-            path.join(__dirname, '../app/webapp/Globals/css/font-awesome.css'),
-            path.join(__dirname, '../app/webapp/Globals/css/style-1.css'),
-            path.join(__dirname, '../app/webapp/Globals/css/style-2.css'),
-        ],
+        'app.js': filesArray
     },
     devtool: '',
     output: {
@@ -144,13 +138,13 @@ module.exports = {
     },
     plugins: [
         extractCSS,
-        new webpack.ProvidePlugin({
-            '$': 'jquery',
-            'jquery': 'jquery',
-            'jQuery': 'jquery',
-            'window.jQuery': 'jquery',
-            // "window.moment": path.resolve(__dirname, '../node_modules/moment/moment.js')
-        }),
+        // new webpack.ProvidePlugin({
+        //     // '$': 'jquery',
+        //     // 'jquery': 'jquery',
+        //     // 'jQuery': 'jquery',
+        //     // 'window.jQuery': 'jquery',
+        //     // "window.moment": path.resolve(__dirname, '../node_modules/moment/moment.js')
+        // }),
         new HtmlWebpackPlugin({
             template: path.join(__dirname, '/../app/webapp/views/index.html'),
             inject: 'body',

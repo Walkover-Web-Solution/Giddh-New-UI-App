@@ -6,6 +6,11 @@ import * as daterangepicker from 'bootstrap-daterangepicker';
 window.daterangepicker = daterangepicker
 giddh.serviceModule = angular.module("serviceModule", ["LocalStorageModule", "ngResource", "ui.bootstrap"]);
 
+import './Globals/css/bootstrap.css';
+import './Globals/css/font-awesome.css';
+import './Globals/css/style-1.css';
+import './Globals/css/style-2.css';
+
 giddh.webApp = angular.module("giddhWebApp",
   [
     "custom_snippet_giddh",
