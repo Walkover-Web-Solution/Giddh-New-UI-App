@@ -1,5 +1,6 @@
 //Service : Audit Logs : HttpService
-
+debugger
+window.app = giddh.webApp;
 (function(app){
 
 	app.AuditLogsHttpService = ng.core.Injectable().Class({
@@ -31,6 +32,6 @@
 	    }
 	});
 
-})(app = window.giddh.webApp || (window.giddh.webApp = {}));
+})(app);
 
 

@@ -1,20 +1,27 @@
-import settings from '../util/settings';
-let router = settings.express.Router();
+(function() {
+  var router, settings;
 
-router.get('/', function(req, res) {
-  let hUrl = settings.envUrl + 'currency';
-  let args = { 
-  	headers: { 
-  		'Content-Type': 'application/json',
-  		'X-Forwarded-For': res.locales.remoteIp
-}
-};
-  return settings.client.get(hUrl, args, function(data, response) {
-    if ((data.status === 'error') || (data.status === undefined)) {
-      res.status(response.statusCode);
-    }
-    return res.send(data);
+  settings = require('../util/settings');
+
+  router = settings.express.Router();
+
+  router.get('/', function(req, res) {
+    var args, hUrl;
+    hUrl = settings.envUrl + 'currency';
+    args = {
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Forwarded-For': res.locales.remoteIp
+      }
+    };
+    return settings.client.get(hUrl, args, function(data, response) {
+      if (data.status === 'error' || data.status === void 0) {
+        res.status(response.statusCode);
+      }
+      return res.send(data);
+    });
   });
-});
 
-export default router;
+  module.exports = router;
+
+}).call(this);

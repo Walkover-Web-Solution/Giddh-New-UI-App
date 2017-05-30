@@ -1,338 +1,399 @@
-import settings from '../util/settings';
-import requestIp from 'request-ip';
-let router = settings.express.Router();
+(function() {
+  var dirName, hitViaSocket, options, panelOption, requestIp, router, settings;
 
-let dirName = settings.path.resolve(__dirname, '..', '..');
-let options = {
-  root: dirName + '/website/views',
-  dotfiles: 'deny',
-  headers: {
-    'x-timestamp': Date.now(),
-    'x-sent': true
-  }
-};
+  settings = require('../util/settings');
 
+  requestIp = require('request-ip');
 
-let panelOption = {
-  root: dirName + '/adminPanel',
-  dotFiles: 'deny',
-  headers: {
-    'x-timestamp': Date.now(),
-    'x-sent': true
-  }
-};
+  router = settings.express.Router();
 
-router.get('/sindhu', (req,res) => res.sendFile('admin-panel.html', panelOption));
+  dirName = settings.path.resolve(__dirname, '..', '..');
 
-// router.get '/sindhu/panel', (req, res) ->
-//   res.sendFile 'sindhu.html', panelOption
-
-router.get('/', (req, res) => res.sendFile('index.html', options));
-
-
-router.get('/index', (req, res) => res.sendFile('index.html', options));
-
-router.get('/affiliate', (req,res) => res.sendFile('joinus.html', options));
-
-router.get('/global', (req,res) => res.sendFile('global.html', options));
-
-router.get('/gst', (req,res) => res.sendFile('gst.html', options));
-
-router.get('/about', (req, res) => res.sendFile('about.html', options));
-
-router.get('/beta', (req, res) => res.sendFile('beta.html', options));
-
-router.get('/pricing', (req, res) => res.sendFile('pricing.html', options));
-
-router.get('/privacy', (req, res) => res.sendFile('privacy.html', options));
-
-router.get('/terms', (req, res) => res.sendFile('terms.html', options));
-
-router.get('/login', (req, res) => res.sendFile('login.html', options));
-
-router.get('/magic', (req, res) => res.sendFile('magic.html', options));
-
-router.get('/payment', (req, res) => res.sendFile('payment.html', options));
-
-router.get('/google87e474bb481dae55.html',(req, res) => res.sendFile('google87e474bb481dae55.html', options));
-
-router.get('/sitemap.xml', (req, res) => res.sendFile('sitemap.xml', options));
-
-router.get('/robots.txt', (req, res) => res.sendFile('robots.txt', options));
-
-router.get('/success', (req, res) => res.sendFile('success.html', options));
-
-router.get('/company/verify-email', (req, res) => res.sendFile('verifyEmail.html', options));
-
-router.get('/refresh-completed', (req, res) => res.sendFile('refresh-completed.html', options));
-
-router.get('/signup', (req, res) => res.sendFile('signup.html', options));
-
-router.get('/IE', (req, res) => res.sendFile('incompatible-browser.html', options));
-
-router.post('/magic-link', function(req, res) {
-  let hUrl;
-  if ((req.body.data.from !== undefined) && (req.body.data.to !== undefined)) {
-    hUrl = settings.envUrl + '/magic-link/' + req.body.data.id + '?from=' + req.body.data.from + '&to=' + req.body.data.to;
-  } else {
-    hUrl = settings.envUrl + '/magic-link/' + req.body.data.id;
-  }
-  return settings.client.get(hUrl, function(data, response) {
-    if ((data.status === 'error') || (data.status === undefined)) {
-      res.status(response.statusCode);
-    }
-    return res.send(data);
-  });
-});
-
-router.post('/magic-link/download-invoice', function(req, res) {
-  let hUrl = settings.envUrl + '/magic-link/' + req.body.data.id + '/download-invoice/' + req.body.data.invoiceNum;
-  return settings.client.get(hUrl, function(data, response) {
-    if ((data.status === 'error') || (data.status === undefined)) {
-      res.status(response.statusCode);
-    }
-    return res.send(data);
-  });
-});
-
-router.put('/ebanks/login', function(req, res) {
-  let hUrl = settings.envUrl + '/ebanks/login/' + req.body.loginId;
-  return settings.client.put(hUrl, function(data, response) {
-    if ((data.status === 'error') || (data.status === undefined)) {
-      res.status(response.statusCode);
-    }
-    return res.send(data);
-  });
-});
-
-router.post('/verify-email', function(req, res) {
-  let data = req.body;
-  let hUrl = settings.envUrl + '/company/'+data.companyUname+'/invoice-setting/verify-email?emailAddress='+data.emailAddress+'&scope='+data.scope;
-  return settings.client.get(hUrl, function(data, response) {
-    if ((data.status === 'error') || (data.status === undefined)) {
-      res.status(response.statusCode);
-    }
-    return res.sendFile('/public/webapp/views/index.html',options);
-  });
-});
-
-router.post('/proforma/pay', function(req, res) {
-  let data = req.body;
-  let hUrl = settings.envUrl + 'company/' + data.companyUniqueName+'/proforma/' + data.uniqueName + '/pay';
-  let args = {
+  options = {
+    root: dirName + '/website/views',
+    dotfiles: 'deny',
     headers: {
-      "Content-Type": "application/json"
-    },
-    data: {
-      "paymentId" : data.paymentId
+      'x-timestamp': Date.now(),
+      'x-sent': true
     }
   };
-  return settings.client.post(hUrl, args, function(data, response) {
-    if ((data.status === 'error') || (data.status === undefined)) {
-      res.status(response.statusCode);
-    }
-    return res.send(data);
-  });
-});
 
-router.post('/invoice/pay', function(req, res) {
-  let data = req.body;
-  let hUrl = settings.envUrl + 'company/'+data.companyUniqueName+'/invoices/'+data.uniqueName+'/pay';
-  let args = {
+  panelOption = {
+    root: dirName + '/adminPanel',
+    dotFiles: 'deny',
     headers: {
-      "Content-Type": "application/json"
-    },
-    data: {
-      "paymentId" : data.paymentId
+      'x-timestamp': Date.now(),
+      'x-sent': true
     }
   };
-  return settings.client.post(hUrl, args, function(data, response) {
-    if ((data.status === 'error') || (data.status === undefined)) {
-      res.status(response.statusCode);
-    }
-    return res.send(data);
-  });
-});
 
-router.post('/invoice-pay-request', function(req, res) {
-  let hUrl = settings.envUrl + 'invoice-pay-request/'+req.body.randomNumber;
-  return settings.client.get(hUrl, function(data, response) {
-    if ((data.status === 'error') || (data.status === undefined)) {
-      res.status(response.statusCode);
-    }
-    return res.send(data);
+  router.get('/sindhu', function(req, res) {
+    return res.sendFile('admin-panel.html', panelOption);
   });
-});
 
-router.post('/get-login-otp', function(req, res) {
-  let data = req.body;
-  data.getGeneratedOTP = false;
-  let hUrl = "https://sendotp.msg91.com/api/generateOTP";
-  let args = {
-    headers: {
-      "Content-Type": "application/json",
-      "application-Key" : settings.getOtpKey
-    },
-    data
-  };
-  return settings.client.post(hUrl,args, function(data, response) {
-    if ((data.status === 'error') || (data.status === undefined)) {
-      res.status(response.statusCode);
-    }
-    return res.send(data);
+  router.get('/', function(req, res) {
+    return res.sendFile('index.html', options);
   });
-});
 
-router.post('/verify-login-otp', function(req, res) {
-  let data = req.body;
-  let hUrl = "https://sendotp.msg91.com/api/verifyOTP";
-  let args = {
-    headers: {
-      "Content-Type": "application/json",
-      "application-Key" : settings.getOtpKey
-    },
-    data
-  };
-  return settings.client.post(hUrl,args, function(data, response) {
-    if ((data.status === 'error') || (data.status === undefined)) {
-      res.status(response.statusCode);
-    }
-    return res.send(data);
+  router.get('/index', function(req, res) {
+    return res.sendFile('index.html', options);
   });
-});
 
-router.post('/login-with-number', function(req, res) {
-  var hUrl = (hUrl = settings.envUrl + 'login-with-number?' + "countryCode=" + req.body.countryCode + "&mobileNumber=" + req.body.mobileNumber);
-  let args = {
-    headers: {
-      "Content-Type": "application/json",
-      "Access-Token" : req.body.token
-    }
-  };
-  return settings.client.get(hUrl,args, function(data, response) {
-    if ((data.status === 'error') || (data.status === undefined)) {
-      res.status(response.statusCode);
+  router.get('/affiliate', function(req, res) {
+    return res.sendFile('joinus.html', options);
+  });
+
+  router.get('/global', function(req, res) {
+    return res.sendFile('global.html', options);
+  });
+
+  router.get('/gst', function(req, res) {
+    return res.sendFile('gst.html', options);
+  });
+
+  router.get('/about', function(req, res) {
+    return res.sendFile('about.html', options);
+  });
+
+  router.get('/beta', function(req, res) {
+    return res.sendFile('beta.html', options);
+  });
+
+  router.get('/pricing', function(req, res) {
+    return res.sendFile('pricing.html', options);
+  });
+
+  router.get('/privacy', function(req, res) {
+    return res.sendFile('privacy.html', options);
+  });
+
+  router.get('/terms', function(req, res) {
+    return res.sendFile('terms.html', options);
+  });
+
+  router.get('/login', function(req, res) {
+    return res.sendFile('login.html', options);
+  });
+
+  router.get('/magic', function(req, res) {
+    return res.sendFile('magic.html', options);
+  });
+
+  router.get('/payment', function(req, res) {
+    return res.sendFile('payment.html', options);
+  });
+
+  router.get('/google87e474bb481dae55.html', function(req, res) {
+    return res.sendFile('google87e474bb481dae55.html', options);
+  });
+
+  router.get('/sitemap.xml', function(req, res) {
+    return res.sendFile('sitemap.xml', options);
+  });
+
+  router.get('/robots.txt', function(req, res) {
+    return res.sendFile('robots.txt', options);
+  });
+
+  router.get('/success', function(req, res) {
+    return res.sendFile('success.html', options);
+  });
+
+  router.get('/company/verify-email', function(req, res) {
+    return res.sendFile('verifyEmail.html', options);
+  });
+
+  router.get('/refresh-completed', function(req, res) {
+    return res.sendFile('refresh-completed.html', options);
+  });
+
+  router.get('/signup', function(req, res) {
+    return res.sendFile('signup.html', options);
+  });
+
+  router.get('/IE', function(req, res) {
+    return res.sendFile('incompatible-browser.html', options);
+  });
+
+  router.post('/magic-link', function(req, res) {
+    var hUrl;
+    if (req.body.data.from !== void 0 && req.body.data.to !== void 0) {
+      hUrl = settings.envUrl + '/magic-link/' + req.body.data.id + '?from=' + req.body.data.from + '&to=' + req.body.data.to;
     } else {
-      req.session.name = data.body.user.uniqueName;
-      req.session.authKey = data.body.authKey;
+      hUrl = settings.envUrl + '/magic-link/' + req.body.data.id;
     }
-    return res.send(data);
-  });
-});
-
-router.post('/signup-with-email', function(req, res) {
-  let hUrl = settings.envUrl + 'signup-with-email';
-  let args = {
-    headers: {
-      "Content-Type": "application/json",
-      'X-Forwarded-For': res.locales.remoteIp
-    },
-    data:req.body
-  };
-  return settings.client.post(hUrl, args, function(data, response) {
-    if ((data.status === 'error') || (data.status === undefined)) {
-      res.status(response.statusCode);
-    }
-    return res.send(data);
-  });
-});
-
-router.post('/verify-email-now', function(req, res) {
-  let hUrl = settings.envUrl + 'verify-email';
-  let args = {
-    headers: {
-      "Content-Type": "application/json",
-      'X-Forwarded-For': res.locales.remoteIp
-    },
-    data:req.body
-  };
-  return settings.client.post(hUrl, args, function(data, response) {
-    if ((data.status === 'error') || (data.status === undefined)) {
-      res.status(response.statusCode);
-    } else {
-      req.session.name = data.body.user.uniqueName;
-      req.session.authKey = data.body.authKey;
-    }
-    return res.send(data);
-  });
-});
-
-router.post('/verify-number', function(req, res) {
-  let hUrl = settings.envUrl + '/verify-number';
-  let args = {
-    headers: {
-      "Content-Type": "application/json",
-      'X-Forwarded-For': res.locales.remoteIp
-    },
-    data:req.body
-  };
-  return settings.client.post(hUrl, args, function(data, response) {
-    if ((data.status === 'error') || (data.status === undefined)) {
-      res.status(response.statusCode);
-    } else {
-      req.session.name = data.body.user.uniqueName;
-      req.session.authKey = data.body.authKey;
-    }
-    return res.send(data);
-  });
-});
-
-
-router.get('/contact/submitDetails', function(req, res) {
-  let ip = requestIp.getClientIp(req);
-  let geo = settings.geoIp.lookup(ip);
-  if ((geo !== null) && (geo.country !== 'IN')) {
-    return res.redirect(301, 'https://giddh.com');
-  } else {
-    return res.redirect(301, 'https://giddh.com');
-  }
-});
-
-
-
-let hitViaSocket = function(data) {
-  data = JSON.stringify(data);
-  data.environment = app.get('env');
-  if (data.isNewUser) {
-    return settings.request({
-      url: 'https://viasocket.com/t/fDR1TMJLvMQgwyjBUMVs/giddh-giddh-login?authkey=MbK1oT6x1RCoVf2AqL3y',
-      qs: {
-        from: 'Giddh',
-        time: +new Date
-      },
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Auth-Key': 'MbK1oT6x1RCoVf2AqL3y'
-      },
-      body: data.user
-    }, function(error, response, body) {
-      if (error) {
-        console.log(error);
-      } else {
-        console.log(response.statusCode, body, 'from viasocket');
+    return settings.client.get(hUrl, function(data, response) {
+      if (data.status === 'error' || data.status === void 0) {
+        res.status(response.statusCode);
       }
+      return res.send(data);
     });
-  }
-};
+  });
 
-router.post('/global-user', function(req, res) {
-  let data = req.body;
-  hitViaSocket(data);
-  return res.status(200).send('success');
-});
+  router.post('/magic-link/download-invoice', function(req, res) {
+    var hUrl;
+    hUrl = settings.envUrl + '/magic-link/' + req.body.data.id + '/download-invoice/' + req.body.data.invoiceNum;
+    return settings.client.get(hUrl, function(data, response) {
+      if (data.status === 'error' || data.status === void 0) {
+        res.status(response.statusCode);
+      }
+      return res.send(data);
+    });
+  });
 
-router.get('/user-location', function(req, res) {
-  let ip = requestIp.getClientIp(req);
-  let geo = settings.geoIp.lookup(ip);
-  if (geo !== null) {
-    return res.send(geo);
-  } else {
-    res.status(404);
-    return res.send('unable to retrieve location');
-  }
-});
+  router.put('/ebanks/login', function(req, res) {
+    var hUrl;
+    hUrl = settings.envUrl + '/ebanks/login/' + req.body.loginId;
+    return settings.client.put(hUrl, function(data, response) {
+      if (data.status === 'error' || data.status === void 0) {
+        res.status(response.statusCode);
+      }
+      return res.send(data);
+    });
+  });
 
-router.get('/global', (req, res) => res.sendFile('global.html', options));
+  router.post('/verify-email', function(req, res) {
+    var data, hUrl;
+    data = req.body;
+    hUrl = settings.envUrl + '/company/' + data.companyUname + '/invoice-setting/verify-email?emailAddress=' + data.emailAddress + '&scope=' + data.scope;
+    return settings.client.get(hUrl, function(data, response) {
+      if (data.status === 'error' || data.status === void 0) {
+        res.status(response.statusCode);
+      }
+      return res.sendFile('/public/webapp/views/index.html', options);
+    });
+  });
 
-export default router;
+  router.post('/proforma/pay', function(req, res) {
+    var args, data, hUrl;
+    data = req.body;
+    hUrl = settings.envUrl + 'company/' + data.companyUniqueName + '/proforma/' + data.uniqueName + '/pay';
+    args = {
+      headers: {
+        "Content-Type": "application/json"
+      },
+      data: {
+        "paymentId": data.paymentId
+      }
+    };
+    return settings.client.post(hUrl, args, function(data, response) {
+      if (data.status === 'error' || data.status === void 0) {
+        res.status(response.statusCode);
+      }
+      return res.send(data);
+    });
+  });
+
+  router.post('/invoice/pay', function(req, res) {
+    var args, data, hUrl;
+    data = req.body;
+    hUrl = settings.envUrl + 'company/' + data.companyUniqueName + '/invoices/' + data.uniqueName + '/pay';
+    args = {
+      headers: {
+        "Content-Type": "application/json"
+      },
+      data: {
+        "paymentId": data.paymentId
+      }
+    };
+    return settings.client.post(hUrl, args, function(data, response) {
+      if (data.status === 'error' || data.status === void 0) {
+        res.status(response.statusCode);
+      }
+      return res.send(data);
+    });
+  });
+
+  router.post('/invoice-pay-request', function(req, res) {
+    var hUrl;
+    hUrl = settings.envUrl + 'invoice-pay-request/' + req.body.randomNumber;
+    return settings.client.get(hUrl, function(data, response) {
+      if (data.status === 'error' || data.status === void 0) {
+        res.status(response.statusCode);
+      }
+      return res.send(data);
+    });
+  });
+
+  router.post('/get-login-otp', function(req, res) {
+    var args, data, hUrl;
+    data = req.body;
+    data.getGeneratedOTP = false;
+    hUrl = "https://sendotp.msg91.com/api/generateOTP";
+    args = {
+      headers: {
+        "Content-Type": "application/json",
+        "application-Key": settings.getOtpKey
+      },
+      data: data
+    };
+    return settings.client.post(hUrl, args, function(data, response) {
+      if (data.status === 'error' || data.status === void 0) {
+        res.status(response.statusCode);
+      }
+      return res.send(data);
+    });
+  });
+
+  router.post('/verify-login-otp', function(req, res) {
+    var args, data, hUrl;
+    data = req.body;
+    hUrl = "https://sendotp.msg91.com/api/verifyOTP";
+    args = {
+      headers: {
+        "Content-Type": "application/json",
+        "application-Key": settings.getOtpKey
+      },
+      data: data
+    };
+    return settings.client.post(hUrl, args, function(data, response) {
+      if (data.status === 'error' || data.status === void 0) {
+        res.status(response.statusCode);
+      }
+      return res.send(data);
+    });
+  });
+
+  router.post('/login-with-number', function(req, res) {
+    var args, hUrl;
+    hUrl = hUrl = settings.envUrl + 'login-with-number?' + "countryCode=" + req.body.countryCode + "&mobileNumber=" + req.body.mobileNumber;
+    args = {
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Token": req.body.token
+      }
+    };
+    return settings.client.get(hUrl, args, function(data, response) {
+      if (data.status === 'error' || data.status === void 0) {
+        res.status(response.statusCode);
+      } else {
+        req.session.name = data.body.user.uniqueName;
+        req.session.authKey = data.body.authKey;
+      }
+      return res.send(data);
+    });
+  });
+
+  router.post('/signup-with-email', function(req, res) {
+    var args, hUrl;
+    hUrl = settings.envUrl + 'signup-with-email';
+    args = {
+      headers: {
+        "Content-Type": "application/json",
+        'X-Forwarded-For': res.locales.remoteIp
+      },
+      data: req.body
+    };
+    return settings.client.post(hUrl, args, function(data, response) {
+      if (data.status === 'error' || data.status === void 0) {
+        res.status(response.statusCode);
+      }
+      return res.send(data);
+    });
+  });
+
+  router.post('/verify-email-now', function(req, res) {
+    var args, hUrl;
+    hUrl = settings.envUrl + 'verify-email';
+    args = {
+      headers: {
+        "Content-Type": "application/json",
+        'X-Forwarded-For': res.locales.remoteIp
+      },
+      data: req.body
+    };
+    return settings.client.post(hUrl, args, function(data, response) {
+      if (data.status === 'error' || data.status === void 0) {
+        res.status(response.statusCode);
+      } else {
+        req.session.name = data.body.user.uniqueName;
+        req.session.authKey = data.body.authKey;
+      }
+      return res.send(data);
+    });
+  });
+
+  router.post('/verify-number', function(req, res) {
+    var args, hUrl;
+    hUrl = settings.envUrl + '/verify-number';
+    args = {
+      headers: {
+        "Content-Type": "application/json",
+        'X-Forwarded-For': res.locales.remoteIp
+      },
+      data: req.body
+    };
+    return settings.client.post(hUrl, args, function(data, response) {
+      if (data.status === 'error' || data.status === void 0) {
+        res.status(response.statusCode);
+      } else {
+        req.session.name = data.body.user.uniqueName;
+        req.session.authKey = data.body.authKey;
+      }
+      return res.send(data);
+    });
+  });
+
+  router.get('/contact/submitDetails', function(req, res) {
+    var geo, ip;
+    ip = requestIp.getClientIp(req);
+    geo = settings.geoIp.lookup(ip);
+    if (geo !== null && geo.country !== 'IN') {
+      return res.redirect(301, 'https://giddh.com');
+    } else {
+      return res.redirect(301, 'https://giddh.com');
+    }
+  });
+
+  hitViaSocket = function(data) {
+    data = JSON.stringify(data);
+    data.environment = app.get('env');
+    if (data.isNewUser) {
+      return settings.request({
+        url: 'https://viasocket.com/t/fDR1TMJLvMQgwyjBUMVs/giddh-giddh-login?authkey=MbK1oT6x1RCoVf2AqL3y',
+        qs: {
+          from: 'Giddh',
+          time: +(new Date)
+        },
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Auth-Key': 'MbK1oT6x1RCoVf2AqL3y'
+        },
+        body: data.user
+      }, function(error, response, body) {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log(response.statusCode, body, 'from viasocket');
+        }
+      });
+    }
+  };
+
+  router.post('/global-user', function(req, res) {
+    var data;
+    data = req.body;
+    hitViaSocket(data);
+    return res.status(200).send('success');
+  });
+
+  router.get('/user-location', function(req, res) {
+    var geo, ip;
+    ip = requestIp.getClientIp(req);
+    geo = settings.geoIp.lookup(ip);
+    if (geo !== null) {
+      return res.send(geo);
+    } else {
+      res.status(404);
+      return res.send('unable to retrieve location');
+    }
+  });
+
+  router.get('/global', function(req, res) {
+    return res.sendFile('global.html', options);
+  });
+
+  module.exports = router;
+
+}).call(this);

@@ -2,7 +2,7 @@
 // Boot NG2 App
 var upgradeAdapter = new ng.upgrade.UpgradeAdapter();
 
-angular.element(document.body).ready(function() {
+angular.element(document.body).ready(function () {
   upgradeAdapter.bootstrap(document.body, ['giddhWebApp']);
 });
 

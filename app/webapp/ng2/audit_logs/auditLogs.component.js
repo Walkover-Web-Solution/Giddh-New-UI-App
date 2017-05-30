@@ -191,4 +191,4 @@
   app.sharedService = sharedService;
   app.loadMore = loadMore;
 
-})(app = window.giddh.webApp || (window.giddh.webApp = {}));
+})(app = giddh.webApp || (giddh.webApp = {}));

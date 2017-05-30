@@ -1,6 +1,7 @@
 /* eslint-disable */
 
 window.giddh = {};
+
 import * as daterangepicker from 'bootstrap-daterangepicker';
 window.daterangepicker = daterangepicker
 debugger;

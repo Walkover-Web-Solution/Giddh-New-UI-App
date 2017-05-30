@@ -315,4 +315,4 @@
   } else {
     root.himalaya = himalaya;
   }
-}).call(this);
+}).call(window);
