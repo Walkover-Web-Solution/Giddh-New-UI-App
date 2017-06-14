@@ -9,7 +9,7 @@ const pkg = require('../package.json')
 const moment = require('moment');
 
 const vendoreArray = [
-     path.resolve(__dirname, '../app/webapp/Globals/modified_lib/moment.js'),
+    path.resolve(__dirname, '../app/webapp/Globals/modified_lib/moment.js'),
     'script-loader!jquery',
     'jquery-ui',
     'script-loader!' + path.resolve(__dirname, '../node_modules/perfect-scrollbar/dist/js/perfect-scrollbar.min.js'),
@@ -32,21 +32,20 @@ const vendoreArray = [
     'ng-file-upload',
     'ui-select',
     'html2canvas',
-    'script-loader!' +path.resolve(__dirname, '../node_modules/chart.js/Chart.min.js'),
+    'script-loader!' + path.resolve(__dirname, '../node_modules/chart.js/Chart.min.js'),
     'angular-ui-switch',
     'ng-csv',
     'angular-vidbg',
     'fullpage.js',
+    'angular-recaptcha',
     'angular-fullpage.js',
     'angular-wizard',
     'angular-google-chart',
     'intl-tel-input',
-    'international-phone-number',
+    'script-loader!' + path.resolve(__dirname, '../node_modules/international-phone-number/releases/international-phone-number.min.js'),
     'angular-file-saver',
     'angular-gridster',
     'ment.io',
-    'trix',
-    'angular-trix',
     'tinymce',
     'tinymce-mention',
     'angular-ui-tinymce',
@@ -61,27 +60,36 @@ var f = glob.sync(path.resolve(__dirname, '../app/webapp/Globals/modified_lib/**
     ignore: [
         path.resolve(__dirname, '../app/webapp/Globals/modified_lib/moment.js')
     ]
-}).map((i) => { return 'script-loader!'+i })
+}).map((i) => {
+    return 'script-loader!' + i
+})
 filesArray.push(...f);
 filesArray.push('script-loader!' + path.resolve(__dirname, '../node_modules/rxjs/bundles/Rx.umd.js'))
 filesArray.push('script-loader!' + path.resolve(__dirname, '../node_modules/es6-shim/es6-shim.js'))
 filesArray.push('script-loader!' + path.resolve(__dirname, '../node_modules/angular2/bundles/angular2-polyfills.js'))
 filesArray.push('script-loader!' + path.resolve(__dirname, '../node_modules/angular2/bundles/angular2-all.umd.min.js'))
 filesArray.push(path.resolve(__dirname, '../app/webapp/root.js'));
-filesArray.push(...glob.sync(path.resolve(__dirname, '../app/webapp/**/*.js'),
-    {
-        ignore: [
-            path.resolve(__dirname, '../app/webapp/Globals/modified_lib/**/*.js'),
-            path.resolve(__dirname, '../app/webapp/root.js'),
-            path.resolve(__dirname, '../app/webapp/ng2/**/*.js')
+filesArray.push(...glob.sync(path.resolve(__dirname, '../app/webapp/**/*.js'), {
+    ignore: [
+        path.resolve(__dirname, '../app/webapp/Globals/modified_lib/**/*.js'),
+        path.resolve(__dirname, '../app/webapp/root.js'),
+        path.resolve(__dirname, '../app/webapp/ng2/**/*.js')
 
-        ]
-    }));
+    ]
+}));
 
 filesArray.push(...glob.sync(path.resolve(__dirname, '../app/webapp/ng2/**/*.services.js')))
 filesArray.push(...glob.sync(path.resolve(__dirname, '../app/webapp/ng2/**/*.component.js')))
 filesArray.push(...glob.sync(path.resolve(__dirname, '../app/webapp/ng2/*.js')))
 
+const METADATA = {
+    baseUrl: '/public/webapp/',
+    isProduction: false,
+    isDev: true,
+    isTesting: false,
+    isWeb: true,
+    isElectron: false
+}
 
 module.exports = {
     resolve: {
@@ -108,32 +116,32 @@ module.exports = {
     },
     module: {
         rules: [{
-            test: /\.css$/i,
-            use: extractCSS.extract({
-                use: {
-                    loader: 'css-loader',
-                    options: {
-                        minimize: false
+                test: /\.css$/i,
+                use: extractCSS.extract({
+                    use: {
+                        loader: 'css-loader',
+                        options: {
+                            minimize: false
+                        }
                     }
-                }
-            })
-        }, {
-            test: /\.(png|eot|svg|ttf|woff|woff2)$/,
-            loader: 'url-loader?limit=100000'
-        }, {
-            exclude: /node_modules/,
-            test: /\.js$/,
-            use: [{
-                loader: 'babel-loader',
-                options: {
-                    presets: ['es2015']
-                },
-            }],
-        },
-        {
-            test: require.resolve("angular"),
-            use: 'imports-loader?this=>window'
-        }
+                })
+            }, {
+                test: /\.(png|eot|svg|ttf|woff|woff2)$/,
+                loader: 'url-loader?limit=100000'
+            }, {
+                exclude: /node_modules/,
+                test: /\.js$/,
+                use: [{
+                    loader: 'babel-loader',
+                    options: {
+                        presets: ['es2015']
+                    },
+                }],
+            },
+            {
+                test: require.resolve("angular"),
+                use: 'imports-loader?this=>window'
+            }
         ]
     },
     plugins: [
@@ -148,20 +156,25 @@ module.exports = {
         new HtmlWebpackPlugin({
             template: path.join(__dirname, '/../app/webapp/views/index.html'),
             inject: 'body',
-            filename: 'index.html'
+            filename: 'index.html',
+            metadata: METADATA
         }),
+        new webpack.DefinePlugin(METADATA),
         new webpack.optimize.CommonsChunkPlugin({
-            name: 'vendor', filename: 'core_bower.min.js', minChunks: function (module) {
+            name: 'vendor',
+            filename: 'core_bower.min.js',
+            minChunks: function (module) {
                 return module.context && module.context.indexOf('node_modules') !== -1;
             }
         }),
-        new CopyWebpackPlugin([
-            { from: 'app/webapp/', to: './' },
-        ], {
-                ignore: [
-                    "*.js", "*.md", "*.json", ".gitignore", "*.eot", "*.ttf", "*.svg", "*.woff", "*.woff2",
-                    "*.css", "*.xml", "*.png", "*.jpg", "*.gif", "*.mp4", "*.ico"
-                ],
-            })
+        new CopyWebpackPlugin([{
+            from: 'app/webapp/',
+            to: './'
+        }, ], {
+            ignore: [
+                "*.js", "*.md", "*.json", ".gitignore", "*.eot", "*.ttf", "*.svg", "*.woff", "*.woff2",
+                "*.css", "*.xml", "*.png", "*.jpg", "*.gif", "*.mp4", "*.ico"
+            ],
+        })
     ]
 };

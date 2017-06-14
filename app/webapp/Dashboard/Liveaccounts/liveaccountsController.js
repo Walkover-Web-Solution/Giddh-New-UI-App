@@ -47,7 +47,7 @@ let liveaccountsController = function($rootScope, $scope, $uibModal, userService
     let url = res.body.connectUrl;
     $scope.connectUrl = url;
     let modalInstance = $uibModal.open({
-      templateUrl: '/public/webapp/Globals/modals/refreshBankAccountsModal.html',
+      templateUrl: 'public/webapp/Globals/modals/refreshBankAccountsModal.html',
       size: "md",
       backdrop: 'static',
       scope: $scope
@@ -81,7 +81,7 @@ let liveaccountsController = function($rootScope, $scope, $uibModal, userService
     let url = res.body.connectUrl;
     $scope.connectUrl = url;
     return $uibModal.open({
-      templateUrl: '/public/webapp/Globals/modals/refreshBankAccountsModal.html',
+      templateUrl: 'public/webapp/Globals/modals/refreshBankAccountsModal.html',
       size: "md",
       backdrop: 'static',
       scope: $scope
@@ -102,6 +102,6 @@ liveaccount.controller('liveaccountsController',liveaccountsController)
 
 .directive('liveAccount', [($locationProvider,$rootScope) => ({
   restrict: 'E',
-  templateUrl: '/public/webapp/Dashboard/Liveaccounts/liveaccounts.html'
+  templateUrl: 'public/webapp/Dashboard/Liveaccounts/liveaccounts.html'
 //  controller: 'liveaccountsController'
 }) ]);

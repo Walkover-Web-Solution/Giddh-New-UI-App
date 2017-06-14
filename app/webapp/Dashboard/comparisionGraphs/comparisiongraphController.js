@@ -387,7 +387,7 @@ compare.controller('comparisiongraphController',comparisiongraphController)
 
 .directive('compareGraph',[$locationProvider => ({
   restrict: 'E',
-  templateUrl: '/public/webapp/Dashboard/comparisionGraphs/compare.html'
+  templateUrl: 'public/webapp/Dashboard/comparisionGraphs/compare.html'
 //  controller: 'comparisiongraphController'
 }) ]
 );

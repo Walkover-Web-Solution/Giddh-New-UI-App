@@ -160,5 +160,5 @@ profitloss.controller('profitlossController',profitlossController)
 
 .directive('profitLoss', () => ({
   restrict: 'E',
-  templateUrl: '/public/webapp/Dashboard/profitLossGraph/profitloss.html'
+  templateUrl: 'public/webapp/Dashboard/profitLossGraph/profitloss.html'
 }) );

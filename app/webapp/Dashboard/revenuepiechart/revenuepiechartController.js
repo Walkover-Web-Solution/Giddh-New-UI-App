@@ -203,5 +203,5 @@ revenue.controller('revenuechartController', revenuechartController)
 
 .directive('revenueChart',[($locationProvider,$rootScope) => ({
   restrict: 'E',
-  templateUrl: '/public/webapp/Dashboard/revenuepiechart/revenuepiechart.html'
+  templateUrl: 'public/webapp/Dashboard/revenuepiechart/revenuepiechart.html'
 }) ]);
