@@ -57,7 +57,7 @@ let companyController = function($scope, $rootScope, $timeout, $uibModal, $log, 
     duration: "MONTHLY",
     taxFileDate: 1
   };
-  
+
   $scope.today = new Date();
   $scope.fromTaxDate = {date: new Date()};
   $scope.format = "dd-MM-yyyy";
@@ -124,12 +124,12 @@ let companyController = function($scope, $rootScope, $timeout, $uibModal, $log, 
   $scope.toDatePickerOpen = function() {
     return this.toDatePickerIsOpen = true;
   };
-  
+
 
 //  #dialog for first time user
 //  $scope.openFirstTimeUserModal = () ->
 //    modalInstance = $uibModal.open(
-//      templateUrl: '/public/webapp/Globals/modals/createCompanyModal.html',
+//      templateUrl: 'public/webapp/Globals/modals/createCompanyModal.html',
 //      size: "sm",
 //      backdrop: 'static',
 //      scope: $scope
@@ -268,13 +268,13 @@ let companyController = function($scope, $rootScope, $timeout, $uibModal, $log, 
   //   # set financial year
   //   localStorageService.set('activeFY', data.activeFinancialYear)
   //   $rootScope.setActiveFinancialYear(data.activeFinancialYear)
-  //   activeYear = {} 
+  //   activeYear = {}
   //   activeYear.start = moment(data.activeFinancialYear.financialYearStarts,"DD/MM/YYYY").year()
   //   activeYear.ends = moment(data.activeFinancialYear.financialYearEnds,"DD/MM/YYYY").year()
   //   if activeYear.start == activeYear.ends then (activeYear.year = activeYear.start) else (activeYear.year = activeYear.start + '-' + activeYear.ends)
   //   $rootScope.currentFinancialYear = activeYear.year
   //   ########
-    
+
   //   $rootScope.$emit('callCheckPermissions', data)
   //   $rootScope.canViewSpecificItems = false
   //   if data.role.uniqueName is 'shared'
@@ -531,7 +531,7 @@ let companyController = function($scope, $rootScope, $timeout, $uibModal, $log, 
 
   $scope.pageChangedCompSuccess =function(res){
     $scope.compTransData.paymentDetail = $scope.compTransData.paymentDetail.concat(res.body.paymentDetail);
-    return $scope.compTransData.startPage += 1; 
+    return $scope.compTransData.startPage += 1;
   };
 
   $scope.pageChangedCompFailure =res=> toastr.error(res.data.message, res.data.status);
@@ -638,7 +638,7 @@ let companyController = function($scope, $rootScope, $timeout, $uibModal, $log, 
         obj.couponCode = null;
         obj.amount= Number($scope.amount);
         $scope.coupRes.extra = true;
-      } else {  
+      } else {
         obj.couponCode = $scope.coupRes.couponCode;
       }
     }
@@ -676,7 +676,7 @@ let companyController = function($scope, $rootScope, $timeout, $uibModal, $log, 
       }
     }
   };
-    
+
   $scope.addBalRzrFailure = function(res) {
     toastr.error(res.data.message, res.data.status);
     $scope.directPay = true;
@@ -729,8 +729,8 @@ let companyController = function($scope, $rootScope, $timeout, $uibModal, $log, 
         return toastr.warning("Something went wrong", "Warning");
     }
   };
-    
-  
+
+
   $scope.calCulateDiscount = function() {
     let val = Math.floor(($scope.coupRes.value * $scope.amount)/100);
     if (val > $scope.coupRes.maxAmount) {
@@ -740,7 +740,7 @@ let companyController = function($scope, $rootScope, $timeout, $uibModal, $log, 
     }
   };
 
-      
+
   $scope.checkDiffAndAlert = function(type){
     $scope.directPay = false;
     switch (type) {
@@ -755,7 +755,7 @@ let companyController = function($scope, $rootScope, $timeout, $uibModal, $log, 
           $scope.disableRazorPay = false;
           return $scope.payAlert.push({type: 'success', msg: `Your cashback amount will be credited in your account withing 48 hours after payment has been done. Your will get a refund of Rs. ${$scope.coupRes.value}`});
         }
-      
+
       case 'discount':
         let diff = $scope.amount-$scope.discount;
         if (diff < 100) {
@@ -779,8 +779,8 @@ let companyController = function($scope, $rootScope, $timeout, $uibModal, $log, 
         }
     }
   };
-      
-      
+
+
 
   $scope.redeemCouponFailure = function(res) {
     $scope.disableRazorPay = false;
@@ -829,18 +829,18 @@ let companyController = function($scope, $rootScope, $timeout, $uibModal, $log, 
     }
     if (data.isAccountConflict) {
       $scope.fixUploadData.accountConflicts = _.reject($scope.fixUploadData.accountConflicts, acObj =>
-          _.some($scope.fltAccntListPaginated, ac => (ac.uniqueName === acObj.uniqueName) || (ac.mergedAccounts.indexOf(acObj.uniqueName) !== -1)) 
+          _.some($scope.fltAccntListPaginated, ac => (ac.uniqueName === acObj.uniqueName) || (ac.mergedAccounts.indexOf(acObj.uniqueName) !== -1))
       );
     }
     $scope.modal = {};
     return $scope.modal.modalInstance = $uibModal.open({
-      templateUrl: '/public/webapp/Globals/modals/fixUploadIssueModal.html',
+      templateUrl: 'public/webapp/Globals/modals/fixUploadIssueModal.html',
       size: "lg",
       backdrop: 'static',
       scope: $scope
     });
   };
-    
+
 
   // omit if group already exist
   $scope.ifGroupAlreadyExist =group =>
@@ -931,7 +931,7 @@ let companyController = function($scope, $rootScope, $timeout, $uibModal, $log, 
           obj.account = {};
           obj.account.uniqueName = '';
         }
-        obj.hasLinkedAcc = _.find($scope.fltAccntListPaginated, acc=> acc.uniqueName === obj.account.uniqueName); 
+        obj.hasLinkedAcc = _.find($scope.fltAccntListPaginated, acc=> acc.uniqueName === obj.account.uniqueName);
         return $scope.taxList.push(obj);
       });
     }
@@ -985,7 +985,7 @@ let companyController = function($scope, $rootScope, $timeout, $uibModal, $log, 
   //delete tax
   $scope.deleteTaxconfirmation = data =>
     modalService.openConfirmModal({
-      title: 'Delete Tax', 
+      title: 'Delete Tax',
       body: `Are you sure you want to delete? ${data.name} ?`,
       ok: 'Yes',
       cancel: 'No'}).then(function() {
@@ -1064,7 +1064,7 @@ let companyController = function($scope, $rootScope, $timeout, $uibModal, $log, 
         newTax
       };
       return $scope.updateTax.modalInstance = $uibModal.open({
-        templateUrl:'/public/webapp/Globals/modals/update-tax.html',
+        templateUrl:'public/webapp/Globals/modals/update-tax.html',
         size: "md",
         backdrop: 'static',
         scope: $scope
@@ -1074,7 +1074,7 @@ let companyController = function($scope, $rootScope, $timeout, $uibModal, $log, 
       return item.isEditable = false;
     }
   };
-  
+
   $scope.updateTaxAndEntries = function(val) {
     let { reqParam } = $scope.taxObj;
     let { newTax } = $scope.taxObj;
@@ -1089,7 +1089,7 @@ let companyController = function($scope, $rootScope, $timeout, $uibModal, $log, 
     toastr.success(res.status, "Tax updated successfully.");
     return $scope.updateTax.modalInstance.close();
   };
-    
+
   $scope.updateTaxFailure = function(res) {
     $scope.getTax();
     return toastr.error(res.data.message);
@@ -1123,9 +1123,9 @@ let companyController = function($scope, $rootScope, $timeout, $uibModal, $log, 
       cancel: 'No'
     }).then(() => $scope.taxEditData.taxDetail.splice(index, 1))
   ;
-  
+
   $scope.cancelUpdateTax = function() {
-    $scope.taxEditData.taxDetail = $scope.preSpliceTaxDetail; 
+    $scope.taxEditData.taxDetail = $scope.preSpliceTaxDetail;
     return $scope.modalInstance.close();
   };
 
@@ -1139,7 +1139,7 @@ let companyController = function($scope, $rootScope, $timeout, $uibModal, $log, 
     authKey: '',
     subject: ''
   };
-  
+
   $scope.getKeys = function() {
     companyServices.getSmsKey($rootScope.selectedCompany.uniqueName).then($scope.getSmsKeySuccess, $scope.getSmsKeyFailure);
     return companyServices.getEmailKey($rootScope.selectedCompany.uniqueName).then($scope.getEmailKeySuccess, $scope.getEmailKeyFailure);
@@ -1363,7 +1363,7 @@ let companyController = function($scope, $rootScope, $timeout, $uibModal, $log, 
     } else {
       cFY = currentFinancialYear;
     }
-      
+
     _.each(response,function(yr) {
       if (yr.financialYearStarts.indexOf(cFY) !== -1) {
         return cYear = yr;
@@ -1513,7 +1513,7 @@ let companyController = function($scope, $rootScope, $timeout, $uibModal, $log, 
           break;
       }
       $scope.banks.modalInstance = $uibModal.open({
-        templateUrl:  '/public/webapp/Globals/modals/yodleeMfaModal.html',
+        templateUrl:  'public/webapp/Globals/modals/yodleeMfaModal.html',
         size: "sm",
         backdrop: 'static',
         scope: $scope
@@ -1756,7 +1756,7 @@ let companyController = function($scope, $rootScope, $timeout, $uibModal, $log, 
   $scope.connectBank = function(){
     if ($scope.linkedAccountsExist === false) {
       $scope.modalInstance = $uibModal.open({
-        templateUrl: '/public/webapp/ManageCompany/saltedgeTerms.html',
+        templateUrl: 'public/webapp/ManageCompany/saltedgeTerms.html',
         size: "a4",
         backdrop: 'static',
         scope: $scope
@@ -1776,7 +1776,7 @@ let companyController = function($scope, $rootScope, $timeout, $uibModal, $log, 
     let url = res.body.token_URL + '?token=' + res.body.token;
     $scope.connectUrl = url;
     return modalInstance = $uibModal.open({
-      templateUrl: '/public/webapp/Globals/modals/connectBankModal.html',
+      templateUrl: 'public/webapp/Globals/modals/connectBankModal.html',
       size: "md",
       backdrop: 'static',
       scope: $scope,
@@ -1798,7 +1798,7 @@ let companyController = function($scope, $rootScope, $timeout, $uibModal, $log, 
     let url = res.body.connectUrl;
     $scope.connectUrl = url;
     let modalInstance = $uibModal.open({
-      templateUrl: '/public/webapp/Globals/modals/refreshBankAccountsModal.html',
+      templateUrl: 'public/webapp/Globals/modals/refreshBankAccountsModal.html',
       size: "md",
       backdrop: 'static',
       scope: $scope
@@ -1827,7 +1827,7 @@ let companyController = function($scope, $rootScope, $timeout, $uibModal, $log, 
     let url = res.body.connectUrl;
     $scope.connectUrl = url;
     return $uibModal.open({
-      templateUrl:  '/public/webapp/Globals/modals/refreshBankAccountsModal.html',
+      templateUrl:  'public/webapp/Globals/modals/refreshBankAccountsModal.html',
       size: "md",
       backdrop: 'static',
       scope: $scope

@@ -9,7 +9,7 @@ let homeController = function($scope, $rootScope, getLedgerState, $state, $locat
     return $http.get('/state-details').then(
         function(res) {
             $rootScope.selectedCompany = localStorageService.get("_selectedCompany");
-            if ($rootScope.selectedCompany.uniqueName = res.data.body.companyUniqueName) {
+            if ($rootScope.selectedCompany.uniqueName === res.data.body.companyUniqueName) {
                 if (res.data.body.lastState.indexOf('ledger') !== -1) {
                     let state = res.data.body.lastState.split('@');
                     return $state.go(state[0], {unqName:state[1]});
@@ -33,7 +33,9 @@ let homeController = function($scope, $rootScope, getLedgerState, $state, $locat
     //   else
     //     $state.go('company.content.manage')
 
-  $scope.goToLedgerState();
+  if (window.sessionStorage.getItem('_ak')) {
+    $scope.goToLedgerState();
+  }
 
   return $rootScope.setActiveFinancialYear(getLedgerState.data.activeFinancialYear);
 };

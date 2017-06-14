@@ -150,7 +150,7 @@ let taxController = function($scope, $rootScope, modalService, companyServices, 
         newTax
       };
       return $scope.updateTax.modalInstance = $uibModal.open({
-        templateUrl:'/public/webapp/Globals/modals/update-tax.html',
+        templateUrl:'public/webapp/Globals/modals/update-tax.html',
         size: "md",
         backdrop: 'static',
         scope: $scope

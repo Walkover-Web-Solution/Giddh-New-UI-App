@@ -113,7 +113,8 @@ giddh.serviceModule.service('ledgerService', function($resource, $q) {
         page:unqNamesObj.page,
         count:unqNamesObj.count,
         sort:unqNamesObj.sort,
-        reversePage: unqNamesObj.reversePage
+        reversePage: unqNamesObj.reversePage,
+        q:unqNamesObj.q
       }, onSuccess, onFailure) );
     },
 

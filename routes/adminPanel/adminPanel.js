@@ -1,31 +1,25 @@
-(function() {
-  var router, settings;
+let settings = require('../util/settings');
+let router = settings.express.Router({mergeParams: true});
 
-  settings = require('../util/settings');
 
-  router = settings.express.Router({
-    mergeParams: true
+// generate magic link
+router.post('/companies', function(req, res) {
+  let args = {
+    headers: {
+      'Auth-Key': req.session.authKey,
+      'X-Forwarded-For': res.locales.remoteIp,
+      'Content-Type': 'application/json'
+    },
+    data: req.body.filters
+  };
+  let hUrl = settings.envUrl + 'admin/companies?page='+req.body.params.page+'&count='+req.body.params.count;
+  return settings.client.post(hUrl, args, function(data, response) {
+    if ((data.status === 'error') || (data.status === undefined)) {
+      res.status(response.statusCode);
+    }
+    return res.send(data);
   });
+});
 
-  router.post('/companies', function(req, res) {
-    var args, hUrl;
-    args = {
-      headers: {
-        'Auth-Key': req.session.authKey,
-        'X-Forwarded-For': res.locales.remoteIp,
-        'Content-Type': 'application/json'
-      },
-      data: req.body.filters
-    };
-    hUrl = settings.envUrl + 'admin/companies?page=' + req.body.params.page + '&count=' + req.body.params.count;
-    return settings.client.post(hUrl, args, function(data, response) {
-      if (data.status === 'error' || data.status === void 0) {
-        res.status(response.statusCode);
-      }
-      return res.send(data);
-    });
-  });
 
-  module.exports = router;
-
-}).call(this);
+module.exports = router;

@@ -1,6 +1,6 @@
 // confirm modal settings
 giddh.serviceModule.value('$confirmModalDefaults', {
-  templateUrl: '/public/webapp/Globals/modals/confirmModal.html',
+  templateUrl: 'public/webapp/Globals/modals/confirmModal.html',
   controller: 'ConfirmModalController',
   defaultLabels: {
     title: 'Confirm',
@@ -28,7 +28,7 @@ giddh.serviceModule.service('modalService',
 
       openManageGroupsModal() {
         return $uibModal.open({
-          templateUrl: '/public/webapp/Globals/ManageGroupsAndAccounts/addManageGroupModal.html',
+          templateUrl: 'public/webapp/Globals/ManageGroupsAndAccounts/addManageGroupModal.html',
           size: "liq90",
           backdrop: 'static',
           scope: $scope
@@ -36,7 +36,7 @@ giddh.serviceModule.service('modalService',
       },
       openImportListModal(data, showImportListData) {
         return $uibModal.open({
-          templateUrl: '/public/webapp/Globals/modals/openImportListModal.html',
+          templateUrl: 'public/webapp/Globals/modals/openImportListModal.html',
           size: "md",
           backdrop: 'static'
         });

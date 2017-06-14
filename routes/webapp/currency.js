@@ -1,27 +1,20 @@
-(function() {
-  var router, settings;
+let settings = require('../util/settings');
+let router = settings.express.Router();
 
-  settings = require('../util/settings');
-
-  router = settings.express.Router();
-
-  router.get('/', function(req, res) {
-    var args, hUrl;
-    hUrl = settings.envUrl + 'currency';
-    args = {
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Forwarded-For': res.locales.remoteIp
-      }
-    };
-    return settings.client.get(hUrl, args, function(data, response) {
-      if (data.status === 'error' || data.status === void 0) {
-        res.status(response.statusCode);
-      }
-      return res.send(data);
-    });
+router.get('/', function(req, res) {
+  let hUrl = settings.envUrl + 'currency';
+  let args = { 
+  	headers: { 
+  		'Content-Type': 'application/json',
+  		'X-Forwarded-For': res.locales.remoteIp
+}
+};
+  return settings.client.get(hUrl, args, function(data, response) {
+    if ((data.status === 'error') || (data.status === undefined)) {
+      res.status(response.statusCode);
+    }
+    return res.send(data);
   });
+});
 
-  module.exports = router;
-
-}).call(this);
+module.exports = router;

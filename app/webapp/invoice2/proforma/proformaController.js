@@ -121,7 +121,7 @@ let proformaController = function($scope, $rootScope, localStorageService,invoic
       "totalMoreThan":false,
       "totalLessThan":false,
       "totalEqual": true
-    }; 
+    };
   };
 
   pc.getAllProformaByFilter = function(data) {
@@ -214,7 +214,7 @@ let proformaController = function($scope, $rootScope, localStorageService,invoic
       //$scope.calcSubtotal()
       return $timeout(( () =>
         $scope.modalInstance = $uibModal.open({
-          templateUrl:'/public/webapp/invoice2/proforma/prevProforma.html',
+          templateUrl:'public/webapp/invoice2/proforma/prevProforma.html',
           size: "a4",
           backdrop: 'static',
           scope: $scope
@@ -301,7 +301,7 @@ aria-hidden="true">&times;</span></button> \
         backdrop: 'static',
         scope: $scope
       });
-    } else {       
+    } else {
       return invoiceService.updateBalanceStatus(reqParam, data).then(this.success, this.failure);
     }
   };
@@ -339,7 +339,11 @@ aria-hidden="true">&times;</span></button> \
       count: $scope.gwaList.count,
       showEmptyGroups: true
     };
-    return groupService.getFlattenGroupAccList(reqParam).then(pc.getFlattenGrpWithAccListSuccess, pc.getFlattenGrpWithAccListFailure);
+    if (!isElectron) {
+        return groupService.getFlattenGroupAccList(reqParam).then(pc.getFlattenGrpWithAccListSuccess, pc.getFlattenGrpWithAccListFailure);
+    } else {
+        return groupService.getFlattenGroupAccListElectron(reqParam).then(pc.getFlattenGrpWithAccListSuccess, pc.getFlattenGrpWithAccListFailure);
+    }
   };
 
   pc.getFlattenGrpWithAccListSuccess = function(res) {
@@ -363,7 +367,7 @@ aria-hidden="true">&times;</span></button> \
     }
   });
 
-  $scope.newAccountModel = {};  
+  $scope.newAccountModel = {};
   $scope.addNewAccount = function(proforma, index) {
     pc.selectedProforma = proforma;
     pc.selectedProformaIndex = index;
@@ -372,7 +376,7 @@ aria-hidden="true">&times;</span></button> \
     $scope.newAccountModel.accUnqName = '';
     pc.getFlattenGrpWithAccList($rootScope.selectedCompany.uniqueName);
     return pc.AccmodalInstance = $uibModal.open({
-      templateUrl: '/public/webapp/Ledger/createAccountQuick.html',
+      templateUrl: 'public/webapp/Ledger/createAccountQuick.html',
       size: "sm",
       backdrop: 'static',
       scope: $scope
@@ -384,7 +388,7 @@ aria-hidden="true">&times;</span></button> \
     this.success = function(res) {
       toastr.success('Account created successfully');
       $scope.proformaList.results[pc.selectedProformaIndex] = res.body;
-      return pc.AccmodalInstance.close(); 
+      return pc.AccmodalInstance.close();
     };
     this.failure = res => toastr.error(res.data.message);
 
@@ -403,7 +407,7 @@ aria-hidden="true">&times;</span></button> \
       return toastr.error('Please select a group.');
     } else {
       //accountService.createAc(unqNamesObj, newAccount).then(pc.addNewAccountConfirmSuccess, pc.addNewAccountConfirmFailure)
-      return invoiceService.linkProformaAccount(reqParam, data).then(this.success, this.failure); 
+      return invoiceService.linkProformaAccount(reqParam, data).then(this.success, this.failure);
     }
   };
 
@@ -426,7 +430,7 @@ aria-hidden="true">&times;</span></button> \
       while (i < 3) {
         text += chars.charAt(Math.floor(Math.random() * chars.length));
         i++;
-      } 
+      }
       unq = unqName + text;
       return $scope.newAccountModel.accUnqName = unq;
     } else {
@@ -468,7 +472,7 @@ aria-hidden="true">&times;</span></button> \
 
     let reqParam = {};
     reqParam.companyUniqueName = $rootScope.selectedCompany.uniqueName;
-    return invoiceService.getTemplates(reqParam).then(this.success, this.failure);  
+    return invoiceService.getTemplates(reqParam).then(this.success, this.failure);
   };
 
   // $timeout ( ->
@@ -496,7 +500,7 @@ aria-hidden="true">&times;</span></button> \
         } else if ((elem.type === 'Element') && elem.children && (elem.children.length > 0)) {
           return $$this.replaceEditables(elem.children);
         }
-      })      
+      })
     ;
 
     let templateVariables = [];
@@ -555,7 +559,7 @@ aria-hidden="true">&times;</span></button> \
       groupUniqueNames: [$rootScope.groupName.revenueFromOperations, 'discount']
     };
     return groupService.postFlatAccList(reqParam,datatosend).then(
-      res => $scope.revenueAccounts = res.body.results, 
+      res => $scope.revenueAccounts = res.body.results,
       res => []);
   };
 
@@ -744,7 +748,7 @@ aria-hidden="true">&times;</span></button> \
   };
 
   pc.entryModel = function() {
-    return this.model = 
+    return this.model =
       {
         "description": "",
         "amount": 0,
@@ -759,7 +763,7 @@ aria-hidden="true">&times;</span></button> \
 
     return companyServices.getTax($rootScope.selectedCompany.uniqueName).then(this.success, this.failure);
   };
-  
+
   pc.getTaxList();
 
   $scope.addParticular = function(transactions) {
@@ -850,7 +854,7 @@ aria-hidden="true">&times;</span></button> \
     });
     return ctax;
   };
-  
+
   pc.getTaxesFromAccountUniqueName = function(txn) {
     let account = _.findWhere($rootScope.fltAccntListPaginated, {uniqueName:txn.accountUniqueName});
     return account.applicableTaxes;
@@ -900,7 +904,7 @@ aria-hidden="true">&times;</span></button> \
     $scope.newAccountModel.accUnqName = '';
     pc.getFlattenGrpWithAccList($rootScope.selectedCompany.uniqueName);
     return pc.AccModalInstance = $uibModal.open({
-      templateUrl:'/public/webapp/invoice2/addNewAccount.html',
+      templateUrl:'public/webapp/invoice2/addNewAccount.html',
       size: "sm",
       backdrop: 'static',
       scope: $scope
@@ -924,7 +928,7 @@ aria-hidden="true">&times;</span></button> \
     if (($scope.newAccountModel.group.groupUniqueName === '') || ($scope.newAccountModel.group.groupUniqueName === undefined)) {
       return toastr.error('Please select a group.');
     } else {
-      return accountService.createAc(unqNamesObj, newAccount).then($scope.addQuickAccountConfirmSuccess, $scope.addQuickAccountConfirmFailure); 
+      return accountService.createAc(unqNamesObj, newAccount).then($scope.addQuickAccountConfirmSuccess, $scope.addQuickAccountConfirmFailure);
     }
   };
 
@@ -1011,19 +1015,19 @@ aria-hidden="true">&times;</span></button> \
         if (((elem.type === 'Text') && elem.hasVar && elem.variable.isEditable) || ((elem.type === 'Text') && elem.hasVar && (elem.variable.key === "$accountUniqueName"))) {
           switch (elem.variable.key) {
             case "$accountAddress":
-              return elem.variable.value = details.address; 
+              return elem.variable.value = details.address;
             case "$accountCity":
-              return elem.variable.value = details.city; 
+              return elem.variable.value = details.city;
             case "$accountEmail":
-              return elem.variable.value = details.email; 
+              return elem.variable.value = details.email;
             case "$accountMobileNo":
-              return elem.variable.value = details.mobileNo; 
+              return elem.variable.value = details.mobileNo;
             case "$accountState":
-              return elem.variable.value = details.state; 
+              return elem.variable.value = details.state;
             case "$accountCountry":
-              return elem.variable.value = details.country; 
+              return elem.variable.value = details.country;
             case "$accountPinCode":
-              return elem.variable.value = details.pincode; 
+              return elem.variable.value = details.pincode;
             case "$accountAttentionTo":
               return elem.variable.value = details.attentionTo;
             case "$accountUniqueName":

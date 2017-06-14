@@ -1,18 +1,19 @@
 let mainController = function($scope, $state, $rootScope, $timeout, $http, $uibModal, localStorageService, toastr, locationService, modalService, roleServices, permissionService, companyServices, $window,groupService, $location, DAServices) {
 
+$scope.hideHeader = false
   $rootScope.scriptArrayHead = [
-    "/public/webapp/newRelic.js",
-    "/public/webapp/core_bower.min.js",
-    "/public/webapp/_extras.js",
-    "/public/webapp/app.js",
-    "/public/webapp/app.min.js"
+    "public/webapp/newRelic.js",
+    "public/webapp/core_bower.min.js",
+    "public/webapp/_extras.js",
+    "public/webapp/app.js",
+    "public/webapp/app.min.js"
   ];
   $rootScope.scriptArrayBody = [
     "/node_modules/rxjs/bundles/Rx.umd.js",
     "/node_modules/es6-shim/es6-shim.js",
     "/node_modules/angular2/bundles/angular2-polyfills.js",
     "/node_modules/angular2/bundles/angular2-all.umd.min.js",
-    "/public/webapp/ng2.js"
+    "public/webapp/ng2.js"
   ];
   $rootScope.groupName = {
     sundryDebtors : "sundrydebtors",
@@ -123,18 +124,30 @@ let mainController = function($scope, $state, $rootScope, $timeout, $http, $uibM
   let getUserSuccess = function(res) {
     localStorageService.set('_userDetails', res.data.body);
     $rootScope.basicInfo = res.data.body;
-    $scope.userName = $rootScope.basicInfo.name.split(" ");
-    $scope.userName = $scope.userName[0][0]+$scope.userName[1][0];
+   // bug fixed by ghlabs team
+    // if user don't have space in name then previous logic will fail
+    if ($rootScope.basicInfo.name.match(/\s/g)) {
+        $scope.userName = $rootScope.basicInfo.name.split(" ");
+        $scope.userName = $scope.userName[0] + $scope.userName[1];
+    }
+
+    $scope.userName = $rootScope.basicInfo.name;
     $rootScope.getCompanyList();
     if (!_.isEmpty($rootScope.selectedCompany)) {
       return $rootScope.cmpViewShow = true;
     }
   };
-      
-  let getUserFailure = res => toastr.error('unable to fetch user');
-  let getUserDetail = () => $http.get('/fetch-user').then(getUserSuccess, getUserFailure);
-  getUserDetail();
 
+  let getUserFailure = res => toastr.error('unable to fetch user');
+
+  let getUserDetail = () => {
+      let user = localStorageService.get('_userDetails');
+      let url = isElectron ? '/users/' + user.uniqueName : '/fetch-user';
+      return $http.get(url).then(getUserSuccess, getUserFailure);
+  }
+  if (window.sessionStorage.getItem('_ak')) {
+    getUserDetail();
+  }
 
   $scope.addScript = function() {
     _.each($rootScope.scriptArrayHead, function(script) {
@@ -159,7 +172,7 @@ let mainController = function($scope, $state, $rootScope, $timeout, $http, $uibM
 
   $scope.runSetupWizard = () =>
     $rootScope.setupModalInstance = $uibModal.open({
-      templateUrl: '/public/webapp/SetupWizard/setup-wizard.html',
+      templateUrl: 'public/webapp/SetupWizard/setup-wizard.html',
       size: "lg",
       backdrop: 'static',
       scope: $scope
@@ -232,7 +245,11 @@ let mainController = function($scope, $state, $rootScope, $timeout, $http, $uibM
 
   $rootScope.countryCodesList = locationService.getCountryCode();
 
-  $scope.getRoles = () => roleServices.getAll().then($scope.onGetRolesSuccess, $scope.onGetRolesFailure);
+  $scope.getRoles = () => {
+    if (window.sessionStorage.getItem('_ak')) {
+      roleServices.getAll().then($scope.onGetRolesSuccess, $scope.onGetRolesFailure);
+    }
+  }
 
   $scope.onGetRolesSuccess = res =>
 //    console.log("roles we have",res.body)
@@ -240,7 +257,6 @@ let mainController = function($scope, $state, $rootScope, $timeout, $http, $uibM
   ;
 
   $scope.onGetRolesFailure = res => toastr.error("Something went wrong while fetching role", "Error");
-
 
   $scope.getCdnUrl = () => roleServices.getEnvVars().then($scope.onGetEnvSuccess, $scope.onGetEnvFailure);
 
@@ -269,7 +285,7 @@ let mainController = function($scope, $state, $rootScope, $timeout, $http, $uibM
     return $rootScope.canVWDLT = permissionService.hasPermissionOn(entity, "VWDLT");
   };
 
-    
+
 
   $rootScope.setScrollToTop = function(val, elem){
     if ((val === '') || _.isUndefined(val)) {
@@ -285,9 +301,9 @@ let mainController = function($scope, $state, $rootScope, $timeout, $http, $uibM
     let pattern = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return pattern.test(emailStr);
   };
-  
+
   $scope.getRoles();
-  $scope.getCdnUrl();
+  if (!isElectron) $scope.getCdnUrl();
 
   $timeout((function() {
     let cdt = localStorageService.get("_selectedCompany");
@@ -305,7 +321,8 @@ let mainController = function($scope, $state, $rootScope, $timeout, $http, $uibM
     $scope.beforeDeleteCompany.company = company;
     $scope.beforeDeleteCompany.index = index;
     return modalService.openConfirmModal({
-      title: `Are you sure you want to delete? ${name}`,
+      title: 'Delete Company',
+      body: `Are you sure you want to delete ${name} ?`,
       ok: 'Yes',
       cancel: 'No'
     }).then(() => companyServices.delete(company.uniqueName).then($scope.delCompanySuccess, $scope.delCompanyFailure));
@@ -327,9 +344,14 @@ let mainController = function($scope, $state, $rootScope, $timeout, $http, $uibM
 
 //    $scope.getCompanyList()
 
-// refresh company list 
+// refresh company list
   $scope.refreshcompanyList = function(e) {
-    companyServices.getAll().then($scope.refreshcompanyListSuccess, $scope.getCompanyListFailure);
+    if (!isElectron) {
+        companyServices.getAll().then($scope.refreshcompanyListSuccess, $scope.getCompanyListFailure);
+    } else {
+        let cdt = localStorageService.get("_userDetails");
+        companyServices.getAllElectron(cdt.uniqueName).then($scope.refreshcompanyListSuccess, $scope.getCompanyListFailure);
+    }
     return e.stopPropagation();
   };
 
@@ -422,10 +444,17 @@ let mainController = function($scope, $state, $rootScope, $timeout, $http, $uibM
   $scope.getOnlyCityFailure = res => toastr.error(res.data.message, res.data.status);
 
   //Get company list
-  $rootScope.getCompanyList = ()=> companyServices.getAll().then($scope.getCompanyListSuccess, $scope.getCompanyListFailure);
+  if (!isElectron) {
+    $rootScope.getCompanyList = ()=> companyServices.getAll().then($scope.getCompanyListSuccess, $scope.getCompanyListFailure);
+  } else {
+    let cdt = localStorageService.get("_userDetails");
+    if (cdt) {
+        $rootScope.getCompanyList = ()=> companyServices.getAllElectron(cdt.uniqueName).then($scope.getCompanyListSuccess, $scope.getCompanyListFailure);
+    }
+  }
 
   //Get company list success
-  $scope.getCompanyListSuccess = function(res) {    
+  $scope.getCompanyListSuccess = function(res) {
     $scope.companyList = _.sortBy(res.body, 'shared');
     $scope.companyList = $scope.companyList.reverse();
     $rootScope.CompanyList = $scope.companyList;
@@ -438,10 +467,10 @@ let mainController = function($scope, $state, $rootScope, $timeout, $http, $uibM
       // When there are companies
       $scope.checkUserCompanyStatus(res.body);
       $rootScope.mngCompDataFound = true;
-      $scope.findCompanyInList();
-      return $rootScope.checkWalkoverCompanies();
+      return $scope.findCompanyInList();
     }
   };
+      // $rootScope.checkWalkoverCompanies()
 
   $scope.checkUserCompanyStatus = compList =>
     _.each(compList, function(cmp) {
@@ -532,7 +561,11 @@ let mainController = function($scope, $state, $rootScope, $timeout, $http, $uibM
       page: 1,
       count: 0
     };
-    return groupService.getFlatAccList(reqParam).then($scope.flatAccntQuerySuccess, $scope.flatAccntQueryFailure);
+    if (!isElectron) {
+        return groupService.getFlatAccList(reqParam).then($scope.flatAccntQuerySuccess, $scope.flatAccntQueryFailure);
+    } else {
+        return groupService.getFlatAccListElectron(reqParam).then($scope.flatAccntQuerySuccess, $scope.flatAccntQueryFailure);
+    }
   };
 
   $rootScope.postFlatAccntsByQuery = function(query,data) {
@@ -563,7 +596,11 @@ let mainController = function($scope, $state, $rootScope, $timeout, $http, $uibM
     };
     if ($scope.workInProgress === false) {
       $scope.workInProgress = true;
-      return groupService.getFlatAccList(reqParam).then($scope.getFlatAccountListListSuccess, $scope.getFlatAccountListFailure);
+      if (!isElectron) {
+        return groupService.getFlatAccList(reqParam).then($scope.getFlatAccountListListSuccess, $scope.getFlatAccountListFailure);
+      } else {
+          return groupService.getFlatAccListElectron(reqParam).then($scope.getFlatAccountListListSuccess, $scope.getFlatAccountListFailure);
+      }
     }
   };
 
@@ -575,7 +612,7 @@ let mainController = function($scope, $state, $rootScope, $timeout, $http, $uibM
     $rootScope.flatAccList.limit = 5;
     return $scope.$broadcast('account-list-updated');
   };
-    
+
   $scope.getFlatAccountListFailure = function(res) {
     $scope.workInProgress = false;
     return toastr.error(res.data.message);
@@ -591,7 +628,25 @@ let mainController = function($scope, $state, $rootScope, $timeout, $http, $uibM
     return filteredList;
   };
 
+  $rootScope.OpenManegeModal = () => $rootScope.$emit('Open-Manage-Modal');
 
+  $rootScope.NewgoToManageGroups =function() {
+    if (!$rootScope.canManageComp) {
+      return;
+    }
+    if (_.isEmpty($rootScope.selectedCompany)) {
+      return toastr.error("Select company first.", "Error");
+    } else {
+      let modalInstance;
+      return modalInstance = $uibModal.open({
+        templateUrl:'/public/webapp/NewManageGroupsAndAccounts/ManageGroupModal.html',
+        size: "liq90",
+        backdrop: 'static',
+        scope: $scope
+      });
+    }
+  };
+      // modalInstance.result.then(mc.goToManageGroupsOpen, mc.goToManageGroupsClose)
 
 
   // search flat accounts list
@@ -600,11 +655,19 @@ let mainController = function($scope, $state, $rootScope, $timeout, $http, $uibM
     reqParam.companyUniqueName = $rootScope.selectedCompany.uniqueName;
     if (str.length > 2) {
       reqParam.q = str;
-      return groupService.getFlatAccList(reqParam).then($rootScope.getFlatAccountListListSuccess, $rootScope.getFlatAccountListFailure);
+      if (!isElectron) {
+        return groupService.getFlatAccList(reqParam).then($rootScope.getFlatAccountListListSuccess, $rootScope.getFlatAccountListFailure);
+      } else {
+        return groupService.getFlatAccListElectron(reqParam).then($rootScope.getFlatAccountListListSuccess, $rootScope.getFlatAccountListFailure);
+      }
     } else {
       reqParam.q = '';
       reqParam.count = 5;
-      return groupService.getFlatAccList(reqParam).then($rootScope.getFlatAccountListListSuccess, $rootScope.getFlatAccountListFailure);
+      if (!isElectron) {
+        return groupService.getFlatAccList(reqParam).then($rootScope.getFlatAccountListListSuccess, $rootScope.getFlatAccountListFailure);
+      } else {
+        return groupService.getFlatAccListElectron(reqParam).then($rootScope.getFlatAccountListListSuccess, $rootScope.getFlatAccountListFailure);
+      }
     }
   };
 
@@ -627,7 +690,7 @@ let mainController = function($scope, $state, $rootScope, $timeout, $http, $uibM
 
   // change selected company
 
-  
+
 
   $scope.changeCompany = function(company, index, method) {
 //    console.log("method we get here is : ", method)
@@ -646,7 +709,7 @@ let mainController = function($scope, $state, $rootScope, $timeout, $http, $uibM
       localStorageService.set("_selectedCompany", company);
       $rootScope.selectedCompany = company;
       $state.go('company.content.ledgerContent');
-      $rootScope.$emit('companyChanged');
+      $rootScope.$emit('company-changed');
     } else {
       $rootScope.canManageComp = true;
       //$scope.goToCompany(company, index, "CHANGED")
@@ -658,7 +721,7 @@ let mainController = function($scope, $state, $rootScope, $timeout, $http, $uibM
     changeData.data = company;
     changeData.index = index;
     changeData.type = method;
-    $scope.$broadcast('company-changed', changeData);
+    // $scope.$broadcast('company-changed', changeData)
     $rootScope.$emit('company-changed', changeData);
     let url = $location.url();
     // if url.indexOf('ledger') == -1
@@ -694,7 +757,7 @@ let mainController = function($scope, $state, $rootScope, $timeout, $http, $uibM
   $scope.setFYonCompanychange = function(company) {
     localStorageService.set('activeFY', company.activeFinancialYear);
     $rootScope.setActiveFinancialYear(company.activeFinancialYear);
-    let activeYear = {}; 
+    let activeYear = {};
     activeYear.start = moment(company.activeFinancialYear.financialYearStarts,"DD/MM/YYYY").year();
     activeYear.ends = moment(company.activeFinancialYear.financialYearEnds,"DD/MM/YYYY").year();
     if (activeYear.start === activeYear.ends) { activeYear.year = activeYear.start; } else { activeYear.year = activeYear.start + '-' + activeYear.ends; }
@@ -711,8 +774,6 @@ let mainController = function($scope, $state, $rootScope, $timeout, $http, $uibM
   });
 
   $scope.showAccounts = e => $rootScope.flyAccounts = true;
-    //e.stopPropagation()
-  // $scope.addScript()
 
   // for accounts list
   $scope.gwaList = {
@@ -735,7 +796,11 @@ let mainController = function($scope, $state, $rootScope, $timeout, $http, $uibM
     };
     if ($scope.working === false) {
       $scope.working = true;
-      return groupService.getFlattenGroupAccList(reqParam).then($scope.getFlattenGrpWithAccListSuccess, $scope.getFlattenGrpWithAccListFailure);
+      if (!isElectron) {
+        return groupService.getFlattenGroupAccList(reqParam).then($scope.getFlattenGrpWithAccListSuccess, $scope.getFlattenGrpWithAccListFailure);
+      } else {
+          return groupService.getFlattenGroupAccListElectron(reqParam).then($scope.getFlattenGrpWithAccListSuccess, $scope.getFlattenGrpWithAccListFailure);
+      }
     }
   };
 
@@ -766,7 +831,11 @@ let mainController = function($scope, $state, $rootScope, $timeout, $http, $uibM
       page: $scope.gwaList.page,
       count: $scope.gwaList.count
     };
-    groupService.getFlattenGroupAccList(reqParam).then($scope.loadMoreGrpWithAccSuccess, $scope.loadMoreGrpWithAccFailure);
+    if (!isElectron) {
+        groupService.getFlattenGroupAccList(reqParam).then($scope.loadMoreGrpWithAccSuccess, $scope.loadMoreGrpWithAccFailure);
+    } else {
+        groupService.getFlattenGroupAccListElectron(reqParam).then($scope.loadMoreGrpWithAccSuccess, $scope.loadMoreGrpWithAccFailure);
+    }
     return $scope.gwaList.limit += 10;
   };
 
@@ -777,7 +846,7 @@ let mainController = function($scope, $state, $rootScope, $timeout, $http, $uibM
       return _.each(res.body.results, function(grp) {
         grp.open = true;
         return $rootScope.flatAccntWGroupsList.push(grp);
-      }); 
+      });
       //$scope.flatAccntWGroupsList = _.union($scope.flatAccntWGroupsList, list)
     } else if (res.body.totalPages > $scope.gwaList.currentPage) {
       return $scope.loadMoreGrpWithAcc($rootScope.selectedCompany.uniqueName);
@@ -799,11 +868,19 @@ let mainController = function($scope, $state, $rootScope, $timeout, $http, $uibM
       reqParam.q = str;
       reqParam.page = $scope.gwaList.page;
       reqParam.count = $scope.gwaList.count;
-      return groupService.getFlattenGroupAccList(reqParam).then($scope.getFlattenGrpWithAccListSuccess, $scope.getFlattenGrpWithAccListFailure);
+      if (!isElectron) {
+        return groupService.getFlattenGroupAccList(reqParam).then($scope.getFlattenGrpWithAccListSuccess, $scope.getFlattenGrpWithAccListFailure);
+      } else {
+          return groupService.getFlattenGroupAccListElectron(reqParam).then($scope.getFlattenGrpWithAccListSuccess, $scope.getFlattenGrpWithAccListFailure);
+      }
     } else {
       //$scope.hideLoadMore = false
       reqParam.q = '';
-      return groupService.getFlattenGroupAccList(reqParam).then($scope.getFlattenGrpWithAccListSuccess, $scope.getFlattenGrpWithAccListFailure);
+      if (!isElectron) {
+        return groupService.getFlattenGroupAccList(reqParam).then($scope.getFlattenGrpWithAccListSuccess, $scope.getFlattenGrpWithAccListFailure);
+      } else {
+          return groupService.getFlattenGroupAccListElectron(reqParam).then($scope.getFlattenGrpWithAccListSuccess, $scope.getFlattenGrpWithAccListFailure);
+      }
     }
   };
     // if str.length < 1
@@ -848,32 +925,26 @@ let mainController = function($scope, $state, $rootScope, $timeout, $http, $uibM
 
   $scope.runTour = () => $rootScope.$emit('run-tour');
 
-  $scope.showSwitchUserOption = false;
-  $rootScope.checkUserCompany = function() {
-    let user = localStorageService.get('_userDetails');
-    let company = user.uniqueName.split('@');
-    company = company[company.length - 1];
-    return company;
-  };
+  // $scope.showSwitchUserOption = false
+  // $rootScope.checkUserCompany = () ->
+  //   user = localStorageService.get('_userDetails')
+  //   company = user.uniqueName.split('@')
+  //   company = company[company.length - 1]
+  //   company
 
-  $rootScope.checkWalkoverCompanies = function() {
-    if (($rootScope.checkUserCompany().toLowerCase() === 'giddh.com') || ($rootScope.checkUserCompany().toLowerCase() === 'walkover.in') || ($rootScope.checkUserCompany().toLowerCase() === 'msg91.com')) {
-      return $scope.showSwitchUserOption = true;
-    } else {
-      return $scope.showSwitchUserOption = false;
-    }
-  };
+  // $rootScope.checkWalkoverCompanies = () ->
+  //   if $rootScope.checkUserCompany().toLowerCase() == 'giddh.com' || $rootScope.checkUserCompany().toLowerCase() == 'walkover.in' || $rootScope.checkUserCompany().toLowerCase() == 'msg91.com'
+  //     $scope.showSwitchUserOption = true
+  //   else
+  //     $scope.showSwitchUserOption = false
 
-  $rootScope.ledgerMode = 'new';
-  $rootScope.switchLedgerMode = function() {
-    if ($rootScope.checkWalkoverCompanies()) {
-      if ($rootScope.ledgerMode === 'new') {
-        return $rootScope.ledgerMode = 'old';
-      } else {
-        return $rootScope.ledgerMode = 'new';
-      }
-    }
-  };
+  // $rootScope.ledgerMode = 'new'
+  // $rootScope.switchLedgerMode = () ->
+  //   if $rootScope.checkWalkoverCompanies()
+  //     if $rootScope.ledgerMode == 'new'
+  //       $rootScope.ledgerMode = 'old'
+  //     else
+  //       $rootScope.ledgerMode = 'new'
 
   $rootScope.setState = function(lastState, url, param) {
     $rootScope.selectedCompany = $rootScope.selectedCompany || localStorageService.get('_selectedCompany');
@@ -886,9 +957,9 @@ let mainController = function($scope, $state, $rootScope, $timeout, $http, $uibM
     }
     return $http.post('/state-details', data).then(
         function(res) {},
-          
+
         function(res) {}
-          
+
     );
   };
 
@@ -913,8 +984,20 @@ let mainController = function($scope, $state, $rootScope, $timeout, $http, $uibM
     }
   });
 
+  $scope.$watch(function () {
+      return location.hash
+  }, function (value) {
+      if (value === "#!/login") {
+          $scope.hideHeader = true
+      } else {
+          if (window.sessionStorage.getItem('_ak')) getUserDetail();
+          $scope.hideHeader = false
+      }
+  });
   return $rootScope.$on('different-company', function(event, lastStateData){
     let company = _.findWhere($scope.companyList, {uniqueName:lastStateData.companyUniqueName});
+    localStorageService.set('_selectedCompany', company);
+    $rootScope.selectedCompany = company;
     $scope.changeCompany(company, 0, 'CHANGE');
     return $state.go(lastStateData.lastState);
   });

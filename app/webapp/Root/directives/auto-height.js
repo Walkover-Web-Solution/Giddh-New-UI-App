@@ -16,9 +16,11 @@ directive('autoHeight', ['$window', '$timeout', ($window, $timeout) =>
       let adjustHeight = function() {
         let additionalHeight = $attrs.additionalHeight || 0;
         let minHeight = $attrs.minHeight || 600;
-        let parentHeight = $window.innerHeight - $element.parent()[0].getBoundingClientRect().top;
-        $element.css('min-height',minHeight + 'px');
-        return $element.css('height', (parentHeight - combineHeights(siblings($element)) - additionalHeight) + "px");
+        if (!$element[0].parentElement) {
+          let parentHeight = $window.innerHeight-$element[0].parentElement.getBoundingClientRect().top;
+          $element.css('min-height',minHeight + 'px');
+          return $element.css('height', (parentHeight - combineHeights(siblings($element)) - additionalHeight) + "px");
+        }
       };
 
       angular.element($window).on('resize', () => adjustHeight());
@@ -89,10 +91,30 @@ directive('autoHeight', ['$window', '$timeout', ($window, $timeout) =>
     }
   })
 
+])
+
+// sarfaraz
+// to remove class dynamic 
+// init with outside-click="YOUR_CLASS_NAME"
+
+.directive("outsideClick", ['$document','$parse', ($document, $parse)=>
+  ({
+    link($scope, $element, $attributes) {
+      let cls = $attributes.outsideClick;
+      let onDocumentClick =function(event){
+        let isChild = $element[0].contains(event.target);
+        if(!isChild) {
+          return $element.removeClass(cls);
+        }
+      };
+      
+      $document.on("click", onDocumentClick);
+
+      return $element.on('$destroy', ()=> $document.off("click", onDocumentClick));
+    }
+  })
+
 ]);
-
-
-
 
 
 
@@ -308,7 +330,7 @@ directive('razorPay', ['$compile', '$filter', '$document', '$parse', '$rootScope
           amount,
           name: "Giddh",
           description: $rootScope.selectedCompany.name+ " Subscription for Giddh",
-          image: "/public/website/images/logo.png",
+          image: "public/website/images/logo.png",
           handler(response){
             // hit api after success
             console.log(response, "response after success");
@@ -973,21 +995,24 @@ angular.module('ledger', [])
     return result;
   }
   ).filter('addStockinAccountList', () =>
-  function(input, g) {
+  function(input,baseAccount) {
     let result = [];
     _.each(input, function(q) {
-      let p = RegExp(g, 'i');
-      // # check if query matches with name and uniqueName
-      // if q.name.match(p) or q.uniqueName.match(p) or q.mergedAccounts.length > 0 && q.mergedAccounts.match(p) && !q.stocks
-      //   result.push q
+      if (baseAccount.stocks) {
+        _.each(baseAccount.stocks, stock => q.stocks = baseAccount.stocks);
+      }
+
       if (q.stocks && (q.stocks.length > 0)) {
-        return _.each(q.stocks, function(stock) {
+        _.each(q.stocks, function(stock) {
           let withStock = _.extend({}, q);
           withStock.stocks = []; 
           withStock.stock = stock;
           withStock.stocks.push(stock);
           return result.push(withStock);
         });
+        let withoutStock = _.extend({},q);
+        delete withoutStock.stocks;
+        return result.push(withoutStock);
       } else {
         return result.push(q);
       }

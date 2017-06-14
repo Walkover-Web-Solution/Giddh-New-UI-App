@@ -504,7 +504,7 @@ body.lightTrans .navbar{
 }
 body.light .navbar.transparent{
 	background: transparent;
-	box-shadow: none; 
+	box-shadow: none;
 }
 
 /*affix navbar*/
@@ -696,7 +696,7 @@ body.light .navbar.transparent{
 .pr{position: relative}
 /*login page start*/
 .intro.login{
-	background: url('/public/webapp/Globals/images/new/login_bg.jpg') no-repeat top center scroll;
+	background: url('../images/new/login_bg.jpg') no-repeat top center scroll;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   background-size: cover;
@@ -832,7 +832,7 @@ body.light .navbar.transparent{
   100% {
     transform: rotate(360deg);
   }
-} 
+}
 
 /*end login page*/
 /*pricing page styles*/
@@ -925,7 +925,7 @@ body.light .navbar.transparent{
   -webkit-background-size: cover;
   -moz-background-size: cover;
   background-size: cover;
-	
+
 	height: 210px;
 	margin: 0 auto;*/
 	display: table;
@@ -1122,7 +1122,7 @@ footer small{
 	color: #565B5B
 }
 footer small a{
-	color: #565B5B; 
+	color: #565B5B;
 }
 #footer-mascot{
 	position: absolute;
@@ -1462,10 +1462,10 @@ body.unresponsive .container {
     z-index: 9999;
 }
 
-@media (min-width:1367px){		
-	.container.adjust-width{		
-		max-width: 55%;		
-	}		
+@media (min-width:1367px){
+	.container.adjust-width{
+		max-width: 55%;
+	}
 }
 
 .font-white{
@@ -1761,7 +1761,7 @@ button.toast-close-button {
     height: 100%;
     position: relative;
     top: 0;
-    left: 0;  
+    left: 0;
 }
 .feature .caption.first {
   padding: 25px 0;

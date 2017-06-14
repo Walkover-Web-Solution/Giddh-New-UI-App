@@ -771,7 +771,7 @@ body.light .navbar.transparent{
     background: none;
 }
 .intro.pricing, .intro.security{
-    background: #FFF8EA url('/public/website/images/new/banner-grid-design.png') repeat;
+    background: #FFF8EA url('//public/website/images/new/banner-grid-design.png') repeat;
 }
 .intro.home .intro-body {
     background: rgba(0, 0, 0, 0.3);
@@ -803,7 +803,7 @@ body.light .navbar.transparent{
     line-height: 60px;
 }
 .brand-wrap{
-    /*background: url('/public/website/images/new/banner-graph.png') no-repeat center center scroll;
+    /*background: url('//public/website/images/new/banner-graph.png') no-repeat center center scroll;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   background-size: cover;
@@ -842,7 +842,7 @@ body.light .navbar.transparent{
     z-index: 13
 }
 .scroll-btn a{
-    background-image: url('/public/website/images/new/scrolling-arrow.png');
+    background-image: url('//public/website/images/new/scrolling-arrow.png');
     background-repeat: no-repeat;
     cursor: pointer;
     display: block;
@@ -1009,7 +1009,7 @@ footer small a{
     position: absolute;
     bottom: -60px;
     left: 0;
-    background: url('/public/website/images/new/footer-mascot.png') no-repeat;
+    background: url('//public/website/images/new/footer-mascot.png') no-repeat;
     width: 111px;
     height: 220px;
 }
@@ -1135,7 +1135,7 @@ footer small a{
     line-height: 36px;
 }
 #abtMascot{
-    background: url('/public/website/images/new/footer-mascot.png') no-repeat;
+    background: url('//public/website/images/new/footer-mascot.png') no-repeat;
     width: 111px;
     height: 220px;
     margin: 40px auto 40px;
@@ -1174,7 +1174,7 @@ footer small a{
     margin-bottom: 50px;
 }
 .gridBg{
-    background: #FFF8EA url('/public/website/images/new/banner-grid-design.png') repeat top left;
+    background: #FFF8EA url('//public/website/images/new/banner-grid-design.png') repeat top left;
 }
 .txtBody{
     font-size: 18px;

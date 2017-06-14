@@ -31,6 +31,6 @@ window.app = giddh.webApp;
 	    }
 	});
 
-})(app);
+})(app = window.giddh.webApp || (window.giddh.webApp = {}));
 
 

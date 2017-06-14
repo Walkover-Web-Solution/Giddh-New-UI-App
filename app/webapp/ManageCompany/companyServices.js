@@ -1,5 +1,5 @@
 giddh.serviceModule.service('companyServices', function($resource, $q) {
-  let Company = $resource('/company', 
+  let Company = $resource('/company',
   {
     'uniqueName': this.uniqueName,
     'page': this.page,
@@ -13,7 +13,7 @@ giddh.serviceModule.service('companyServices', function($resource, $q) {
     addCompany: {
       method: 'POST'
     },
-    
+
     getCompanyDetails: {
       method: 'GET',
       url: '/company/:uniqueName'
@@ -22,6 +22,11 @@ giddh.serviceModule.service('companyServices', function($resource, $q) {
     getCompanyList: {
       method: 'GET',
       url: '/company/all'
+    },
+
+    getCompanyListElectron: {
+      method: 'GET',
+      url: '/users/:uniqueName/companies'
     },
 
     deleteCompany: {
@@ -58,7 +63,7 @@ giddh.serviceModule.service('companyServices', function($resource, $q) {
       method: 'GET',
       url: '/company/:uniqueName/imports'
     },
-    
+
     getProfitLoss: {
       method:'GET',
       url: '/company/:uniqueName/profit-loss'
@@ -73,22 +78,22 @@ giddh.serviceModule.service('companyServices', function($resource, $q) {
       method:'GET',
       url: '/company/:uniqueName/transactions?page=:page'
     },
-    
+
     updtCompSubs: {
       method: 'PUT',
       url: '/company/:uniqueName/subscription-update'
     },
-    
+
     payBillViaWallet: {
       method: 'POST',
       url: '/company/:uniqueName/pay-via-wallet'
     },
-    
+
     retryXmlUpload: {
       method: 'PUT',
       url: '/company/:uniqueName/retry'
     },
-    
+
     getInvTemplates: {
       method: 'GET',
       url: '/company/:uniqueName/templates'
@@ -108,22 +113,22 @@ giddh.serviceModule.service('companyServices', function($resource, $q) {
       method: 'DELETE',
       url: '/company/:uniqueName/invoices/:invoiceUniqueID'
     },
-    
+
     getTax: {
       method:'GET',
       url: '/company/:uniqueName/tax'
     },
-    
+
     addTax: {
       method: 'POST',
       url: '/company/:uniqueName/tax'
     },
-    
+
     deleteTax: {
       method: 'DELETE',
       url: '/company/:uniqueName/tax/:taxUniqueName'
     },
-    
+
     editTax: {
       method: 'PUT',
       url: '/company/:uniqueName/tax/:taxUniqueName/:updateEntries'
@@ -213,7 +218,7 @@ giddh.serviceModule.service('companyServices', function($resource, $q) {
       method: 'POST',
       url: '/company/:companyUniqueName/cropped-flatten-account'
     },
-       
+
 
     getAllSettings: {
       method: 'GET',
@@ -273,6 +278,10 @@ giddh.serviceModule.service('companyServices', function($resource, $q) {
       return this.handlePromise((onSuccess, onFailure) => Company.getCompanyList(onSuccess, onFailure));
     },
 
+    getAllElectron(uniqueName) {
+        return this.handlePromise((onSuccess, onFailure) => Company.getCompanyListElectron({uniqueName}, onSuccess, onFailure));
+    },
+
     get(uniqueName) {
       return this.handlePromise((onSuccess, onFailure) => Company.getCompanyDetails({uniqueName}, onSuccess,
           onFailure) );
@@ -325,7 +334,7 @@ giddh.serviceModule.service('companyServices', function($resource, $q) {
         uniqueName: data.uniqueName
       }, data, onSuccess, onFailure) );
     },
-      
+
     payBillViaWallet(data, onSuccess, onFailure) {
       return this.handlePromise((onSuccess, onFailure) => Company.payBillViaWallet({
         uniqueName: data.uniqueName
@@ -374,7 +383,7 @@ giddh.serviceModule.service('companyServices', function($resource, $q) {
         taxUniqueName: reqParam.taxUniqueName
       }, onSuccess, onFailure) );
     },
-    
+
     editTax(reqParam, taxData, onSuccess, onFailure) {
       return this.handlePromise((onSuccess, onFailure) => Company.editTax({
         uniqueName: reqParam.uniqueName,

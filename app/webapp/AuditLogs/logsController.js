@@ -239,11 +239,19 @@ let logsController = function($scope, $rootScope, localStorageService, groupServ
     reqParam.companyUniqueName = $rootScope.selectedCompany.uniqueName;
     if (str.length > 2) {
       reqParam.q = str;
-      return groupService.getFlatAccList(reqParam).then($scope.getFlatAccountListListSuccess, $scope.getFlatAccountListFailure);
+      if (!isElectron) {
+        return groupService.getFlatAccList(reqParam).then($scope.getFlatAccountListListSuccess, $scope.getFlatAccountListFailure);
+      } else {
+          return groupService.getFlatAccListElectron(reqParam).then($scope.getFlatAccountListListSuccess, $scope.getFlatAccountListFailure);
+      }
     } else {
       reqParam.q = '';
       reqParam.count = 5;
-      return groupService.getFlatAccList(reqParam).then($scope.getFlatAccountListListSuccess, $scope.getFlatAccountListFailure);
+      if (!isElectron) {
+        return groupService.getFlatAccList(reqParam).then($scope.getFlatAccountListListSuccess, $scope.getFlatAccountListFailure);
+      } else {
+          return groupService.getFlatAccListElectron(reqParam).then($scope.getFlatAccountListListSuccess, $scope.getFlatAccountListFailure);
+      }
     }
   };
 

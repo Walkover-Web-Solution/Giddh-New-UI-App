@@ -15,7 +15,7 @@
 		</div>
 
 <!-- 
-		<div class="filters" ng-include="'/public/webapp/recurring-entry/partials/filters.html'" ng-if="recEntry.showFilters">
+		<div class="filters" ng-include="'public/webapp/recurring-entry/partials/filters.html'" ng-if="recEntry.showFilters">
 			
 		</div> -->
 
@@ -68,7 +68,7 @@
 					ng-class="{'animate':entry.showPanel}"
 					ng-dblclick="recEntry.selectEntry(entry, $parent.$index, ledger)"
 					ng-repeat="entry in ledger.transactions"
-					ng-include="'/public/webapp/recurring-entry/partials/rec-entry-list.html'"	
+					ng-include="'public/webapp/recurring-entry/partials/rec-entry-list.html'"	
 					>
 					
 				</div>

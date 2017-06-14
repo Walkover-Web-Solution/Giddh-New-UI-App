@@ -1,27 +1,20 @@
-(function() {
-  var router, settings;
+let settings = require('../util/settings');
+let router = settings.express.Router({mergeParams: true});
 
-  settings = require('../util/settings');
+router.get('/', function(req, res) {
+  console.log("we are here");
+  let authHead = {
+    headers: {
+      'Auth-Key': req.session.authKey,
+      'X-Forwarded-For': res.locales.remoteIp
+    }
+  };
+  let data = {envUrl: settings.envUrl};
+  return res.send(data);
+});
 
-  router = settings.express.Router({
-    mergeParams: true
-  });
 
-  router.get('/', function(req, res) {
-    var authHead, data;
-    console.log("we are here");
-    authHead = {
-      headers: {
-        'Auth-Key': req.session.authKey,
-        'X-Forwarded-For': res.locales.remoteIp
-      }
-    };
-    data = {
-      envUrl: settings.envUrl
-    };
-    return res.send(data);
-  });
 
-  module.exports = router;
 
-}).call(this);
+
+module.exports = router;

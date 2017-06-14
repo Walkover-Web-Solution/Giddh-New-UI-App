@@ -116,32 +116,35 @@ module.exports = {
     },
     module: {
         rules: [{
-                test: /\.css$/i,
-                use: extractCSS.extract({
-                    use: {
-                        loader: 'css-loader',
-                        options: {
-                            minimize: false
-                        }
-                    }
-                })
-            }, {
-                test: /\.(png|eot|svg|ttf|woff|woff2)$/,
-                loader: 'url-loader?limit=100000'
-            }, {
-                exclude: /node_modules/,
-                test: /\.js$/,
-                use: [{
-                    loader: 'babel-loader',
+            test: /\.css$/i,
+            use: extractCSS.extract({
+                use: {
+                    loader: 'css-loader',
                     options: {
-                        presets: ['es2015']
-                    },
-                }],
-            },
-            {
-                test: require.resolve("angular"),
-                use: 'imports-loader?this=>window'
-            }
+                        minimize: false
+
+                    }
+                },
+                fallback: "style-loader",
+                publicPath: ''
+            })
+        }, {
+            test: /\.(jpg|png|eot|svg|ttf|woff|woff2)$/,
+            loader: 'url-loader?limit=100000&name=images/[hash].[ext]'
+        }, {
+            exclude: /node_modules/,
+            test: /\.js$/,
+            use: [{
+                loader: 'babel-loader',
+                options: {
+                    presets: ['es2015']
+                },
+            }],
+        },
+        {
+            test: require.resolve("angular"),
+            use: 'imports-loader?this=>window'
+        }
         ]
     },
     plugins: [
@@ -175,6 +178,12 @@ module.exports = {
                 "*.js", "*.md", "*.json", ".gitignore", "*.eot", "*.ttf", "*.svg", "*.woff", "*.woff2",
                 "*.css", "*.xml", "*.png", "*.jpg", "*.gif", "*.mp4", "*.ico"
             ],
-        })
+        }),
+        new CopyWebpackPlugin([
+            {
+                from: 'app/webapp/Globals/images',
+                to: './Globals/images/'
+            }
+        ])
     ]
 };

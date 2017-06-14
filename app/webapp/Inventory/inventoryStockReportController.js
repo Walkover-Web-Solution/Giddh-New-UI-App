@@ -1,6 +1,10 @@
 let inventoryStockReportController = function($scope, $rootScope, $timeout, toastr, stockService, $state, $filter) {
   
   let vm = this;
+
+  vm.selectedStock = {};
+
+  vm.stockId = $state.params.stockId;
   if (_.isUndefined($rootScope.selectedCompany)) {
     $rootScope.selectedCompany = localStorageService.get('_selectedCompany');
   }
@@ -19,7 +23,7 @@ let inventoryStockReportController = function($scope, $rootScope, $timeout, toas
   };
 
   vm.report=
-    {page: 1};
+    {page: 0};
 
   vm.fromDate=
     {date:new Date(moment().subtract(1, 'month').utc())};
@@ -27,6 +31,22 @@ let inventoryStockReportController = function($scope, $rootScope, $timeout, toas
   vm.toDate =
     {date: new Date()};
 
+  vm.findAndSet=()=>
+    vm.selectedStock = _.find(vm.stockArr, item=> item.uniqueName === vm.stockId)
+  ;
+
+  vm.setStockArr=function(){
+    vm.stockArr = $scope.$parent.stock.updateStockGroup.stocks;
+    if (angular.isUndefined(vm.stockArr)) {
+      return $timeout(function(){
+        vm.stockArr = $scope.$parent.stock.updateStockGroup.stocks;
+        return vm.findAndSet();
+      }
+      ,1500);
+    } else {
+      return vm.findAndSet();
+    }
+  };
 
   vm.fromDatePickerOpen = function(e){
     vm.fromDatePickerIsOpen = true;
@@ -51,7 +71,8 @@ let inventoryStockReportController = function($scope, $rootScope, $timeout, toas
       stockUniqueName: $state.params.stockId,
       to:$filter('date')(vm.toDate.date, 'dd-MM-yyyy'),
       from:$filter('date')(vm.fromDate.date, 'dd-MM-yyyy'),
-      page:vm.report.page
+      page:vm.report.page,
+      count: 10
     };
 
     return stockService.getStockReport(reqParam).then(vm.getStockReportSuccess, vm.onFailure);
@@ -64,7 +85,8 @@ let inventoryStockReportController = function($scope, $rootScope, $timeout, toas
     if (_.isEmpty($state.params.stockId)) {
       return $state.go('inventory', {}, {reload: true, notify: true});
     } else {
-      return vm.getStockReport();
+      vm.getStockReport();
+      return vm.setStockArr();
     }
   }
   ,100);

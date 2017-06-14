@@ -1,40 +1,33 @@
-(function() {
-  var dirName, options, router, settings;
+let settings = require('../util/settings');
+let router = settings.express.Router();
 
-  settings = require('../util/settings');
+let dirName = settings.path.resolve(__dirname, '..', '..');
 
-  router = settings.express.Router();
+let options = {
+  root: dirName + '/webapp/views',
+  dotfiles: 'deny',
+  headers: {
+    'x-timestamp': Date.now(),
+    'x-sent': true
+  }
+};
 
-  dirName = settings.path.resolve(__dirname, '..', '..');
 
-  options = {
-    root: dirName + '/webapp/views',
-    dotfiles: 'deny',
-    headers: {
-      'x-timestamp': Date.now(),
-      'x-sent': true
-    }
-  };
 
-  router.get('/app/*', function(req, res) {
-    if (req.session.name !== void 0) {
-      return res.sendFile('index.html', options);
-    } else {
-      return res.redirect('/login');
-    }
-  });
+router.get('/app/*', function(req, res) {
+  if (req.session.name !== undefined) {
+    return res.sendFile('index.html', options);
+  } else {
+    return res.redirect('/login');
+  }
+});
 
-  router.get('/thanks', function(req, res) {
-    return res.sendFile('thanks.html', options);
-  });
+router.get('/thanks', (req, res) => res.sendFile('thanks.html', options));
 
-  router.post('/logout', function(req, res) {
-    req.session.destroy();
-    return res.json({
-      status: 'success'
-    });
-  });
+router.post('/logout', function(req, res) {
+  req.session.destroy();
+  return res.json({status: 'success'});
+});
 
-  module.exports = router;
 
-}).call(this);
+module.exports = router;

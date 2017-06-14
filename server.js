@@ -40,7 +40,7 @@ app.set('public', __dirname + '/public/');
 app.engine('html', engines.mustache);
 app.set('view engine', 'html');
 
-// app.use(favicon(__dirname + '/app/website/images/favicon.ico'));
+app.use(favicon(settings.path.join(__dirname, 'public/webapp/globals/images/favicon.ico')));
 
 app.use(logger('dev'));
 app.use(useragent.express());
@@ -158,6 +158,22 @@ global.mStorage = multer.diskStorage({
     }
 })
 
+let checkUserAgentIsElectron = (req) => {
+    if (req.useragent.source.indexOf('Electron') > -1) {
+        return true
+    } else {
+        return false
+    }
+}
+
+// middleware
+app.use(function (req, res, next) {
+    if (checkUserAgentIsElectron(req)) {
+        req.session.authKey = req.headers['auth-key']
+        req.session.name = req.headers['user-uniquename']
+    }
+    next();
+});
 
 // disable browser cache
 app.use(function (req, res, next) {
@@ -201,6 +217,7 @@ var adminPanel = require('./public/routes/adminPanel/adminPanel')
 var recEntry = require('./public/routes/webapp/recurringEntry')
 var invoiceUpload = require('./public/routes/webapp/invoiceUpload')
 var stateDetails = require('./public/routes/webapp/stateDetails')
+var invoiceModule = require('./public/routes/invoice/invoiceModule')
 
 app.use('/time-test', timetest);
 app.use('/currency', currency);
@@ -230,39 +247,31 @@ app.use('/ebanks', ebanks);
 app.use('/admin', adminPanel);
 app.use('/state-details', stateDetails);
 app.use('/magic-link', magicLink);
+app.use('/invoice',invoiceModule);
 
-let checkUserAgentIsElectron = (req) => {
-    if (req.useragent.source.indexOf('Electron') > -1) {
-        return true
-    } else {
-        return false
-    }
-}
 
 // delete user session on logout
 app.use('/logout', function (req, res) {
     if (req.session.name) {
-        delete req.session
+        req.session.destroy()
         res.redirect('https://giddh.com')
         //res.status(200).send({message:'user logged out'})
     } else {
-        res.status(403).send({
-            message: 'user not found'
-        })
+        res.status(403).send({message: 'user not found'})
     }
+})
+
+//get understanding json
+app.get('/understanding', function(req, res){
+  res.status(200).send(settings.understanding)
 })
 
 //return user-details
 app.use('/fetch-user', function (req, res) {
-    var authHead, hUrl, authKey;
-    if (checkUserAgentIsElectron(req)) {
-        authKey = req.headers['auth-key']
-    } else {
-        authKey = req.session.authKey
-    }
+    var authHead, hUrl;
     authHead = {
         headers: {
-            'Auth-Key': authKey ,
+            'Auth-Key': req.session.authKey,
             'Content-Type': 'application/json',
             'X-Forwarded-For': res.locales.remoteIp
         }
@@ -309,9 +318,12 @@ app.use('/', getSession, function (req, res) {
     if (req.session.name) {
         res.sendFile(__dirname + '/public/webapp/index.html')
     } else {
-        res.sendFile(__dirname + '/public/webapp/index.html')
-        // res.status(404)
-        // res.redirect('https://www.giddh.com')
+        if (checkUserAgentIsElectron(req)) {
+            res.sendFile(__dirname + '/public/webapp/index.html')
+        } else {
+            res.status(404)
+            res.redirect('https://www.giddh.com')
+        }
     }
 });
 

@@ -123,7 +123,7 @@ let invoice2controller = function($scope, $rootScope, invoiceService, toastr, ac
     } else {
       if (invoice.condition === "paid") {
         return $scope.modalInstance = $uibModal.open({
-          templateUrl: '/public/webapp/invoice2/action/actionTransactions.html',
+          templateUrl: 'public/webapp/invoice2/action/actionTransactions.html',
           size: "md",
           backdrop: 'static',
           scope: $scope,
@@ -503,7 +503,7 @@ let invoice2controller = function($scope, $rootScope, invoiceService, toastr, ac
     // open dialog
     if(showPopUp) {
       $scope.modalInstance = $uibModal.open({
-        templateUrl: '/public/webapp/Invoice/prevInvoiceTemp.html',
+        templateUrl: 'public/webapp/Invoice/prevInvoiceTemp.html',
         size: "a4",
         backdrop: 'static',
         scope: $scope

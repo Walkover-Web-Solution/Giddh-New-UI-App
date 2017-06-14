@@ -1,5 +1,5 @@
 <!-- super loader -->
-<div class="load-bar-wrap" ng-if="superLoader" style="z-index: 99999;">
+<div class="load-bar-wrap" ng-if="superLoader">
   <div class="load-bar">
     <div class="bar"></div>
     <div class="bar"></div>
@@ -202,13 +202,37 @@
     </div>
         </li>
 
-        <li>
+<!--         <li>
+            <div ng-hide="canViewSpecificItems">
+                <button id="AddManage" type="button" class="btn btn-primary btn-sm btn-block mrB1" ng-click="goToManageGroups()" ng-show="canManageComp">
+                    <span class="icon-plus" aria-hidden="true"></span> Add & Manage
+                </button>
+            </div>
+        </li> -->
+
+<!--         <li>
           <div ng-hide="canViewSpecificItems">
               <button id="AddManage" type="button" class="btn btn-primary btn-sm btn-block mrB1" ng-click="goToManageGroups()" ng-show="canManageComp">
                   <span class="icon-plus" aria-hidden="true"></span> Add & Manage
               </button>
           </div>
+        </li> -->
+
+        <li>
+            <div ng-hide="canViewSpecificItems">
+                <button id="AddManage" type="button" class="btn btn-primary btn-sm btn-block mrB1" ng-click="NewgoToManageGroups()" ng-show="canManageComp">
+                    <span class="icon-plus" aria-hidden="true"></span> Add & Manage
+                </button>
+            </div>
         </li>
+      
+<!--       <li class="header-btn fixedDate">
+        <span class="dateblock">
+          <input ng-if="showUnivdate" date-range-picker class="form-control date-picker date-range-picker" type="text" ng-model="cDate" options="fixedDateOptions" required/>
+        <span ng-if="!showUnivdate" ng-click="showUnivdate = true" class="fix_date" tooltip-placement="bottom" uib-tooltip="Set fix date" ng-click="showUnivdate = false"><i class="fa fa-calendar" aria-hidden="true"></i> 1-04-17 - 31-03-18</span>  
+        </span>
+      </li> -->
+
 
 
       </ul>
@@ -260,10 +284,10 @@
             <li ng-if="ledgerState"><a href="javascript:void(0)" ng-click="runTour()">Run Tour</a></li>
             <li><a target="_Blank" href="https://docs.giddh.com/" ng-click="$event.stopPropagation()">Documentation</a></li>
             <li ng-if="selectedCompany.canUserSwitch"><a class="pull-left" href="javascript:void(0)" ng-click="switchUser()"><span class="pull-left">Switch User</span><span class="on-btn pull-left" ng-if="ucActive"></span></a></li>
-            <li ng-if="showSwitchUserOption"><a class="cp" ng-click="switchLedgerMode()">Switch Ledger - 
+            <!-- <li ng-if="showSwitchUserOption"><a class="cp" ng-click="switchLedgerMode()">Switch Ledger - 
                 <span ng-if="ledgerMode == 'new'">Old</span><span ng-if="ledgerMode == 'old'">New</span>
               </a>
-            </li>
+            </li> -->
             <li role="separator" class="divider" style="width:100%"></li>
             <li><a ng-click="logout()" href="javascript:void(0)">Logout</a></li>
           </ul>
@@ -272,7 +296,7 @@
     </nav>
   </div>
   <div class="accounts-side-bar greyBg" ng-show="flyAccounts">
-    <div ng-include="'/public/webapp/views/accounts.html'"></div>
+    <div ng-include="'public/webapp/views/accounts.html'"></div>
   </div>
 </header>
 

@@ -14,7 +14,7 @@ let newLedgerController = function($scope, $rootScope, $window,localStorageServi
   lc.toDatePickerIsOpen = false;
   lc.format = "dd-MM-yyyy";
   lc.showPanel = false;
-  lc.accountUnq = $stateParams.unqName;  
+  lc.accountUnq = $stateParams.unqName;
   lc.accountToShow = {};
   lc.mergeTransaction = false;
   lc.showEledger = true;
@@ -45,7 +45,7 @@ let newLedgerController = function($scope, $rootScope, $window,localStorageServi
     }
   };
 
-  var tour = { 
+  var tour = {
     config: {
       mask:{
         clickThrough: false,
@@ -54,7 +54,7 @@ let newLedgerController = function($scope, $rootScope, $window,localStorageServi
       placementPriority: ['top', 'right','left', 'bottom'],
       onClose() {
         return tour.config.showNext = true;
-      }, 
+      },
       onComplete() {
         return console.log('completed');
       }
@@ -237,7 +237,7 @@ let newLedgerController = function($scope, $rootScope, $window,localStorageServi
           return d.promise;
         }
       }
-      
+
     ]
   };
 
@@ -304,7 +304,7 @@ let newLedgerController = function($scope, $rootScope, $window,localStorageServi
 
   lc.sortDirection = Object.freeze({'asc' : 0, 'desc' : 1});
   lc.sortDirectionInvert = function(dir) {
-    if (lc.sortDirection.asc === dir) { 
+    if (lc.sortDirection.asc === dir) {
       return lc.sortDirection.desc;
     } else if (lc.sortDirection.desc === dir) {
       return lc.sortDirection.asc;
@@ -393,7 +393,7 @@ let newLedgerController = function($scope, $rootScope, $window,localStorageServi
   lc.dNonemptyTxn = 0;
   lc.pageCount = 50;
   lc.page = 1;
-  lc.dbConfig = { 
+  lc.dbConfig = {
     name: 'giddh_db',
     storeName: 'ledgers',
     version: 25,
@@ -433,7 +433,7 @@ let newLedgerController = function($scope, $rootScope, $window,localStorageServi
         let crObjs = [];
         let crSavedLedgersCount = 0;
         let drSavedLedgersCount = 0;
-        let seedLedgerInDB = function(ledger, index) { 
+        let seedLedgerInDB = function(ledger, index) {
           ledger.uniqueId = $rootScope.selectedCompany.uniqueName + " " + accountUniqueName + " " + ledger.uniqueName;
           ledger.accountUniqueName = accountUniqueName;
           ledger.index = index;
@@ -452,7 +452,7 @@ let newLedgerController = function($scope, $rootScope, $window,localStorageServi
           seedLedgerInDB(ledger, index);
           let drTrans = [];
           let crTrans = [];
-          ledger.transactions.forEach(function(tr, index) { 
+          ledger.transactions.forEach(function(tr, index) {
             if ( tr.type === 'CREDIT') {
               crTrans.push(tr);
               return cNonemptyTxn++;
@@ -490,7 +490,7 @@ let newLedgerController = function($scope, $rootScope, $window,localStorageServi
         };
         let drOS = drTrans.objectStore('drTransactions');
         drOS.delete(keyRange);
-        drObjs.forEach(function(drOb) { 
+        drObjs.forEach(function(drOb) {
           let addDrReq = drOS.put(drOb);
           addDrReq.onsuccess = e => drSavedLedgersCount += 1;
             // lc.progressBar.value += 1
@@ -510,7 +510,7 @@ let newLedgerController = function($scope, $rootScope, $window,localStorageServi
 
         let crOS = crTrans.objectStore('crTransactions');
         crOS.delete(keyRange);
-        return crObjs.forEach(function(crOb) { 
+        return crObjs.forEach(function(crOb) {
           let addCrReq = crOS.put(crOb);
           addCrReq.onsuccess = e => crSavedLedgersCount += 1;
             // lc.progressBar.value += 1
@@ -526,7 +526,7 @@ let newLedgerController = function($scope, $rootScope, $window,localStorageServi
         //console.log('failed', e.target.error)
 
       //search.clear()
-      
+
 
     lc.dbConfig.failure = function(e) {
       toastr.error(e.target.error.message);
@@ -538,7 +538,7 @@ let newLedgerController = function($scope, $rootScope, $window,localStorageServi
     };
 
     lc.dbConfig.onblocked = e => toastr.error(e.target.error);
-      
+
     return dbInstance = idbService.openDb(lc.dbConfig);
   };
 
@@ -572,7 +572,7 @@ let newLedgerController = function($scope, $rootScope, $window,localStorageServi
     let crLoadCompleted, drLoadCompleted;
     lc.readLedgersFinished = false;
     type = type || null;
-    if (type === null) { 
+    if (type === null) {
       drLoadCompleted = false;
       crLoadCompleted = false;
     } else if (type === 'dr') {
@@ -595,13 +595,13 @@ let newLedgerController = function($scope, $rootScope, $window,localStorageServi
           drLoadCompleted = true;
           lc.dLedgerContainer.scrollDisable = false;
           if (crLoadCompleted) {
-            $scope.$apply(()=> lc.readLedgersFinished = true);
+            $timeout(()=> lc.readLedgersFinished = true);
             lc.onLedgerReadComplete();
           }
         };
         let drOS = drTrans.objectStore('drTransactions');
         let drSearch = drOS.index('company+accountUniqueName+index', true).openCursor(keyAndDir.keyRange, keyAndDir.scrollDir);
-        
+
         drSearch.onsuccess = function(e) {
           let cursor = e.target.result;
           if (cursor) {
@@ -636,7 +636,7 @@ let newLedgerController = function($scope, $rootScope, $window,localStorageServi
           }
         };
 
-        drSearch.onerror = function(e) {}; 
+        drSearch.onerror = function(e) {};
       }
           //console.log 'error', e
 
@@ -650,13 +650,13 @@ let newLedgerController = function($scope, $rootScope, $window,localStorageServi
           crLoadCompleted = true;
           lc.cLedgerContainer.scrollDisable = false;
           if (drLoadCompleted) {
-            $scope.$apply(()=> lc.readLedgersFinished = true);
+            $timeout(()=> lc.readLedgersFinished = true);
             lc.onLedgerReadComplete();
           }
         };
         let crOS = crTrans.objectStore('crTransactions');
         let crSearch = crOS.index('company+accountUniqueName+index', true).openCursor(keyAndDir.keyRange, keyAndDir.scrollDir);
-        
+
         crSearch.onsuccess = function(e) {
           let cursor = e.target.result;
           if (cursor) {
@@ -690,7 +690,7 @@ let newLedgerController = function($scope, $rootScope, $window,localStorageServi
           }
         };
 
-        crSearch.onerror = function(e) {}; 
+        crSearch.onerror = function(e) {};
       }
           //console.log 'error', e
       db.close();
@@ -712,7 +712,7 @@ let newLedgerController = function($scope, $rootScope, $window,localStorageServi
     let crLoadCompleted, drLoadCompleted;
     lc.readLedgersFinished = false;
     type = type || null;
-    if (type === null) { 
+    if (type === null) {
       drLoadCompleted = false;
       crLoadCompleted = false;
     } else if (type === 'dr') {
@@ -733,7 +733,7 @@ let newLedgerController = function($scope, $rootScope, $window,localStorageServi
           drLoadCompleted = true;
           lc.dLedgerContainer.scrollDisable = false;
           if (crLoadCompleted) {
-            $scope.$apply(()=> lc.readLedgersFinished = true);
+            $timeout(()=> lc.readLedgersFinished = true);
           }
         };
         let drOS = drTrans.objectStore('drTransactions');
@@ -772,7 +772,7 @@ let newLedgerController = function($scope, $rootScope, $window,localStorageServi
           }
         };
 
-        drSearch.onerror = function(e) {}; 
+        drSearch.onerror = function(e) {};
       }
           //console.log 'error', e
 
@@ -786,7 +786,7 @@ let newLedgerController = function($scope, $rootScope, $window,localStorageServi
           crLoadCompleted = true;
           lc.cLedgerContainer.scrollDisable = false;
           if (drLoadCompleted) {
-            $scope.$apply(()=> lc.readLedgersFinished = true);
+            $timeout(()=> lc.readLedgersFinished = true);
           }
         };
         let crOS = crTrans.objectStore('crTransactions');
@@ -825,12 +825,12 @@ let newLedgerController = function($scope, $rootScope, $window,localStorageServi
           }
         };
 
-        crSearch.onerror = function(e) {}; 
+        crSearch.onerror = function(e) {};
       }
           //console.log 'error', e
       return db.close();
     };
-      
+
     lc.dbConfig.failure = function(e) {
       //console.log e.target.error
     };
@@ -850,7 +850,7 @@ let newLedgerController = function($scope, $rootScope, $window,localStorageServi
       lc.filteredLedgers = [];
 
       let ledgerTrans = db.transaction([ 'ledgers' ], 'readwrite');
-      ledgerTrans.onerror = function(e) { 
+      ledgerTrans.onerror = function(e) {
         lc.log('transaction error');
         return db.close();
       };
@@ -859,7 +859,7 @@ let newLedgerController = function($scope, $rootScope, $window,localStorageServi
         return db.close();
       };
       ledgerTrans.oncomplete = e => lc.readLedgersFiltered(accountUniqueName, page, scrollDir, type);
-            
+
       let ledger = ledgerTrans.objectStore('ledgers');
       let keyRange = IDBKeyRange.lowerBound([
           accountUniqueName,
@@ -903,7 +903,7 @@ let newLedgerController = function($scope, $rootScope, $window,localStorageServi
   //   lc.showLoader = false
   // )
 
-  // $scope.$watch('lc.readLedgersFinished', (newVal, oldVal) -> 
+  // $scope.$watch('lc.readLedgersFinished', (newVal, oldVal) ->
   //   if ( newVal && !oldVal )
   //     lc.log "Read Ledgers Finished."
   //     # $scope.$apply()
@@ -1146,7 +1146,7 @@ let newLedgerController = function($scope, $rootScope, $window,localStorageServi
       },
       amount : 0,
       type: str
-    }; 
+    };
   };
 
   lc.checkForTaxTransactions = function(ledger) {
@@ -1209,7 +1209,7 @@ let newLedgerController = function($scope, $rootScope, $window,localStorageServi
     lc.setFocusToBlankTxn(ledger, txn, str);
     return lc.blankCheckCompEntry(ledger);
   };
-  
+
   lc.setFocusToBlankTxn = function(ledger, transaction, str) {
     lc.prevTxn.isOpen = false;
     lc.prevTxn.isblankOpen = false;
@@ -1230,7 +1230,7 @@ let newLedgerController = function($scope, $rootScope, $window,localStorageServi
         });
       }
     } else if (str === 'CREDIT') {
-      if (ledger.uniqueName) { 
+      if (ledger.uniqueName) {
         return _.each(lc.cLedgerContainer.ledgerData[ledger.uniqueName].transactions, function(txn) {
             if ((txn.amount === 0) && (txn.particular.name === "") && (txn.particular.uniqueName === "") && (txn.type === str)) {
               txn.isOpen = true;
@@ -1502,7 +1502,7 @@ aria-hidden="true">&times;</span></button> \
     lc.isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0;
     if ($rootScope.msieBrowser()) {
       return $rootScope.openWindow(res.body.filePath);
-    } else if (lc.isSafari) {       
+    } else if (lc.isSafari) {
       let modalInstance;
       return modalInstance = $uibModal.open({
         template: `<div> \
@@ -1576,7 +1576,7 @@ aria-hidden="true">&times;</span></button> \
   };
 
   lc.loadDefaultAccount = function(acc) {
-    
+
     this.success = function(res) {
       lc.accountUnq = 'cash';
       return lc.getAccountDetail(lc.accountUnq);
@@ -1593,7 +1593,7 @@ aria-hidden="true">&times;</span></button> \
     };
     return accountService.get(unqObj).then(this.success, this.failure);
   };
-          
+
 
   lc.getBankTransactions = function(accountUniqueName) {
     let unqObj = {
@@ -1670,7 +1670,7 @@ aria-hidden="true">&times;</span></button> \
         if (txn.type === 'DEBIT') {
           ledger.voucher.name = "Receipt";
           ledger.voucher.shortCode = "rcpt";
-        } else { 
+        } else {
           ledger.voucher.name = "Payment";
           ledger.voucher.shortCode = "pay";
         }
@@ -1719,12 +1719,12 @@ aria-hidden="true">&times;</span></button> \
   lc.removeBankTransactions = function() {
     let withoutBankTxn = [];
     _.each(lc.cLedgerContainer.ledgerData, function(ledger) {
-      if (ledger.isBankTransaction) { 
+      if (ledger.isBankTransaction) {
         return lc.cLedgerContainer.remove(ledger);
       }
     });
     _.each(lc.dLedgerContainer.ledgerData, function(ledger) {
-      if (ledger.isBankTransaction) { 
+      if (ledger.isBankTransaction) {
         return lc.dLedgerContainer.remove(ledger);
       }
     });
@@ -1870,12 +1870,12 @@ aria-hidden="true">&times;</span></button> \
     // if lc.ledgerData.balance.type == 'CREDIT'
     //   lc.ledgerData.reckoningDebitTotal += lc.ledgerData.balance.amount
     //   lc.ledgerData.reckoningCreditTotal += lc.ledgerData.forwardedBalance.amount
-    // else if lc.ledgerData.balance.type == 'DEBIT'    
+    // else if lc.ledgerData.balance.type == 'DEBIT'
     //   lc.ledgerData.reckoningCreditTotal += lc.ledgerData.balance.amount
     //   lc.ledgerData.reckoningDebitTotal += lc.ledgerData.forwardedBalance.amount
     return lc.addToIdb(res.body.ledgers, $rootScope.selectedAccount.uniqueName);
   };
-      
+
   lc.updateLedgerDataSuccess = (res,condition, ledger) =>
     // lc.setEntryTotal(ledger, res.body, condition)
     lc.fetchLedgerDataSuccess(res)
@@ -1894,7 +1894,7 @@ aria-hidden="true">&times;</span></button> \
 
   lc.setCounter = function(ledgers, type) {
     let txns = 0;
-    let ledgerCount = 0;  
+    let ledgerCount = 0;
     _.each(ledgers, function(led) {
       let l = 0;
       //count transactions in ledger
@@ -1902,7 +1902,7 @@ aria-hidden="true">&times;</span></button> \
         if (txn.type === type) {
           return l += 1;
         }
-      }); 
+      });
       if (txns <= lc.ledgerCount) {
         txns += l;
         return ledgerCount += 1;
@@ -2057,7 +2057,7 @@ aria-hidden="true">&times;</span></button> \
 
   // lc.matchTaxAccounts = (taxlist) ->
   //   _.each taxlist, (tax) ->
-      
+
 
   // lc.addTaxEntry = (tax, item) ->
   //   if tax.isSelected
@@ -2073,10 +2073,10 @@ aria-hidden="true">&times;</span></button> \
   if (lc.accountUnq) {
     lc.getAccountDetail(lc.accountUnq);
   } else {
-    lc.loadDefaultAccount();  
+    lc.loadDefaultAccount();
   }
   // $scope.$on('account-list-updated', ()->
-  //   lc.loadDefaultAccount() 
+  //   lc.loadDefaultAccount()
   // )
   // lc.flatAccListC5 = {
   //     page: 1
@@ -2253,7 +2253,7 @@ aria-hidden="true">&times;</span></button> \
         }
       });
     } else {
-      ledger.isBlankCompEntry = false; 
+      ledger.isBlankCompEntry = false;
       return lc.blankLedger.isBlankCompEntry = false;
     }
   };
@@ -2360,7 +2360,7 @@ aria-hidden="true">&times;</span></button> \
       lc.btIndex = ledger.index;
     }
     delete ledger.isCompoundEntry;
-    if (!_.isEmpty(ledger.voucher.shortCode)) { 
+    if (!_.isEmpty(ledger.voucher.shortCode)) {
       let response, unqNamesObj;
       if (_.isEmpty(ledger.uniqueName)) {
         //add new entry
@@ -2501,7 +2501,7 @@ aria-hidden="true">&times;</span></button> \
     if (withoutTaxesLedgerTxn.length === withoutTaxesUtxnList.length) {
       _.each(withoutTaxesLedgerTxn, (txn, idx) =>
         _.each(withoutTaxesUtxnList, function(uTxn, dx) {
-          if (idx === dx) { 
+          if (idx === dx) {
             if ((txn.particular.uniqueName !== uTxn.particular.uniqueName) || (txn.amount !== uTxn.amount)) {
               return isModified = true;
             }
@@ -2523,7 +2523,7 @@ aria-hidden="true">&times;</span></button> \
           return txn.isManualTax = false;
         }
       });
-    }); 
+    });
   };
 
   lc.getPrincipleTxnOnly = function(txnList) {
@@ -2556,7 +2556,7 @@ aria-hidden="true">&times;</span></button> \
             }
           }
         })
-      ); 
+      );
     }
               //transactions.push(txn)
               //txnList.splice(idx, 1)
@@ -2568,7 +2568,7 @@ aria-hidden="true">&times;</span></button> \
     if (ledger.taxes && (ledger.taxes.length > 0)) {
       ledger.taxList = [];
       return _.each(lc.taxList, function(tax) {
-        if (ledger.taxes.indexOf(tax.uniqueName) !== -1) { 
+        if (ledger.taxes.indexOf(tax.uniqueName) !== -1) {
           tax.isChecked = true;
           return ledger.taxList.push(tax);
         }
@@ -2757,7 +2757,7 @@ aria-hidden="true">&times;</span></button> \
     $timeout(( () => ledger.total = lc.updatedLedgerTotal), 2000);
     return lc.getPaginatedLedger(lc.currentPage);
   };
-    
+
   lc.updateEntryFailure = function(res, ledger) {
     lc.doingEntry = false;
     ledger = angular.copy(lc.ledgerBeforeEdit, ledger);
@@ -2767,7 +2767,7 @@ aria-hidden="true">&times;</span></button> \
     //   lc.pageLoader = false
     //   lc.showLoader = false
     // ), 1000
-    
+
   lc.createLedger = function(ledger, type) {
     let txns = [];
     let tLdr = {};
@@ -2838,7 +2838,7 @@ aria-hidden="true">&times;</span></button> \
     return lc.updateLedgerData('delete');
   };
 
-  
+
   lc.deleteEntryFailure = res => toastr.error(res.data.message, res.data.status);
 
   lc.removeDeletedLedger = function(item) {
@@ -2856,13 +2856,13 @@ aria-hidden="true">&times;</span></button> \
     // lc.ledgerData.ledgers.splice(index, 1)
 
   // select multiple transactions, from same or different entries
-  lc.allSelected = [];  
+  lc.allSelected = [];
   lc.selectMultiple = function(ledger, txn, index) {
     let cTxn = {};
     if (txn.isSelected === true) {
       cTxn.unq = ledger.uniqueName;
       cTxn.index = index;
-      cTxn.txn = txn; 
+      cTxn.txn = txn;
       return lc.allSelected.push(cTxn);
     }
   };
@@ -2954,20 +2954,26 @@ aria-hidden="true">&times;</span></button> \
       page: lc.gwaList.page,
       count: lc.gwaList.count
     };
-    if(showEmpty) { 
+    if(showEmpty) {
       reqParam.showEmptyGroups = true;
     }
-    return groupService.getFlattenGroupAccList(reqParam).then(lc.getFlattenGrpWithAccListSuccess, lc.getFlattenGrpWithAccListFailure);
+    if (!isElectron) {
+        return groupService.getFlattenGroupAccList(reqParam).then(lc.getFlattenGrpWithAccListSuccess, lc.getFlattenGrpWithAccListFailure);
+    } else {
+        return groupService.getFlattenGroupAccListElectron(reqParam).then(lc.getFlattenGrpWithAccListSuccess, lc.getFlattenGrpWithAccListFailure);
+    }
   };
 
   lc.getGroupsWithDetail = function() {
-    if ($rootScope.allowed === true) {
+    if (($rootScope.allowed === true) && $rootScope.canUpdate) {
       return groupService.getGroupsWithoutAccountsInDetail($rootScope.selectedCompany.uniqueName).then(
         success=> lc.detGrpList = success.body,
         failure => toastr.error('Failed to get Detailed Groups List'));
     }
   };
-  lc.getGroupsWithDetail();
+  if ($rootScope.canUpdate) {
+    lc.getGroupsWithDetail();
+  }
 
   lc.markFixedGrps = function(flatGrpList) {
     let temp = [];
@@ -3008,7 +3014,7 @@ aria-hidden="true">&times;</span></button> \
     lc.selectedTxn.isOpen = false;
     lc.getFlattenGrpWithAccList($rootScope.selectedCompany.uniqueName, true);
     return lc.AccmodalInstance = $uibModal.open({
-      templateUrl:'/public/webapp/Ledger/createAccountQuick.html',
+      templateUrl:'public/webapp/Ledger/createAccountQuick.html',
       size: "sm",
       backdrop: 'static',
       scope: $scope
@@ -3032,7 +3038,7 @@ aria-hidden="true">&times;</span></button> \
     if ((lc.newAccountModel.group.groupUniqueName === '') || (lc.newAccountModel.group.groupUniqueName === undefined)) {
       return toastr.error('Please select a group.');
     } else {
-      return accountService.createAc(unqNamesObj, newAccount).then(lc.addNewAccountConfirmSuccess, lc.addNewAccountConfirmFailure); 
+      return accountService.createAc(unqNamesObj, newAccount).then(lc.addNewAccountConfirmSuccess, lc.addNewAccountConfirmFailure);
     }
   };
 
@@ -3055,7 +3061,7 @@ aria-hidden="true">&times;</span></button> \
       while (i < 3) {
         text += chars.charAt(Math.floor(Math.random() * chars.length));
         i++;
-      } 
+      }
       unq = unqName + text;
       return lc.newAccountModel.accUnqName = unq;
     } else {
@@ -3221,7 +3227,7 @@ aria-hidden="true">&times;</span></button> \
   lc.blankLedger.transactions.push(lc.cBlankTxn);
 
   $rootScope.$on('company-changed', function(event,changeData) {
-    if (changeData.type === 'CHANGE') { 
+    if (changeData.type === 'CHANGE') {
       lc.loadDefaultAccount();
       return lc.getTaxList();
     }
@@ -3299,7 +3305,7 @@ aria-hidden="true">&times;</span></button> \
 
     return ledgerService.getReconcileEntries(reqParam).then(this.success, this.failure);
   };
-  
+
   // $rootScope.$on('account-selected', ()->
   //   lc.getAccountDetail(lc.accountUnq)
   //   #lc.isSelectedAccount()
@@ -3320,7 +3326,7 @@ aria-hidden="true">&times;</span></button> \
         cancel: 'No'
       }).then(
           res => lc.mapBankTransaction(mappedEntry.uniqueName, bankEntry.transactionId),
-          function(res) {} 
+          function(res) {}
       )
   ;
   lc.mapBankTransaction = function(entryUnq, transactionId) {
@@ -3399,7 +3405,7 @@ aria-hidden="true">&times;</span></button> \
     }
   };
 
-  lc.ledgerContainer = function() { 
+  lc.ledgerContainer = function() {
     this.ledgerData = {};
     this.trCount = 0;
     this.firstLedger = null;
@@ -3410,14 +3416,14 @@ aria-hidden="true">&times;</span></button> \
     return this;
   };
 
-  lc.ledgerContainer.prototype.add = function(o) { 
+  lc.ledgerContainer.prototype.add = function(o) {
     if (!this.ledgerData.hasOwnProperty(o.uniqueName)) {
       this.trCount += o.transactions.length;
       this.ledgerData[o.uniqueName] = o;
     }
   };
 
-  lc.ledgerContainer.prototype.add = function(o, count) { 
+  lc.ledgerContainer.prototype.add = function(o, count) {
     if (!this.ledgerData.hasOwnProperty(o.uniqueName)) {
       this.trCount += o.transactions.length;
       this.ledgerData[o.uniqueName] = o;
@@ -3433,7 +3439,7 @@ aria-hidden="true">&times;</span></button> \
     }
   };
 
-  lc.ledgerContainer.prototype.addAtTop = function(o, count) { 
+  lc.ledgerContainer.prototype.addAtTop = function(o, count) {
     if (!this.ledgerData.hasOwnProperty(o.uniqueName)) {
       this.trCount += o.transactions.length;
       this.ledgerData[o.uniqueName] = o;
@@ -3449,7 +3455,7 @@ aria-hidden="true">&times;</span></button> \
     }
   };
 
-  lc.ledgerContainer.prototype.top = function() { 
+  lc.ledgerContainer.prototype.top = function() {
     let least = Number.MAX_SAFE_INTEGER;
     let topKey = null;
     let ref = Object.keys(this.ledgerData);
@@ -3462,7 +3468,7 @@ aria-hidden="true">&times;</span></button> \
     return this.ledgerData[topKey];
   };
 
-  lc.ledgerContainer.prototype.bottom = function() { 
+  lc.ledgerContainer.prototype.bottom = function() {
     let last = Number.MIN_SAFE_INTEGER;
     let bottomKey = null;
     let ref = Object.keys(this.ledgerData);
@@ -3476,23 +3482,23 @@ aria-hidden="true">&times;</span></button> \
   };
 
   lc.ledgerContainer.prototype.remove = function(o) {
-    if (typeof(o) === 'object') { 
+    if (typeof(o) === 'object') {
       this.trCount -= o.transactions.length;
       delete this.ledgerData[o.uniqueName];
     }
-    
-    if (typeof(o) === 'string') { 
+
+    if (typeof(o) === 'string') {
       this.trCount -= this.ledgerData[o].transactions.length;
       delete this.ledgerData[o];
     }
-    
+
   };
 
-  lc.ledgerContainer.prototype.removeTop = function() { 
+  lc.ledgerContainer.prototype.removeTop = function() {
     this.remove(this.top());
   };
 
-  lc.ledgerContainer.prototype.removeBottom = function() { 
+  lc.ledgerContainer.prototype.removeBottom = function() {
     this.remove(this.bottom());
   };
 
@@ -3522,7 +3528,7 @@ aria-hidden="true">&times;</span></button> \
           ]);
         fetchDirection = 'prev';
       }
-      if ( (scrollDir === 'next') || (scrollDir === null)) { 
+      if ( (scrollDir === 'next') || (scrollDir === null)) {
         keyRange = IDBKeyRange.bound(
           [
             $rootScope.selectedCompany.uniqueName,
@@ -3552,7 +3558,7 @@ aria-hidden="true">&times;</span></button> \
           ]);
         fetchDirection = 'next';
       }
-      if ( (scrollDir === 'next') || (scrollDir === null) ) { 
+      if ( (scrollDir === 'next') || (scrollDir === null) ) {
         keyRange = IDBKeyRange.bound(
           [
             $rootScope.selectedCompany.uniqueName,
@@ -3648,7 +3654,7 @@ aria-hidden="true">&times;</span></button> \
   };
 
 
-  lc.log = function() { 
+  lc.log = function() {
     if (lc.showLogs) {
       return console.log(arguments);
     }
@@ -3661,7 +3667,7 @@ aria-hidden="true">&times;</span></button> \
   lc.showTaxTxns = function(ledger) {
     if (ledger.transactions.length > 1) {
       _.each(ledger.transactions, function(txn) {
-        if (txn.isTax) { 
+        if (txn.isTax) {
           return txn.hide = !txn.hide;
         }
       });

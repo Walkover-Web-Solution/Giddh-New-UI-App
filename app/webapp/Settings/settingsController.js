@@ -298,7 +298,7 @@ let settingsController = function($scope, $rootScope, $timeout, $uibModal, $log,
         newTax
       };
       return $scope.updateTax.modalInstance = $uibModal.open({
-        templateUrl:  '/public/webapp/Globals/modals/update-tax.html',
+        templateUrl:  'public/webapp/Globals/modals/update-tax.html',
         size: "md",
         backdrop: 'static',
         scope: $scope
@@ -567,7 +567,7 @@ let settingsController = function($scope, $rootScope, $timeout, $uibModal, $log,
           break;
       }
       $scope.banks.modalInstance = $uibModal.open({
-        templateUrl:  '/public/webapp/Globals/modals/yodleeMfaModal.html',
+        templateUrl:  'public/webapp/Globals/modals/yodleeMfaModal.html',
         size: "sm",
         backdrop: 'static',
         scope: $scope
@@ -818,7 +818,7 @@ let settingsController = function($scope, $rootScope, $timeout, $uibModal, $log,
     $scope.connectUrl = encodeURI(url);
     console.log($scope.connectUrl);
     return modalInstance = $uibModal.open({
-      templateUrl:  '/public/webapp/Globals/modals/connectBankModal.html',
+      templateUrl:  'public/webapp/Globals/modals/connectBankModal.html',
       size: "md",
       backdrop: 'static',
       scope: $scope,
@@ -840,7 +840,7 @@ let settingsController = function($scope, $rootScope, $timeout, $uibModal, $log,
     let url = res.body.connectUrl;
     $scope.connectUrl = url;
     let modalInstance = $uibModal.open({
-      templateUrl:  '/public/webapp/Globals/modals/refreshBankAccountsModal.html',
+      templateUrl:  'public/webapp/Globals/modals/refreshBankAccountsModal.html',
       size: "md",
       backdrop: 'static',
       scope: $scope
@@ -869,7 +869,7 @@ let settingsController = function($scope, $rootScope, $timeout, $uibModal, $log,
     let url = res.body.connectUrl;
     $scope.connectUrl = url;
     return $uibModal.open({
-      templateUrl:  '/public/webapp/Globals/modals/refreshBankAccountsModal.html',
+      templateUrl:  'public/webapp/Globals/modals/refreshBankAccountsModal.html',
       size: "md",
       backdrop: 'static',
       scope: $scope
@@ -1022,7 +1022,7 @@ let settingsController = function($scope, $rootScope, $timeout, $uibModal, $log,
 
   $scope.pageChangedCompSuccess =function(res){
     $scope.compTransData.paymentDetail = $scope.compTransData.paymentDetail.concat(res.body.paymentDetail);
-    return $scope.compTransData.startPage += 1; 
+    return $scope.compTransData.startPage += 1;
   };
 
   $scope.pageChangedCompFailure =res=> toastr.error(res.data.message, res.data.status);
@@ -1129,7 +1129,7 @@ let settingsController = function($scope, $rootScope, $timeout, $uibModal, $log,
         obj.couponCode = null;
         obj.amount= Number($scope.amount);
         $scope.coupRes.extra = true;
-      } else {  
+      } else {
         obj.couponCode = $scope.coupRes.couponCode;
       }
     }
@@ -1167,7 +1167,7 @@ let settingsController = function($scope, $rootScope, $timeout, $uibModal, $log,
       }
     }
   };
-    
+
   $scope.addBalRzrFailure = function(res) {
     toastr.error(res.data.message, res.data.status);
     $scope.directPay = true;
@@ -1220,8 +1220,8 @@ let settingsController = function($scope, $rootScope, $timeout, $uibModal, $log,
         return toastr.warning("Something went wrong", "Warning");
     }
   };
-    
-  
+
+
   $scope.calCulateDiscount = function() {
     let val = Math.floor(($scope.coupRes.value * $scope.amount)/100);
     if (val > $scope.coupRes.maxAmount) {
@@ -1231,7 +1231,7 @@ let settingsController = function($scope, $rootScope, $timeout, $uibModal, $log,
     }
   };
 
-      
+
   $scope.checkDiffAndAlert = function(type){
     $scope.directPay = false;
     switch (type) {
@@ -1246,7 +1246,7 @@ let settingsController = function($scope, $rootScope, $timeout, $uibModal, $log,
           $scope.disableRazorPay = false;
           return $scope.payAlert.push({type: 'success', msg: `Your cashback amount will be credited in your account withing 48 hours after payment has been done. Your will get a refund of Rs. ${$scope.coupRes.value}`});
         }
-      
+
       case 'discount':
         let diff = $scope.amount-$scope.discount;
         if (diff < 100) {
@@ -1270,8 +1270,8 @@ let settingsController = function($scope, $rootScope, $timeout, $uibModal, $log,
         }
     }
   };
-      
-      
+
+
 
   $scope.redeemCouponFailure = function(res) {
     $scope.disableRazorPay = false;
@@ -1491,7 +1491,7 @@ let settingsController = function($scope, $rootScope, $timeout, $uibModal, $log,
     } else {
       cFY = currentFinancialYear;
     }
-      
+
     _.each(response,function(yr) {
       if (yr.financialYearStarts.indexOf(cFY) !== -1) {
         return cYear = yr;

@@ -14,7 +14,7 @@ let app = angular.module("giddhApp", [
     "ngFileSaver"
 ]
 );
-app.config(ipnConfig => { dfebugger; ipnConfig.autoFormat = false });
+app.config(ipnConfig => ipnConfig.autoFormat = false);
 
 angular.module('valid-number', []).
     directive('validNumber', () =>
@@ -347,17 +347,16 @@ app.config([
     }
 ]);
 
-app.config(localStorageServiceProvider => { localStorageServiceProvider.setPrefix('giddh') });
+app.config(localStorageServiceProvider => localStorageServiceProvider.setPrefix('giddh'));
 
 
-app.config(vcRecaptchaServiceProvider => {
-    return vcRecaptchaServiceProvider.setDefaults({
+app.config(vcRecaptchaServiceProvider=>
+    vcRecaptchaServiceProvider.setDefaults({
         key: '6LcgBiATAAAAAMhNd_HyerpTvCHXtHG6BG-rtcmi'
         // theme: 'dark'
         //stoken: '6LcgBiATAAAAACj5K_70CDbRUSyGR1R7e9gckO1w'
         // size: 'compact'
     })
-}
 );
 
 // app.config [

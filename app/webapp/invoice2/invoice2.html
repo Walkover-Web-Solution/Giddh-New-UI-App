@@ -2,12 +2,12 @@
   <div class="row">
     <!-- <uib-tabset justified="false" class="parentTab">
         <uib-tab heading="Invoice" select="commonGoButtonClick()">
-          <div ng-include="'/public/webapp/invoice2/invoiceContent.html'">
+          <div ng-include="'public/webapp/invoice2/invoiceContent.html'">
 
           </div>
         </uib-tab>
         <uib-tab heading="Proforma (Beta)" select="broadcastToProforma()">
-          <div ng-include="'/public/webapp/invoice2/proforma/proformaContent.html'" ng-controller="proformaController">
+          <div ng-include="'public/webapp/invoice2/proforma/proformaContent.html'" ng-controller="proformaController">
 
           </div>
         </uib-tab>
@@ -21,8 +21,8 @@
       <span class="icon-dropdown"></span>
       </div>
       <div>
-        <section ng-if="currentPage == 'INVOICE'" ng-include="'/public/webapp/invoice2/invoiceContent.html'"></section>
-        <section ng-if="currentPage == 'PROFORMA'" ng-include="'/public/webapp/invoice2/proforma/proformaContent.html'" ng-controller="proformaController"></section>  
+        <section ng-if="currentPage == 'INVOICE'" ng-include="'public/webapp/invoice2/invoiceContent.html'"></section>
+        <section ng-if="currentPage == 'PROFORMA'" ng-include="'public/webapp/invoice2/proforma/proformaContent.html'" ng-controller="proformaController"></section>  
       </div>
   </div>
 </div>

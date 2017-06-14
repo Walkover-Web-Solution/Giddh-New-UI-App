@@ -20,7 +20,7 @@
     ng.core.Component({
       selector: 'audit-logs',
       providers: [ng.http.HTTP_PROVIDERS, httpService,sharedService],
-      templateUrl: '/public/webapp/ng2/audit_logs/audit-logs.html',
+      templateUrl: 'public/webapp/ng2/audit_logs/audit-logs.html',
     })
     .Class({
       constructor:[ng.http.Http, httpService,sharedService, function( http, service, shared) {
@@ -37,7 +37,7 @@
           if(res.reqBody.page > 1){
             for(i=0;i<res.logs.length;i++){
               this.logs.push(res.logs[i]);
-            }    
+            }
           }else{
             this.logs = res.logs;
           }
@@ -125,7 +125,7 @@
             options.toastr.error(error.message)
           }.bind(self)); //  on Error
       });
-      
+
     }
 
   });
@@ -191,4 +191,4 @@
   app.sharedService = sharedService;
   app.loadMore = loadMore;
 
-})(app = giddh.webApp || (giddh.webApp = {}));
+})(app = window.giddh.webApp || (window.giddh.webApp = {}));

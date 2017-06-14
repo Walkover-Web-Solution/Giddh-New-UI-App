@@ -86,7 +86,7 @@ const METADATA = {
     baseUrl: '/public/electron/',
     isProduction: false,
     isDev: true,
-    isTesting: false,
+    testingUrl: 'http://test.giddh.com',
     isWeb: false,
     isElectron: true
 }
@@ -116,37 +116,41 @@ module.exports = {
     },
     module: {
         rules: [{
-                test: /\.css$/i,
-                use: extractCSS.extract({
-                    use: {
-                        loader: 'css-loader',
-                        options: {
-                            minimize: false
-                        }
-                    }
-                })
-            }, {
-                test: /\.(png|eot|svg|ttf|woff|woff2)$/,
-                loader: 'url-loader?limit=100000'
-            }, {
-                exclude: /node_modules/,
-                test: /\.js$/,
-                use: [{
-                    loader: 'babel-loader',
+            test: /\.css$/i,
+            use: extractCSS.extract({
+                use: {
+                    loader: 'css-loader',
                     options: {
-                        presets: ['es2015']
-                    },
-                }],
-            },
-            {
-                test: require.resolve("angular"),
-                use: 'imports-loader?this=>window'
-            }
+                        minimize: false
+
+                    }
+                },
+                fallback: "style-loader",
+                publicPath: ''
+            })
+        }, {
+            test: /\.(jpg|png|eot|svg|ttf|woff|woff2)$/,
+            loader: 'url-loader?limit=100000&name=images/[hash].[ext]'
+        }, {
+            exclude: /node_modules/,
+            test: /\.js$/,
+            use: [{
+                loader: 'babel-loader',
+                options: {
+                    presets: ['es2015']
+                },
+            }],
+        },
+        {
+            test: require.resolve("angular"),
+            use: 'imports-loader?this=>window'
+        }
         ]
     },
     plugins: [
         extractCSS,
         new webpack.ProvidePlugin({
+            // "angular": path.resolve(__dirname, '../node_modules/angular/angular.min.js')
             // '$': 'jquery',
             // 'jquery': 'jquery',
             // 'jQuery': 'jquery',
@@ -170,11 +174,17 @@ module.exports = {
         new CopyWebpackPlugin([{
             from: 'app/webapp/',
             to: './'
-        }, ], {
-            ignore: [
-                "*.js", "*.md", "*.json", ".gitignore", "*.eot", "*.ttf", "*.svg", "*.woff", "*.woff2",
-                "*.css", "*.xml", "*.png", "*.jpg", "*.gif", "*.mp4", "*.ico"
-            ],
-        })
+        },], {
+                ignore: [
+                    "*.js", "*.md", "*.json", ".gitignore", "*.eot", "*.ttf", "*.svg", "*.woff", "*.woff2",
+                    "*.css", "*.xml", "*.png", "*.jpg", "*.gif", "*.mp4", "*.ico"
+                ],
+            }),
+        new CopyWebpackPlugin([
+            {
+                from: 'app/webapp/Globals/images',
+                to: './Globals/images/'
+            }
+        ])
     ]
 };

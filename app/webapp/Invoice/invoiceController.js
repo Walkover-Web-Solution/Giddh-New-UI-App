@@ -34,8 +34,8 @@ let invoiceController = function($scope, $rootScope, $filter, $uibModal, $timeou
   };
   // default Template data
   $scope.tempDataDef= {
-    logo: { 
-      path: '/public/website/images/logo.png'
+    logo: {
+      path: 'public/website/images/logo.png'
     },
     invoiceDetails: {
       invoiceNumber: '##########',
@@ -46,7 +46,7 @@ let invoiceController = function($scope, $rootScope, $filter, $uibModal, $timeou
       name: 'Walkover Web Solutions Pvt. ltd.',
       data: ['405-406 Capt. C.S. Naidu Arcade','10/2 Old Palasiya','Indore Madhya Pradesh','CIN: 02830948209eeri','Email: account@giddh.com']
     },
-    companyIdentities: { 
+    companyIdentities: {
       data: 'tin:67890,cin:12345'
     },
     entries: [
@@ -141,7 +141,7 @@ let invoiceController = function($scope, $rootScope, $filter, $uibModal, $timeou
     return this.toDatePickerIsOpen = true;
   };
   // end of date picker
-  
+
 
   // end of page load varialbles
 
@@ -160,7 +160,7 @@ let invoiceController = function($scope, $rootScope, $filter, $uibModal, $timeou
       // with accounts, group data
       $scope.getFlattenGrpWithAccList($rootScope.selectedCompany.uniqueName);
 //      $scope.getSubgroupsWithAccounts($rootScope.selectedCompany.uniqueName,'sundry_debtors')
-      $scope.getMultipleSubgroupsWithAccounts($rootScope.selectedCompany.uniqueName,[$rootScope.groupName.sundryDebtors,$rootScope.groupName.revenueFromOperations]);
+      $scope.getMultipleSubgroupsWithAccounts($rootScope.selectedCompany.uniqueName,[$rootScope.groupName.sundryDebtors,$rootScope.groupName.revenueFromOperations,$rootScope.groupName.otherIncome]);
       return groupService.getGroupsWithAccountsCropped($rootScope.selectedCompany.uniqueName).then($scope.makeAccountsList, $scope.makeAccountsListFailure);
     }
   };
@@ -183,7 +183,7 @@ let invoiceController = function($scope, $rootScope, $filter, $uibModal, $timeou
 
   $scope.makeAccountsListFailure = res => toastr.error(res.data.message, res.data.status);
 
-  
+
   // search flat accounts list
   $scope.searchAccounts = str => console.log("inside search accounts");
 //    reqParam = {}
@@ -245,7 +245,11 @@ let invoiceController = function($scope, $rootScope, $filter, $uibModal, $timeou
       page: $scope.gwaList.page,
       count: $scope.gwaList.count
     };
-    return groupService.getFlattenGroupAccList(reqParam).then($scope.getFlattenGrpWithAccListSuccess, $scope.getFlattenGrpWithAccListFailure);
+    if (!isElectron) {
+        return groupService.getFlattenGroupAccList(reqParam).then($scope.getFlattenGrpWithAccListSuccess, $scope.getFlattenGrpWithAccListFailure);
+    } else {
+        return groupService.getFlattenGroupAccListElectron(reqParam).then($scope.getFlattenGrpWithAccListSuccess, $scope.getFlattenGrpWithAccListFailure);
+    }
   };
 
   $scope.getFlattenGrpWithAccListSuccess = function(res) {
@@ -253,7 +257,7 @@ let invoiceController = function($scope, $rootScope, $filter, $uibModal, $timeou
 //    $scope.flatAccntWGroupsList = []
 //    $scope.filterSundryDebtors(res.body.results)
 //    $scope.showAccountList = true
-    return $scope.gwaList.limit = 5;  
+    return $scope.gwaList.limit = 5;
   };
 
   $scope.getFlattenGrpWithAccListFailure = res => toastr.error(res.data.message);
@@ -382,7 +386,7 @@ let invoiceController = function($scope, $rootScope, $filter, $uibModal, $timeou
   // set as default
   $scope.setDefTemp = function(data) {
     if (data.isDefault) {
-      let obj = { 
+      let obj = {
         uniqueName: $rootScope.selectedCompany.uniqueName,
         tempUname: data.uniqueName
       };
@@ -431,7 +435,7 @@ let invoiceController = function($scope, $rootScope, $filter, $uibModal, $timeou
     // set mode
     $scope.editMode = mode === 'edit' ? true : false;
     $scope.tempSet = template.sections;
-    
+
     _.extend($scope.defTempData , data);
     $scope.defTempData.signatureType = $scope.tempSet.signatureType;
     showPopUp = $scope.convertIntoOur();
@@ -439,7 +443,7 @@ let invoiceController = function($scope, $rootScope, $filter, $uibModal, $timeou
     // open dialog
     if(showPopUp) {
       $scope.modalInstance = $uibModal.open({
-        templateUrl: '/public/webapp/Invoice/prevInvoiceTemp.html',
+        templateUrl: 'public/webapp/Invoice/prevInvoiceTemp.html',
         size: "a4",
         backdrop: 'static',
         scope: $scope
@@ -556,7 +560,7 @@ let invoiceController = function($scope, $rootScope, $filter, $uibModal, $timeou
     } else if ((typeof($scope.defTempData.account.data) === 'object') && !(_.isEmpty($scope.defTempData.account.data))) {
       $scope.defTempData.account.data = $scope.defTempData.account.data.join("\n");
     }
-    
+
     // companyIdentities setting
     if(_.isNull($scope.defTempData.companyIdentities)) {
       toastr.error("Selected company is not available, please contact to support.","Error");
@@ -629,7 +633,7 @@ let invoiceController = function($scope, $rootScope, $filter, $uibModal, $timeou
       }
 
       if (moment(data.invoiceDetails.invoiceDate, "DD-MM-YYYY", true).isValid()) {
-        if ($scope.defTempData.account.data.length > 0) { 
+        if ($scope.defTempData.account.data.length > 0) {
           return accountService.genInvoice(obj, dData).then($scope.genInvoiceSuccess, $scope.genInvoiceFailure);
         } else {
           toastr.error("Buyer's address can not be left blank.");
@@ -673,7 +677,7 @@ let invoiceController = function($scope, $rootScope, $filter, $uibModal, $timeou
     return $scope.entriesForInvoice = [];
   };
 
-    
+
     // $scope.getLedgerEntries()
 
   $scope.genInvoiceFailure = function(res) {
@@ -697,7 +701,7 @@ let invoiceController = function($scope, $rootScope, $filter, $uibModal, $timeou
     }
   };
 
-  // get inv templates 
+  // get inv templates
   if (!(_.isEmpty($rootScope.$stateParams.invId))) {
     let ledgerObj = DAServices.LedgerGet();
     if (!_.isEmpty(ledgerObj.ledgerData)) {
@@ -711,7 +715,7 @@ let invoiceController = function($scope, $rootScope, $filter, $uibModal, $timeou
     }
   }
 
-  
+
 
   // invoice setting end
 
@@ -761,7 +765,7 @@ let invoiceController = function($scope, $rootScope, $filter, $uibModal, $timeou
     }
     return $scope.entryListUpdated = true;
   };
-    
+
   $scope.getLedgerEntriesFailure=function(res){
     toastr.error(res.data.message, res.data.status);
     return $scope.entryListUpdated = true;
@@ -817,7 +821,7 @@ let invoiceController = function($scope, $rootScope, $filter, $uibModal, $timeou
     $scope.prevInProg = false;
     return $scope.viewInvTemplate(res.body.template, 'edit', res.body);
   };
-    
+
 
   $scope.prevAndGenInvFailure=function(res){
     $scope.prevInProg = false;
@@ -851,7 +855,7 @@ let invoiceController = function($scope, $rootScope, $filter, $uibModal, $timeou
       return $scope.noDataGenInv = false;
     }
   };
-    
+
 
   $scope.getInvListFailure=res=> toastr.error(res.data.message, res.data.status);
 
@@ -944,7 +948,7 @@ let invoiceController = function($scope, $rootScope, $filter, $uibModal, $timeou
     // if $scope.msieBrowser()
     //   #$scope.openWindow("data:application/pdf;base64, " + res.body)
     //   window.navigator.msSaveBlob(file, 'abc.pdf')
-    // else if $scope.isSafari       
+    // else if $scope.isSafari
     //   modalInstance = $uibModal.open(
     //     template: '<div>
     //         <div class="modal-header">
@@ -963,7 +967,7 @@ let invoiceController = function($scope, $rootScope, $filter, $uibModal, $timeou
     //     scope: $scope
     //   )
     // else
-      // passthis = "data:application/pdf;base64, " + res.body 
+      // passthis = "data:application/pdf;base64, " + res.body
       // window.open(passthis)
     // a = document.createElement("a")
     // document.body.appendChild(a)
@@ -1028,7 +1032,7 @@ let invoiceController = function($scope, $rootScope, $filter, $uibModal, $timeou
     }
     return $scope.editGenInvoice = true;
   };
-    
+
   $scope.updateGeneratedInvoiceSuccess = function(res) {
     toastr.success(res.body);
     return $scope.editGenInvoice = false;
@@ -1060,7 +1064,7 @@ let invoiceController = function($scope, $rootScope, $filter, $uibModal, $timeou
   };
 
   $scope.saveInvoiceSettingsFailure = res => toastr.error(res.data.message);
-  
+
   // state change
   $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){
     // close accounts dropdown and false var if going upwords

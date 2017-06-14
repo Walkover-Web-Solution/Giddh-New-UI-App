@@ -92,7 +92,7 @@ angular.module('trialBalance', []).directive('exportReport', [
       }
 
     })
-  
+
 ]).filter('recType', () =>
   function(input, value) {
     if (value !== 0) {
@@ -158,15 +158,15 @@ angular.module('trialBalance', []).directive('exportReport', [
         scope.padLeft = 20;
 
         let showChild = function() {
-            if (elem.siblings().hasClass('isHidden')) { 
+            if (elem.siblings().hasClass('isHidden')) {
                 elem.siblings().removeClass('isHidden');
                 return elem.siblings().fadeIn(100);
-            } else { 
+            } else {
                 elem.siblings().fadeOut(100);
                 return elem.siblings().addClass('isHidden');
               }
           };
-              
+
         // expand all
         let expandAll = function() {
           angular.element('.table-container').find('.isHidden').not('.account.isHidden').show().removeClass('isHidden');
@@ -206,7 +206,7 @@ angular.module('trialBalance', []).directive('exportReport', [
         });
       }
     })
-  
+
 ])
 .filter('accntsrch', () =>
   function(input, search) {
@@ -216,8 +216,8 @@ angular.module('trialBalance', []).directive('exportReport', [
     let checkIndex = function(src, str) {
       if (src.indexOf(str) !== -1) {
         return true;
-      } else { 
-        return false;     
+      } else {
+        return false;
       }
     };
 
@@ -233,7 +233,7 @@ angular.module('trialBalance', []).directive('exportReport', [
         let grpUnq = grp.groupUniqueName.toLowerCase();
         let grpSyn = !_.isNull(grp.groupSynonyms) ? grp.groupSynonyms.toLowerCase() : '';
         let accounts = [];
-        if (checkIndex(grpName, srch) || checkIndex(grpUnq, srch) || checkIndex(grpSyn, srch)) { 
+        if (checkIndex(grpName, srch) || checkIndex(grpUnq, srch) || checkIndex(grpSyn, srch)) {
           matchCase = 'Group';
           if (grp.beforeFilter.length > 0) {
             _.each(grp.beforeFilter, function(acc) {
@@ -243,7 +243,7 @@ angular.module('trialBalance', []).directive('exportReport', [
               if (checkIndex(accName, srch) || checkIndex(accUnq, srch) || checkIndex(accMergeAcc, srch)) {
                 matchCase = 'Account';
               }
-              if (checkIndex(accName, srch) || checkIndex(accUnq, srch) || (checkIndex(accMergeAcc, srch) && checkIndex(grpName, srch)) || checkIndex(grpUnq, srch) || checkIndex(grpSyn, srch)) { 
+              if (checkIndex(accName, srch) || checkIndex(accUnq, srch) || (checkIndex(accMergeAcc, srch) && checkIndex(grpName, srch)) || checkIndex(grpUnq, srch) || checkIndex(grpSyn, srch)) {
                 matchCase = 'Group and Account';
               }
 
@@ -252,8 +252,8 @@ angular.module('trialBalance', []).directive('exportReport', [
               }
             });
           }
-                
-        } else {  
+
+        } else {
           if (grp.beforeFilter.length > 0) {
             _.each(grp.beforeFilter, function(acc) {
               let accName = acc.name.toLowerCase();
@@ -289,7 +289,7 @@ angular.module('trialBalance', []).directive('exportReport', [
     ({
       restrict: 'A',
       link(scope, elem, attr) {
-        // if attr.dragAround == 'true' 
+        // if attr.dragAround == 'true'
         //   $(elem).draggable()
 
         //   $(elem).on('drag', (e)->
@@ -316,7 +316,7 @@ angular.module('trialBalance', []).directive('exportReport', [
           });
         }
     })
-  
+
 ])
 
 .directive('optionList', ['$window', '$timeout', ($window, $timeout) =>
@@ -364,15 +364,15 @@ angular.module('trialBalance', []).directive('exportReport', [
 
     // $(elem).on('click', (e)->
     //   if scope.isOpen
-        
+
     // )
-    
+
 ])
 
 
 .directive('inputFocus', ['$window', '$timeout', ($window, $timeout) =>
   ({
-    scope: { 
+    scope: {
       isOpen: '=isOpen',
       txn: '=txn'
     },
@@ -391,7 +391,7 @@ angular.module('trialBalance', []).directive('exportReport', [
     //   if scope.isOpen
     //     $(elem).trigger('focus')
     // )
-    
+
 ])
 
 .directive('setDropOverflow', ['$window', '$timeout', ($window, $timeout) =>
@@ -406,7 +406,7 @@ angular.module('trialBalance', []).directive('exportReport', [
     }
   })
 
-    
+
 ])
 
 .directive('coverPage', ['$window', '$timeout', ($window, $timeout) =>
@@ -474,7 +474,7 @@ angular.module('trialBalance', []).directive('exportReport', [
         let height = $(window).innerHeight() - 54 - 54;
         return $(elem).css({"height": height, "overflow-y":"auto"});
       };
-    
+
       $(window).on('resize', e => setHeight());
 
       return setHeight();
@@ -491,10 +491,30 @@ angular.module('trialBalance', []).directive('exportReport', [
         let height = $(window).innerHeight() - 112;
         return $(elem).css({"height": height});
       };
-    
+
       $(window).on('resize', e => setHeight());
 
       return setHeight();
+    }
+  })
+
+])
+
+// check ul overflow
+.directive('overflowfix', ['$window', '$timeout', ($window, $timeout) =>
+  ({
+    restrict: "A",
+    link(scope, elem) {
+      let elem1 = elem[0];
+      let scroll = $(elem).scrollTop();
+      return $(elem).on('scroll', function(e) {
+        if ($(elem1).hasClass("fix")) {
+          return 0;
+        }
+        if (scroll <= 20) {
+          return $(elem1).addClass("fix");
+        }
+      });
     }
   })
 
@@ -599,12 +619,12 @@ angular.module('trialBalance', []).directive('exportReport', [
   ({
     restrict: "EA",
     link(scope, elem, attrs) {
-    
+
       // setPos = () ->
       //   $timeout ( ->
       //     frame = $(window).height() / 3 * 2
       //     offset = $(elem).offset().top
-        
+
       //     if offset > frame
       //       attrs.$set("popoverPlacement", "top")
       //     else
@@ -615,7 +635,7 @@ angular.module('trialBalance', []).directive('exportReport', [
       // setPos()
 
       return $(elem).on('mouseover', function(e){
-        if (e.pageY > (($(window).height() / 3) * 2)) { 
+        if (e.pageY > (($(window).height() / 3) * 2)) {
           return attrs.$set("popoverPlacement", "top");
         } else {
           return attrs.$set("popoverPlacement", "bottom");
@@ -638,7 +658,7 @@ angular.module('trialBalance', []).directive('exportReport', [
   ({
     restrict: "EA",
     link(scope, elem, attrs) {
-    
+
       return $(elem).on('click',e=>
         $timeout(( () => $(window).trigger('resize')), 500)
       );
@@ -652,7 +672,7 @@ angular.module('trialBalance', []).directive('exportReport', [
 // .directive 'triggerClick', ['$window', '$timeout','$parse', ($window, $timeout, $parse) ->
 //   restrict: "EA"
 //   link: (scope, elem, attrs) ->
-    
+
 //     $(elem).on('click',(e)->
 //       $(elem).find('input').trigger('click')
 //     )
@@ -690,7 +710,7 @@ angular.module('trialBalance', []).directive('exportReport', [
   ({
     restrict: "EA",
     link(scope, elem, attrs) {
-    
+
       return $(elem).on('click',function(e){
         let top = $('#middleBody').scrollTop();
         return $('#middleBody').animate({
@@ -704,21 +724,22 @@ angular.module('trialBalance', []).directive('exportReport', [
 
 .directive('fileModel', [
   '$parse',
-  $parse =>
+  '$timeout',
+  ($parse, $timeout) =>
     ({
       restrict: 'A',
       link(scope, element, attrs) {
         let model = $parse(attrs.fileModel);
         let modelSetter = model.assign;
         element.bind('change', function() {
-          scope.$apply(function() {
+          $timeout(function() {
             modelSetter(scope, element[0].files[0]);
           });
         });
       }
 
     })
-  
+
 ])
 
 .filter('abs', () =>

@@ -741,7 +741,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
           document.getElementById('textAngular-editableFix-010203040506070809').setSelectionRange(0, 0); // set caret focus to an element that handles caret focus correctly.
           curelement.focus(); // focus the wanted element.
         }
-      } 
+      }
       globalContentEditableBlur = false;
     }, false); // add global click handler
     angular.element(document).ready(function () {
@@ -827,10 +827,10 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
         var style = document.createElement("style");
         /* istanbul ignore else : WebKit hack :( */
         if(/AppleWebKit\/([\d.]+)/.exec(navigator.userAgent)) style.appendChild(document.createTextNode(""));
-  
+
         // Add the <style> element to the page, add as first so the styles can be overridden by custom stylesheets
         document.head.appendChild(style);
-  
+
         return style.sheet;
       })();
     }
@@ -1174,12 +1174,12 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
           });
           scope.displayElements.scrollWindow.attr({'ng-hide': 'showHtml'});
           if(attrs.taDefaultWrap) scope.displayElements.text.attr('ta-default-wrap', attrs.taDefaultWrap);
-          
+
           if(attrs.taUnsafeSanitizer){
             scope.displayElements.text.attr('ta-unsafe-sanitizer', attrs.taUnsafeSanitizer);
             scope.displayElements.html.attr('ta-unsafe-sanitizer', attrs.taUnsafeSanitizer);
           }
-          
+
           // add the main elements to the origional element
           scope.displayElements.scrollWindow.append(scope.displayElements.text);
           element.append(scope.displayElements.scrollWindow);
@@ -1409,7 +1409,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
             /* istanbul ignore else: don't run if already running */
             if(!scope._bUpdateSelectedStyles){
               scope._bUpdateSelectedStyles = true;
-              scope.$apply(function(){
+              $timeout(function(){
                 scope.updateSelectedStyles();
               });
             }
@@ -1426,7 +1426,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
           _keypress = function(event, eventData){
             /* istanbul ignore else: this is for catching the jqLite testing*/
             if(eventData) angular.extend(event, eventData);
-            scope.$apply(function(){
+            $timeout(function(){
               if(_toolbars.sendKeyCommand(event)){
                 /* istanbul ignore else: don't run if already running */
                 if(!scope._bUpdateSelectedStyles){
@@ -1443,7 +1443,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
           _mouseup = function(){
             // ensure only one execution of updateSelectedStyles()
             scope._bUpdateSelectedStyles = false;
-            scope.$apply(function(){
+            $timeout(function(){
               scope.updateSelectedStyles();
             });
           };
@@ -1674,7 +1674,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
         var _focussed = false;
         var _disableSanitizer = attrs.taUnsafeSanitizer || taOptions.disableSanitizer;
         var BLOCKED_KEYS = /^(9|19|20|27|33|34|35|36|37|38|39|40|45|46|112|113|114|115|116|117|118|119|120|121|122|123|144|145)$/;
-        
+
         // defaults to the paragraph element, but we need the line-break or it doesn't allow you to type into the empty element
         // non IE is '<p><br/></p>', ie is '<p></p>' as for once IE gets it correct...
         var _defaultVal, _defaultTest, _trimTest;
@@ -1698,7 +1698,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
               '<' + attrs.taDefaultWrap + '>&nbsp;</' + attrs.taDefaultWrap + '>';
           _trimTest = new RegExp('^<' + attrs.taDefaultWrap + '>(\\s|&nbsp;)*<\\/' + attrs.taDefaultWrap + '>$', 'ig');
         }
-        
+
         element.addClass('ta-bind');
 
         // in here we are undoing the converts used elsewhere to prevent the < > and & being displayed when they shouldn't in the code.
@@ -1707,7 +1707,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
           if(_isInputFriendly) return element.val();
           throw ('textAngular Error: attempting to update non-editable taBind');
         };
-        
+
         var _setViewValue = function(val){
           if(!val) val = _compileHtml();
           if(val === _defaultTest || val.match(_trimTest)){
@@ -1717,12 +1717,12 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
             if(ngModel.$viewValue !== val) ngModel.$setViewValue(val);
           }
         };
-        
+
         //used for updating when inserting wrapped elements
         scope['updateTaBind' + (attrs.id || '')] = function(){
           if(!_isReadonly) _setViewValue();
         };
-        
+
         //this code is used to update the models when data is entered/deleted
         if(_isInputFriendly){
           element.on('paste', function(e, eventData){
@@ -1815,22 +1815,22 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
               _focussed = true;
               ngModel.$render();
             });
-            
+
             // prevent propagation on mousedown in editor, see #206
             element.on('mousedown', function(event, eventData){
               /* istanbul ignore else: this is for catching the jqLite testing*/
               if(eventData) angular.extend(event, eventData);
-              event.stopPropagation(); 
+              event.stopPropagation();
             });
           }
         }
-        
+
         // catch DOM XSS via taSanitize
         // Sanitizing both ways is identical
         var _sanitize = function(unsafe){
           return (ngModel.$oldViewValue = taSanitize(taFixChrome(unsafe), ngModel.$oldViewValue, _disableSanitizer));
         };
-        
+
         // trigger the validation calls
         var _validity = function(value){
           if(attrs.required) ngModel.$setValidity('required', !(!value || value.trim() === _defaultTest || value.trim().match(_trimTest) || value.trim() === ''));
@@ -1873,11 +1873,11 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
                 .on('click', selectorClickHandler);
             });
         };
-        
+
         var _setInnerHTML = function(newval){
           element[0].innerHTML = newval;
         };
-        
+
         // changes to the model variable from outside the html/text inputs
         ngModel.$render = function(){
           // catch model being null or undefined
@@ -1925,7 +1925,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
             }
           }
         };
-        
+
         if(attrs.taReadonly){
           //set initial value
           _isReadonly = scope.$eval(attrs.taReadonly);
@@ -2476,7 +2476,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
                       break;
                     }
                   }
-                  if(result) break; 
+                  if(result) break;
                 }
               }
               return result;
@@ -2598,7 +2598,9 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
         if(editors[name]){
           editors[name].scope.updateTaBindtaTextElement();
           /* istanbul ignore else: phase catch */
-          if(!editors[name].scope.$$phase) editors[name].scope.$digest();
+          setTimeout(function () {
+            if(!editors[name].scope.$$phase) editors[name].scope.$digest();
+          }, 1000);
         }else throw('textAngular Error: No Editor with name "' + name + '" exists');
       }
     };
@@ -2662,7 +2664,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
             range = _document.createRange();
             range.setStart(sel.anchorNode, sel.anchorOffset);
             range.setEnd(sel.focusNode, sel.focusOffset);
-            
+
             // Handle the case when the selection was selected backwards (from the end to the start in the document)
             if (range.collapsed !== sel.isCollapsed) {
               range.setStart(sel.focusNode, sel.focusOffset);
@@ -2688,7 +2690,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
           },
           container: container,
           collapsed: sel.isCollapsed
-          
+
         };
         else return {
           start: {
@@ -2776,7 +2778,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
           if (sel.getRangeAt && sel.rangeCount) {
             range = sel.getRangeAt(0);
             range.deleteContents();
-      
+
             // Range.createContextualFragment() would be useful here but is
             // only relatively recently standardized and is not supported in
             // some browsers (IE9, for one)
@@ -2787,7 +2789,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
               lastNode = frag.appendChild(node);
             }
             range.insertNode(frag);
-      
+
             // Preserve the selection
             if (lastNode) {
               range = range.cloneRange();
@@ -2814,7 +2816,7 @@ Version 1.2.2
 See README.md or https://github.com/fraywing/textAngular/wiki for requirements and use.
 */
 angular.module('textAngularSetup', [])
-  
+
 // Here we set up the global display defaults, to set your own use a angular $provider#decorator.
 .value('taOptions',  {
   toolbar: [
@@ -3103,7 +3105,7 @@ angular.module('textAngularSetup', [])
       return this.$editor().wrapSelection("indent", null);
     },
     activeState: function(){
-      return this.$editor().queryFormatBlockState('blockquote'); 
+      return this.$editor().queryFormatBlockState('blockquote');
     }
   });
   taRegisterTool('outdent', {
@@ -3183,7 +3185,7 @@ angular.module('textAngularSetup', [])
         if(_preLis.length === 0 || _postLis.length === 0){
           if(_postLis.length === 0) _parent.after(newElem);
           else _parent[0].parentNode.insertBefore(newElem[0], _parent[0]);
-          
+
           if(_preLis.length === 0 && _postLis.length === 0) _parent.remove();
           else angular.element(possibleNodes[0]).remove();
         }else{
@@ -3213,7 +3215,7 @@ angular.module('textAngularSetup', [])
       restoreSelection();
     }
   });
-  
+
   var imgOnSelectAction = function(event, $element, editorScope){
     // setup the editor toolbar
     // Credit to the work at http://hackerwins.github.io/summernote/ for this editbar logic/display
@@ -3267,7 +3269,7 @@ angular.module('textAngularSetup', [])
     buttonGroup.append(quartButton);
     buttonGroup.append(resetButton);
     container.append(buttonGroup);
-    
+
     buttonGroup = angular.element('<div class="btn-group" style="padding-right: 6px;">');
     var floatLeft = angular.element('<button type="button" class="btn btn-default btn-sm btn-small" unselectable="on" tabindex="-1"><i class="fa fa-align-left"></i></button>');
     floatLeft.on('click', function(event){
@@ -3291,7 +3293,7 @@ angular.module('textAngularSetup', [])
     buttonGroup.append(floatNone);
     buttonGroup.append(floatRight);
     container.append(buttonGroup);
-    
+
     buttonGroup = angular.element('<div class="btn-group">');
     var remove = angular.element('<button type="button" class="btn btn-default btn-sm btn-small" unselectable="on" tabindex="-1"><i class="fa fa-trash-o"></i></button>');
     remove.on('click', function(event){
@@ -3301,11 +3303,11 @@ angular.module('textAngularSetup', [])
     });
     buttonGroup.append(remove);
     container.append(buttonGroup);
-    
+
     editorScope.showPopover($element);
     editorScope.showResizeOverlay($element);
   };
-  
+
   taRegisterTool('insertImage', {
     iconclass: 'fa fa-picture-o',
     tooltiptext: taTranslations.insertImage.tooltip,
@@ -3346,7 +3348,7 @@ angular.module('textAngularSetup', [])
       onlyWithAttrs: ['ta-insert-video'],
       action: imgOnSelectAction
     }
-  }); 
+  });
   taRegisterTool('insertLink', {
     tooltiptext: taTranslations.insertLink.tooltip,
     iconclass: 'fa fa-link',

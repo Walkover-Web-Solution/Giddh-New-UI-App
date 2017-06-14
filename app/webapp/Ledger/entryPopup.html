@@ -1,26 +1,26 @@
 <div id="entryModal">
   <div class="modal-header themeBg">
-    <button type="button" class="close" data-dismiss="modal" ng-click="$dismiss(); search.flataccount = ''" aria-label="Close"><span
+    <button type="button" class="close" data-dismiss="modal" ng-click="$dismiss(); ledgerCtrl.resetTaxes();search.flataccount = '';" aria-label="Close"><span
         aria-hidden="true">&times;</span></button>
     <h3 class="modal-title" style="color:#fff">Edit Entry</h3>
   </div>
 
 	<div class="modal-body noPad mrT2">
 		<div class="row">
-			<h1 class="text-center account_Name">{{ledgerCtrl.accountToShow.name}} A/c</h1>
+			<h1 class="text-center account_Name">{{ledgerCtrl.editModeBaseAccount}} A/c</h1>
 		</div>
 		<div class="ledgHead entry-popup mrT1">
 			<table class="col-xs-12 ledger-head">
 				<thead>
 					<tr>
-						<th class="col-xs-6"  style="font-weight: 400">Is {{ledgerCtrl.accountToShow.name}} coming in?</th>
-						<th class="col-xs-6"  style="font-weight: 400">Is {{ledgerCtrl.accountToShow.name}} going out?</th>
+						<th class="col-xs-6"  style="font-weight: 400">{{ledgerCtrl.understandingEditMode.text.dr}}</th>
+						<th class="col-xs-6"  style="font-weight: 400">{{ledgerCtrl.understandingEditMode.text.cr}}</th>
 					</tr>
 				</thead>
 			</table>
 
 			<div style="border:1px solid #ccc;overflow:hidden;position:relative;">
-				<div class="left-col-new">
+				<div class="left-col-new bdrR">
 					<table class="width100">
 						<thead>
 							<tr class="t-h-bg1">
@@ -53,7 +53,6 @@
 												class="ledger-row debit-blank-row"
 												ng-repeat="txn in ledger.transactions"
 												ng-if="txn.type == 'DEBIT'"
-												
 												>
 												<td class="col-xs-2">
 													<input 
@@ -70,8 +69,9 @@
 													type="text" 
 													ng-model="txn.particular"
 													typeahead-append-to-body="true" 
-			                                      	uib-typeahead="accounts as accounts.name for accounts in fltAccntListPaginated | omit:ledgerCtrl.isCurrentAccount | searchAccountInPaginated:$viewValue | limitTo: 25"
-			                                      	typeahead-template-url="accountPopUp.html" 
+			                                      	uib-typeahead="accounts as accounts.name for accounts in fltAccntListPaginated | addStockinAccountList:ledgerCtrl.baseAccount | searchAccountInPaginated:$viewValue | limitTo: 25"
+			                                      	typeahead-template-url="accountPopUp.html"
+			                                      	typeahead-on-select = "ledgerCtrl.createPanel(ledger);ledgerCtrl.matchInventory(ledger)"
 													class="form-control"
 													ng-click="ledgerCtrl.selectTxn(ledger, txn, $index, $event)"
 													is-open="txn.isOpen">
@@ -91,6 +91,15 @@
 				                                        ng-click="ledgerCtrl.downloadAttachedFile(ledger.attachedFile, $event)" 
 				                                        tooltip-append-to-body="true" 
 				                                        uib-tooltip="Download file : {{ledger.attachedFileName}}" 
+				                                        tooltip-placement="top"> 
+				                                    	<i class="glyphicon glyphicon-download pull-left" style="font-size:15px;" ></i>
+				                                    </span> 
+				                                    <span 
+				                                        class="download-invoice-ledger" 
+				                                        ng-if="ledger.invoiceNumber.length > 0" 
+				                                        ng-click="ledgerCtrl.downloadInvoice(ledger.invoiceNumber, $event)" 
+				                                        tooltip-append-to-body="true" 
+				                                        uib-tooltip="Download Invoice : {{ledger.invoiceNumber}}" 
 				                                        tooltip-placement="top"> 
 				                                    	<i class="glyphicon glyphicon-download pull-left" style="font-size:15px;" ></i>
 				                                    </span> 
@@ -153,8 +162,9 @@
 													type="text"
 													ng-model="txn.particular"
 													typeahead-append-to-body="true" 
-			                                      	uib-typeahead="accounts as accounts.name for accounts in fltAccntListPaginated | omit:ledgerCtrl.isCurrentAccount | searchAccountInPaginated:$viewValue | limitTo: 25"
+			                                      	uib-typeahead="accounts as accounts.name for accounts in fltAccntListPaginated  |addStockinAccountList:ledgerCtrl.baseAccount | searchAccountInPaginated:$viewValue | limitTo: 25"
 			                                      	typeahead-template-url="accountPopUp.html"
+			                                      	typeahead-on-select = "ledgerCtrl.createPanel(ledger);ledgerCtrl.matchInventory(ledger)"
 													ng-click="ledgerCtrl.selectTxn(ledger, txn, $index, $event)"
 													is-open="txn.isOpen"
 													>
@@ -174,6 +184,15 @@
 				                                        ng-click="ledgerCtrl.downloadAttachedFile(ledger.attachedFile, $event)" 
 				                                        tooltip-append-to-body="true" 
 				                                        uib-tooltip="Download file : {{ledger.attachedFileName}}" 
+				                                        tooltip-placement="top"> 
+				                                    	<i class="glyphicon glyphicon-download pull-left" style="font-size:15px;" ></i>
+				                                    </span> 
+				                                    <span 
+				                                        class="download-invoice-ledger" 
+				                                        ng-if="ledger.invoiceNumber.length > 0" 
+				                                        ng-click="ledgerCtrl.downloadInvoice(ledger.invoiceNumber, $event)" 
+				                                        tooltip-append-to-body="true" 
+				                                        uib-tooltip="Download Invoice : {{ledger.invoiceNumber}}" 
 				                                        tooltip-placement="top"> 
 				                                    	<i class="glyphicon glyphicon-download pull-left" style="font-size:15px;" ></i>
 				                                    </span> 
@@ -199,7 +218,7 @@
 						
 						<tr class="total_col">
 							<td colspan="12" class="col-xs-12 text-right white h32" style="padding-right:10px !important">
-								<span ng-if="ledgerCtrl.entryTotal.drTotal < ledgerCtrl.entryTotal.crTotal">C/F: CR {{ledgerCtrl.entryTotal.drTotal - ledgerCtrl.entryTotal.crTotal| abs | number:2 }}</span>
+								<span ng-if="ledgerCtrl.entryTotal.drTotal < ledgerCtrl.entryTotal.crTotal"  uib-tooltip="{{ledgerCtrl.understanding.balanceText.cr}}" tooltip-placement="top">C/F: CR {{ledgerCtrl.entryTotal.drTotal - ledgerCtrl.entryTotal.crTotal| abs | number:2 }}</span>
 							</td>
 						</tr>
 						<tr class="total_col">
@@ -215,7 +234,7 @@
 						
 						<tr class="total_col">
 							<td colspan="12" class="col-xs-12 text-right white h32" style="padding-right:10px !important">
-								<span  ng-if="ledgerCtrl.entryTotal.drTotal > ledgerCtrl.entryTotal.crTotal">C/F: Dr <span class="primary_color">{{ledgerCtrl.entryTotal.drTotal - ledgerCtrl.entryTotal.crTotal | number:2}}</span></span>
+								<span  ng-if="ledgerCtrl.entryTotal.drTotal > ledgerCtrl.entryTotal.crTotal">C/F: Dr <span class="primary_color"  uib-tooltip="{{ledgerCtrl.understanding.balanceText.dr}}" tooltip-placement="top">{{ledgerCtrl.entryTotal.drTotal - ledgerCtrl.entryTotal.crTotal | number:2}}</span></span>
 							</td>
 						</tr>
 						<tr class="total_col">
@@ -237,10 +256,24 @@
 				        	<tbody>        		
 				        	<tr>
 				        		<td ng-if="ledgerCtrl.selectedLedger.showStock">
-						        	<label>Quantity</label>
-							        <input type="number" name="" class="form-control" ng-model="ledgerCtrl.selectedLedger.panel.quantity" ng-change="ledgerCtrl.onQuantityChange(ledgerCtrl.selectedLedger) "/>
+						        	<!-- <label>Quantity</label>
+							        <input type="number" name="" class="form-control" ng-model="ledgerCtrl.selectedLedger.panel.quantity" ng-change="ledgerCtrl.onQuantityChange(ledgerCtrl.selectedLedger) "/> -->
+									<table>
+							        	<tbody>
+							        		<tr>
+							        			<td ng-class="{width55: ledgerCtrl.selectedLedger.panel.unit != undefined}">
+							        				<label>Quantity</label>
+							       		 			<input type="number" name="" class="form-control" ng-model="ledgerCtrl.selectedLedger.panel.quantity" ng-change="ledgerCtrl.onQuantityChange(ledgerCtrl.selectedLedger)"/>
+							        			</td>
+							        			<td ng-if="ledgerCtrl.selectedLedger.panel.unit">
+							        				<label>Unit</label>
+							       		 			<select class="form-control" ng-options="unit as unit.stockUnitCode for unit in ledgerCtrl.selectedLedger.panel.units" ng-model="ledgerCtrl.selectedLedger.panel.unit" ng-change="ledgerCtrl.onstockUnitChange(ledgerCtrl.selectedLedger)">
+							       		 			</select>
+							        			</td>
+							        		</tr>
+							        	</tbody>
+							        </table>
 				        		</td>
-				        		
 				        		<td ng-if="ledgerCtrl.selectedLedger.showStock">
 				        			<label>&nbsp;</label>
 				        			<label class="pdR pdL default_clr">x</label>
@@ -258,13 +291,13 @@
 						        	<label class="primary_color">Amount</label>
 							        <input type="number" name="" class="form-control" ng-model="ledgerCtrl.selectedLedger.panel.amount" ng-change="ledgerCtrl.onAmountChange(ledgerCtrl.selectedLedger)"/>
 				        		</td>
-				        		<td >
+				        		<td ng-if="ledgerCtrl.discountAccount && ledgerCtrl.discountAccount.accountDetails.length > 0">
 				        			<label>&nbsp;</label>
 				        			<label class="pdR pdL default_clr">-</label>
 				        		</td>
-				        		<td>
+				        		<td ng-if="ledgerCtrl.discountAccount && ledgerCtrl.discountAccount.accountDetails.length > 0">
 
-								    <span uib-dropdown auto-close="outsideClick">
+								    <span uib-dropdown auto-close="outsideClick" >
 								      <a href id="discount" uib-dropdown-toggle>
 						        	<label>Discount</label>
 							        <input type="number" name="" class="form-control" ng-model="ledgerCtrl.selectedLedger.panel.discount"/>
@@ -284,12 +317,12 @@
 								      </ul>
 								    </span>
 				        		</td>
-				        		<td>
+				        		<td ng-if="ledgerCtrl.taxList.length > 0">
 				        			<label>&nbsp;</label>
 				        			<label class="pdR pdL default_clr">+</label>
 				        		</td>
-				        		<td>
-				        		<span uib-dropdown auto-close="outsideClick">
+				        		<td ng-if="ledgerCtrl.taxList.length > 0">
+				        		<span uib-dropdown auto-close="outsideClick" dropdown-append-to-body>
 								      <a href id="tax" uib-dropdown-toggle>
 						        	<label>Tax %</label>
 						        	<div class="multi-select adjust">
@@ -367,14 +400,16 @@
 			  				<tr>
 			  					<td class="pdR1"><label class="default_clr pull-left">Voucher type</label> </td>
 			  					<td colspan="4">
-						  			<ui-select ng-model="ledgerCtrl.selectedLedger.voucher" theme="bootstrap">
+<!-- 						  			<ui-select ng-model="ledgerCtrl.selectedLedger.voucher" theme="bootstrap">
 					                    <ui-select-match>
 					                      <span>{{$select.selected.name}}</span>
 					                    </ui-select-match >
 					                    <ui-select-choices repeat="item in ledgerCtrl.voucherTypeList| filter: $select.search ">
 					                      <span ng-bind="item.name"></span>
 					                    </ui-select-choices>
-					                </ui-select>
+					                </ui-select> -->
+					                <select ng-options="item as item.name for item in ledgerCtrl.voucherTypeList" ng-model="ledgerCtrl.selectedLedger.voucher">
+					                </select>
 			  					</td>
 			  					<td class="pdL1">
 			  						<span>{{ledgerCtrl.selectedLedger.voucherNo}}</span>
@@ -407,11 +442,12 @@
 	</div>
 </div>
 
-
-
 <script type="text/ng-template" id="accountPopUp.html">
   <a href="javascript:void(0)" class="account-list-item" set-drop-overflow style="border-bottom:1px solid #e0e0e0;">
     <span class="account-list-item" ng-bind-html="match.label | uibTypeaheadHighlight:query" style="display: block;font-size:12px"></span>
     <span class="account-list-item" ng-bind-html="match.model.uniqueName | uibTypeaheadHighlight:query" style="display: block;font-size:10px"></span>
+    <span class="account-list-item" ng-if="match.model.stock" style="display: block;font-size:10px">
+    	Stock: {{match.model.stock.name}}
+    </span>
   </a>
 </script>

@@ -1,5 +1,5 @@
 let userController = function($scope, $rootScope, toastr, userServices, localStorageService, $timeout, $uibModal, modalService, $filter, groupService, $window, $http) {
-  
+
   $scope.userAuthKey = undefined;
   $scope.noData = false;
   $scope.subListData = [];
@@ -38,14 +38,14 @@ let userController = function($scope, $rootScope, toastr, userServices, localSto
     $scope.userAuthKey = res.body.authKey;
     return $window.sessionStorage.setItem('_ak', res.body.authKey);
   };
-    
+
   $scope.generateKeyFailure = res => toastr.error(res.data.message, res.data.status);
 
   $timeout(() => $scope.getUserAuthKey()
   ,200);
 
   $scope.getSubscriptionList = () => userServices.getsublist($rootScope.basicInfo.uniqueName).then($scope.getSubscriptionListSuccess, $scope.getSubscriptionListFailure);
-  
+
   $scope.getSubscriptionListSuccess = function(res) {
     $scope.subListData = res.body;
     if (res.body.length > 0) {
@@ -69,12 +69,12 @@ let userController = function($scope, $rootScope, toastr, userServices, localSto
       return userServices.cancelAutoPay(obj).then($scope.autoPayChangeSuccess, $scope.autoPayChangeFailure);
     }
   };
-    
+
   $scope.autoPayChangeSuccess = res => $scope.getSubscriptionList();
 
   $scope.autoPayChangeFailure = res => toastr.error(res.data.message, res.data.status);
 
-  $scope.getUserTransaction = function() { 
+  $scope.getUserTransaction = function() {
     let modalInstance = $uibModal.open({
       templateUrl: 'prevTransDetail.html',
       size: "liq90",
@@ -87,7 +87,7 @@ let userController = function($scope, $rootScope, toastr, userServices, localSto
     };
     return modalInstance.opened.then(() => userServices.getUserSublist(obj).then($scope.getUserSublistSuccess, $scope.getUserSubListFailure));
   };
-    
+
   $scope.getUserSublistSuccess = function(res) {
     $scope.uTransData = res.body;
     $scope.uTransData.startPage = 1;
@@ -302,7 +302,7 @@ let userController = function($scope, $rootScope, toastr, userServices, localSto
 //          $scope.banks.mfaForm = res.body.yodleeMfaResponse.fieldInfo.questionAns
 //          $scope.banks.showToken = false
 //      $scope.banks.modalInstance = $uibModal.open(
-//        templateUrl: '/public/webapp/views/yodleeMfaModal.html'
+//        templateUrl: 'public/webapp/views/yodleeMfaModal.html'
 //        size: "sm"
 //        backdrop: 'static'
 //        scope: $scope
@@ -555,24 +555,23 @@ let userController = function($scope, $rootScope, toastr, userServices, localSto
   $scope.phoneNumber = '';
   $scope.userNumber = '';
   $scope.mobNum = {
-    countryCode: '',
+    countryCode: 91,
     number: '',
     showVerificationBox : false,
     verificationCode: ''
   };
 
   $scope.addNumber = function(number) {
-    if (number.indexOf('-') !== -1) {
-      let numArr = number.split('-');
-      $scope.mobNum.countryCode = numArr[0];
-      $scope.mobNum.number = numArr[1];
+    let mobileRegex = /^[0-9]{1,10}$/;
+    if (mobileRegex.test(number) && (number.length === 10)) {
+      $scope.mobNum.number = number;
       let data = {
         "countryCode":$scope.mobNum.countryCode,
         "mobileNumber":$scope.mobNum.number
       };
       return userServices.addNumber(data).then($scope.addNumberSuccess, $scope.addNumberFailure);
     } else {
-      return toastr.error("Please enter number in format: 91-9998899988");
+      return toastr.error("Please enter number in format: 9998899988");
     }
   };
 
@@ -649,11 +648,19 @@ let userController = function($scope, $rootScope, toastr, userServices, localSto
     reqParam.companyUniqueName = $rootScope.selectedCompany.uniqueName;
     if (str.length > 2) {
       reqParam.q = str;
-      return groupService.getFlatAccList(reqParam).then($scope.getFlatAccountListListSuccess, $scope.getFlatAccountListFailure);
+      if (!isElectron) {
+        return groupService.getFlatAccList(reqParam).then($scope.getFlatAccountListListSuccess, $scope.getFlatAccountListFailure);
+      } else {
+        return groupService.getFlatAccListElectron(reqParam).then($scope.getFlatAccountListListSuccess, $scope.getFlatAccountListFailure);
+      }
     } else {
       reqParam.q = '';
       reqParam.count = 5;
-      return groupService.getFlatAccList(reqParam).then($scope.getFlatAccountListListSuccess, $scope.getFlatAccountListFailure);
+      if (!isElectron) {
+        return groupService.getFlatAccList(reqParam).then($scope.getFlatAccountListListSuccess, $scope.getFlatAccountListFailure);
+      } else {
+        return groupService.getFlatAccListElectron(reqParam).then($scope.getFlatAccountListListSuccess, $scope.getFlatAccountListFailure);
+      }
     }
   };
 
@@ -666,7 +673,7 @@ let userController = function($scope, $rootScope, toastr, userServices, localSto
 //    url = res.body.token_URL + '?token=' + res.body.token
 //    $scope.connectUrl = url
 //    $uibModal.open(
-//      templateUrl: '/public/webapp/views/connectBankModal.html',
+//      templateUrl: 'public/webapp/views/connectBankModal.html',
 //      size: "md",
 //      backdrop: 'static',
 //      scope: $scope
@@ -686,7 +693,7 @@ let userController = function($scope, $rootScope, toastr, userServices, localSto
 //    url = res.body.connectUrl
 //    $scope.connectUrl = url
 //    $uibModal.open(
-//      templateUrl: '/public/webapp/views/refreshBankAccountsModal.html',
+//      templateUrl: 'public/webapp/views/refreshBankAccountsModal.html',
 //      size: "md",
 //      backdrop: 'static',
 //      scope: $scope
@@ -694,7 +701,7 @@ let userController = function($scope, $rootScope, toastr, userServices, localSto
 //
 //  $scope.refreshTokenFailure = (res) ->
 //    toastr.error(res.data.message, "Error")
-  
+
   //#########Two way Authentication############
   $scope.changeTwoWayAuth = function(condition) {
     this.success = res => toastr.success(res.body);

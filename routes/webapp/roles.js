@@ -1,41 +1,31 @@
-(function() {
-  var router, settings;
+let settings = require('../util/settings');
+let router = settings.express.Router();
 
-  settings = require('../util/settings');
-
-  router = settings.express.Router();
-
-  router.get('/', function(req, res) {
-    var hUrl, onlyAuthHead;
-    onlyAuthHead = {
-      headers: {
-        'Auth-Key': req.session.authKey,
-        'X-Forwarded-For': res.locales.remoteIp
-      }
-    };
-    hUrl = settings.envUrl + 'roles';
-    return settings.client.get(hUrl, onlyAuthHead, function(data, response) {
-      if (data.status === 'error' || data.status === void 0) {
-        res.status(response.statusCode);
-      }
-      return res.send(data);
-    });
-  });
-
-  router.get('/getEnvVars', function(req, res) {
-    var authHead, data;
-    authHead = {
-      headers: {
-        'Auth-Key': req.session.authKey,
-        'X-Forwarded-For': res.locales.remoteIp
-      }
-    };
-    data = {
-      envUrl: settings.cdnUrl
-    };
+router.get('/', function(req, res) {
+  let onlyAuthHead = {
+    headers: {
+      'Auth-Key': req.session.authKey,
+      'X-Forwarded-For': res.locales.remoteIp
+    }
+  };
+  let hUrl = settings.envUrl + 'roles';
+  return settings.client.get(hUrl, onlyAuthHead, function(data, response) {
+    if ((data.status === 'error') || (data.status === undefined)) {
+      res.status(response.statusCode);
+    }
     return res.send(data);
   });
+});
 
-  module.exports = router;
+router.get('/getEnvVars', function(req, res) {
+  let authHead = {
+    headers: {
+      'Auth-Key': req.session.authKey,
+      'X-Forwarded-For': res.locales.remoteIp
+    }
+  };
+  let data = {envUrl: settings.cdnUrl};
+  return res.send(data);
+});
 
-}).call(this);
+module.exports = router;

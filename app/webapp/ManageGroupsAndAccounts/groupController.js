@@ -125,7 +125,7 @@ let groupController = function($scope, $rootScope, localStorageService, groupSer
       return toastr.error("Select company first.", "Error");
     } else {
       let modalInstance = $uibModal.open({
-        templateUrl: '/public/webapp/ManageGroupsAndAccounts/addManageGroupModal.html',
+        templateUrl: 'public/webapp/ManageGroupsAndAccounts/addManageGroupModal.html',
         size: "liq90",
         backdrop: 'static',
         scope: $scope
@@ -148,6 +148,23 @@ let groupController = function($scope, $rootScope, localStorageService, groupSer
     $scope.showEditTaxSection = false;
     return groupService.getGroupsWithoutAccountsCropped($rootScope.selectedCompany.uniqueName).then(gc.getGroupListSuccess, gc.getGroupListFailure);
   };
+// #########################################################################################################################
+// new add & manage modal
+
+  // $scope.NewgoToManageGroups =() ->
+  //   if !$rootScope.canManageComp
+  //     return
+  //   $scope.getFlatAccountListCount5($rootScope.selectedCompany.uniqueName)
+  //   if _.isEmpty($rootScope.selectedCompany)
+  //     toastr.error("Select company first.", "Error")
+  //   else
+  //     modalInstance = $uibModal.open(
+  //       templateUrl: $rootScope.prefixThis+'/public/webapp/NewManageGroupsAndAccounts/ManageGroupModal.html'
+  //       size: "liq90"
+  //       backdrop: 'static'
+  //       scope: $scope
+  //     )
+  //     modalInstance.result.then(mc.goToManageGroupsOpen, mc.goToManageGroupsClose)
 
   $scope.setLedgerData = function(data, acData) {
     $scope.selectedAccountUniqueName = acData.uniqueName;
@@ -248,7 +265,11 @@ let groupController = function($scope, $rootScope, localStorageService, groupSer
       count: $scope.flatAccListC5.count
     };
     // if $scope.workInProgress == false
-    return groupService.getFlatAccList(reqParam).then(gc.getFlatAccountListCount5ListSuccess, gc.getFlatAccountListCount5ListFailure);
+    if (!isElectron) {
+        return groupService.getFlatAccList(reqParam).then(gc.getFlatAccountListCount5ListSuccess, gc.getFlatAccountListCount5ListFailure);
+    } else {
+        return groupService.getFlatAccListElectron(reqParam).then(gc.getFlatAccountListCount5ListSuccess, gc.getFlatAccountListCount5ListFailure);
+    }
   };
       //$scope.workInProgress = true
 
@@ -274,10 +295,18 @@ let groupController = function($scope, $rootScope, localStorageService, groupSer
       count: $scope.flatAccListC5.count
     };
     if (str.length > 2) {
-      groupService.getFlatAccList(reqParam).then(gc.getFlatAccountListCount5ListSuccess, gc.getFlatAccountListCount5ListFailure);
+        if (!isElectron) {
+            groupService.getFlatAccList(reqParam).then(gc.getFlatAccountListCount5ListSuccess, gc.getFlatAccountListCount5ListFailure);
+        } else {
+            groupService.getFlatAccListElectron(reqParam).then(gc.getFlatAccountListCount5ListSuccess, gc.getFlatAccountListCount5ListFailure);
+        }
     } else {
       reqParam.q = '';
-      groupService.getFlatAccList(reqParam).then(gc.getFlatAccountListCount5ListSuccess, gc.getFlatAccountListCount5ListFailure);
+      if (!isElectron) {
+        groupService.getFlatAccList(reqParam).then(gc.getFlatAccountListCount5ListSuccess, gc.getFlatAccountListCount5ListFailure);
+      } else {
+        groupService.getFlatAccListElectron(reqParam).then(gc.getFlatAccountListCount5ListSuccess, gc.getFlatAccountListCount5ListFailure);
+      }
     }
     if (str.length < 1) {
       return $scope.flatAccListC5.limit = 5;
@@ -294,11 +323,15 @@ let groupController = function($scope, $rootScope, localStorageService, groupSer
       page: $scope.flatAccListC5.page,
       count: $scope.flatAccListC5.count
     };
-    return groupService.getFlatAccList(reqParam).then($scope.loadMoreAccSuccess, gc.loadMoreAccFailure);
+    if (!isElectron) {
+        return groupService.getFlatAccList(reqParam).then($scope.loadMoreAccSuccess, gc.loadMoreAccFailure);
+    } else {
+        return groupService.getFlatAccListElectron(reqParam).then($scope.loadMoreAccSuccess, gc.loadMoreAccFailure);
+    }
   };
     //$scope.flatAccList.limit += 5
     //$scope.flatAccListC5.limit += 5
-    
+
   $scope.loadMoreAccSuccess = function(res) {
     let list = res.body.results;
     if (res.body.totalPages > $scope.flatAccListC5.currentPage) {
@@ -307,7 +340,7 @@ let groupController = function($scope, $rootScope, localStorageService, groupSer
         //$scope.fltAccntListcount5.push(acc)
         gc.accountsListShort.push(acc)
       );
-      
+
     } else {
      $scope.hideAccLoadMore = true;
    }
@@ -330,7 +363,11 @@ let groupController = function($scope, $rootScope, localStorageService, groupSer
       count: 0
     };
     if (str.length > 1) {
-      return groupService.getFlatAccList(reqParam).then(this.success, this.failure);
+      if (!isElectron) {
+        return groupService.getFlatAccList(reqParam).then(this.success, this.failure);
+      } else {
+        return groupService.getFlatAccListElectron(reqParam).then(this.success, this.failure);
+      }
     }
   };
 
@@ -381,7 +418,7 @@ let groupController = function($scope, $rootScope, localStorageService, groupSer
 //     #list = gc.removeEmptyGroups(res.body.results)
 //     if res.body.results.length > 0 && res.body.totalPages >= $scope.gwaList.currentPage
 //       _.each res.body.results, (grp) ->
-//         $scope.flatAccntWGroupsList.push(grp) 
+//         $scope.flatAccntWGroupsList.push(grp)
 //       #$scope.flatAccntWGroupsList = _.union($scope.flatAccntWGroupsList, list)
 //     else if res.body.totalPages >= $scope.gwaList.currentPage
 //       $scope.loadMoreGrpWithAcc($rootScope.selectedCompany.uniqueName)
@@ -723,7 +760,7 @@ let groupController = function($scope, $rootScope, localStorageService, groupSer
     };
     $scope.showEditTaxSection = false;
     return accountService.get(reqParams).then(
-      res => gc.getAcDtlSuccess(res, data), 
+      res => gc.getAcDtlSuccess(res, data),
       res => gc.getAcDtlFailure(res));
   };
 
@@ -869,7 +906,7 @@ let groupController = function($scope, $rootScope, localStorageService, groupSer
     }
 
     let accountPayload = angular.copy($scope.selectedAccount, {});
-    delete accountPayload.stocks;  
+    delete accountPayload.stocks;
     return accountService.updateAc(unqNamesObj, accountPayload).then(gc.updateAccountSuccess,
         gc.updateAccountFailure);
   };

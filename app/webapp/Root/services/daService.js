@@ -1,4 +1,4 @@
-giddh.serviceModule.service('DAServices', function($resource, $q) {
+giddh.serviceModule.service('DAServices', function() {
   let ledgerData = {};
   let ledgerAccount = {};
 

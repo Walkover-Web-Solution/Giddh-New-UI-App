@@ -226,7 +226,7 @@
       <div class="middleBody bdrR bdrL row" auto-height> 
         <div class="no-data" ng-if="noData">
           <h1>Sorry, No Data Found!</h1>
-          <img src="/public/webapp/Globals/images/no-data.png" alt="">
+          <img src="public/webapp/Globals/images/no-data.png" alt="">
         </div>
         <uib-tabset id="tabset" ng-if="!noData">
           <uib-tab heading="{{tabs[0].title}}" active="tabs[0].active" select="showHistoryFilter()">
@@ -255,8 +255,8 @@
                     <label>
                       <input type="checkbox" ng-model="selected.filteredGroupsAndAccounts.forfilter.cb.val" ng-change="filterGraph(selected.filteredGroupsAndAccounts.forfilter.cb)" ng-click="$event.stopPropagation()"> Closing Balance
                     </label>
-<!--                     <img style="max-height:18px;" src="/public/webapp/Globals/images/unchecked.png" ng-if="!selected.filteredGroupsAndAccounts.forfilter.cb.val" ng-click="selected.filteredGroupsAndAccounts.forfilter.cb.val = true;filterGraph(selected.filteredGroupsAndAccounts.forfilter.cb)">
-                    <img style="max-height:18px;" src="/public/webapp/Globals/images/checked.png" ng-if="selected.filteredGroupsAndAccounts.forfilter.cb.val" ng-click="selected.filteredGroupsAndAccounts.forfilter.cb.val = false;filterGraph(selected.filteredGroupsAndAccounts.forfilter.cb)"> -->
+<!--                     <img style="max-height:18px;" src="public/webapp/Globals/images/unchecked.png" ng-if="!selected.filteredGroupsAndAccounts.forfilter.cb.val" ng-click="selected.filteredGroupsAndAccounts.forfilter.cb.val = true;filterGraph(selected.filteredGroupsAndAccounts.forfilter.cb)">
+                    <img style="max-height:18px;" src="public/webapp/Globals/images/checked.png" ng-if="selected.filteredGroupsAndAccounts.forfilter.cb.val" ng-click="selected.filteredGroupsAndAccounts.forfilter.cb.val = false;filterGraph(selected.filteredGroupsAndAccounts.forfilter.cb)"> -->
                   </div>
                   <div class="checkbox">
                     <label>
@@ -288,7 +288,7 @@
                 </div>
                 <div class="no-data" ng-if="noData">
                   <h1>Sorry, No Data Found!</h1>
-                  <img src="/public/webapp/Globals/images/no-data.png" alt="">
+                  <img src="public/webapp/Globals/images/no-data.png" alt="">
                 </div>
                 <div class="fixScroll"></div>
               </perfect-scrollbar>

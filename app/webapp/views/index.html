@@ -1,8 +1,12 @@
 <!DOCTYPE HTML>
 <html lang="en">
 <head>
-  <base href="/">
 
+    <% if (!htmlWebpackPlugin.options.metadata.isElectron) { %>
+        <base href="./">
+    <% } %>
+
+  <script src="https://www.google.com/recaptcha/api.js?onload=vcRecaptchaApiLoaded&render=explicit" async defer></script>
   <!-- @if NODE_ENV='PRODUCTION' -->
   <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
   new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -19,7 +23,7 @@
   <!-- LIBRARIES INCLUDE -->
 
 
-
+<link href="public/webapp/giddh.min.css" rel="stylesheet"></head>
 </head>
 <body class="unresponsive" ng-controller="mainController" >
   <!-- @if NODE_ENV='PRODUCTION' -->
@@ -29,7 +33,7 @@
   <!-- @endif -->
 
 
-  <div class="header-container" ng-include="'/public/webapp/views/header.html'"></div>
+  <div class="header-container" ng-if="!hideHeader" ng-include="'public/webapp/views/header.html'"></div>
 
   <div style="min-height:100%;overflow:hidden;" >
     <ui-view></ui-view>
@@ -37,7 +41,7 @@
 
 
 
-  <footer>
+  <footer ng-if="!hideHeader">
     <div>
       <a href="https://giddh.com/about" target="_Blank" ng-click="$event.stopPropagation()" >About us</a>|
       <a href="http://blog.giddh.com/"  target="_Blank" ng-click="$event.stopPropagation()">Blog</a>|
@@ -48,10 +52,14 @@
       <a href="http://faq.giddh.com"  target="_Blank" ng-click="$event.stopPropagation()">FAQ</a>|
       <a href="https://giddh.com//affiliate"  target="_Blank" ng-click="$event.stopPropagation()">Affiliate With Us</a>
     </div>
-
     <small>All right are reserved © 2020 Walkover <a href="https://giddh.com/"  target="_Blank" ng-click="$event.stopPropagation()">Giddh.com</a></small>
   </footer>
 
+  <% if (htmlWebpackPlugin.options.metadata.isElectron) { %>
+      <script> window.$ = window.jQuery = require('jquery') </script>
+  <% } %>
+  <script src="public/webapp/core_bower.min.js"></script>
+  <script src="public/webapp/app.js"></script>
 
 </body>
 </html>

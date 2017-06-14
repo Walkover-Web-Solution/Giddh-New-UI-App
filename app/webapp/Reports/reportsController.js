@@ -100,7 +100,7 @@ let reportsController = function($scope, $rootScope, localStorageService, toastr
   $scope.getGroupsFailure = res => toastr.error(res.data.message, res.data.status);
 
   //sort groups and accounts lists
-  
+
   $scope.sortGroupsAndAccounts =  function(dataArray) {
     $scope.groups = [];
     $scope.accounts = [];
@@ -130,7 +130,7 @@ let reportsController = function($scope, $rootScope, localStorageService, toastr
 
 
   $scope.getAccountsGroupsList();
-  
+
   $scope.formatGraphData = function(graphData) {
     $scope.series = [];
     $scope.chartData = [];
@@ -189,7 +189,7 @@ let reportsController = function($scope, $rootScope, localStorageService, toastr
         grpObj.forSeries.cb = grp.name + " (C/B)";
         fgrp.name = grp.name;
         fgrp.category = grp.category;
-        
+
         if (grp.intervalBalances.length > 0) {
           _.each(grp.intervalBalances, function(bal) {
             grpObj.forData.dr.push(bal.debitTotal);
@@ -281,7 +281,7 @@ let reportsController = function($scope, $rootScope, localStorageService, toastr
         accObj.forSeries.cb = acc.name + " (C/B)";
         facc.name = acc.name;
         facc.category = acc.category;
-        
+
         if (acc.intervalBalances.length > 0) {
           _.each(acc.intervalBalances, function(bal) {
             accObj.forData.dr.push(bal.debitTotal);
@@ -328,10 +328,10 @@ let reportsController = function($scope, $rootScope, localStorageService, toastr
             facc.forfilter.dr.val = true;
             break;
         }
-        if (groups.length < 1) {    
+        if (groups.length < 1) {
           $scope.labels = accObj.forLabels;
         }
-          
+
         return $scope.GroupsAndAccounts.push(facc);
       });
     }
@@ -378,7 +378,7 @@ let reportsController = function($scope, $rootScope, localStorageService, toastr
               cr: [],
               cb: []
             }
-          };  
+          };
           _.each(obj.intervalBalances, function(bal) {
             dataObj.forData.cb.push(bal.closingBalance.amount);
             dataObj.forData.cr.push(bal.creditTotal);
@@ -394,36 +394,36 @@ let reportsController = function($scope, $rootScope, localStorageService, toastr
                 $scope.series.splice(addAtIdx, 0, filteredObj.forSeries.cr);
                 return $scope.chartData.splice(addAtIdx, 0, filteredObj.forData.cr);
               } else if ((arg.val === false) && ($scope.series.indexOf(filteredObj.forSeries.cr) !== -1)) {
-                removeAtIdx = seriesIdc[seriesIdc.length-1] - 1; 
+                removeAtIdx = seriesIdc[seriesIdc.length-1] - 1;
                 $scope.series.splice(removeAtIdx, 1);
                 return $scope.chartData.splice(removeAtIdx, 1);
               }
               break;
             case "dr":
-              if ((arg.val === true) && ($scope.series.indexOf(filteredObj.forSeries.dr) === -1)) {             
+              if ((arg.val === true) && ($scope.series.indexOf(filteredObj.forSeries.dr) === -1)) {
                 addAtIdx = seriesIdc[seriesIdc.length-1];
                 $scope.series.splice(addAtIdx, 0, filteredObj.forSeries.dr);
                 return $scope.chartData.splice(addAtIdx, 0, filteredObj.forData.dr);
               } else if ((arg.val === false) && ($scope.series.indexOf(filteredObj.forSeries.dr) !== -1)) {
-                removeAtIdx = $scope.series.indexOf(filteredObj.forSeries.dr); 
+                removeAtIdx = $scope.series.indexOf(filteredObj.forSeries.dr);
                 $scope.series.splice(removeAtIdx, 1);
                 return $scope.chartData.splice(removeAtIdx, 1);
               }
               break;
             case "cb":
-              if ((arg.val === true) && ($scope.series.indexOf(filteredObj.forSeries.cb) === -1)) {             
+              if ((arg.val === true) && ($scope.series.indexOf(filteredObj.forSeries.cb) === -1)) {
                 addAtIdx = seriesIdc[seriesIdc.length-1];
                 $scope.series.splice(addAtIdx, 0, filteredObj.forSeries.cb);
                 return $scope.chartData.splice(addAtIdx, 0, filteredObj.forData.cb);
               } else if ((arg.val === false) && ($scope.series.indexOf(filteredObj.forSeries.cb) !== -1)) {
-                removeAtIdx = $scope.series.indexOf(filteredObj.forSeries.cb); 
+                removeAtIdx = $scope.series.indexOf(filteredObj.forSeries.cb);
                 $scope.series.splice(removeAtIdx, 1);
                 return $scope.chartData.splice(removeAtIdx, 1);
               }
               break;
           }
         }
-      });                 
+      });
     }
   };
 
@@ -446,7 +446,7 @@ let reportsController = function($scope, $rootScope, localStorageService, toastr
       'cUname': $rootScope.selectedCompany.uniqueName,
       'fromDate': $filter('date')($scope.fromDate.date,'dd-MM-yyyy'),
       'toDate': $filter('date')($scope.toDate.date, "dd-MM-yyyy"),
-      'interval': $scope.selected.interval 
+      'interval': $scope.selected.interval
     };
     let graphParam = {
       'groups' : $scope.createArrayWithUniqueName($scope.selected.groups),
@@ -459,7 +459,7 @@ let reportsController = function($scope, $rootScope, localStorageService, toastr
       return $scope.chartDataAvailable = true;
     }
   };
-    
+
   $scope.$watch('selected.groups', function(newVal, oldVal){
     if (newVal !== oldVal) {
       if (newVal.length > 3) {
@@ -469,7 +469,7 @@ let reportsController = function($scope, $rootScope, localStorageService, toastr
         return $scope.groups = $scope.listBeforeLimit.groups;
       }
     }
-  }); 
+  });
 
   $scope.$watch('selected.accounts', function(newVal, oldVal){
     if (newVal !== oldVal) {
@@ -515,7 +515,7 @@ let reportsController = function($scope, $rootScope, localStorageService, toastr
     $scope.showNWfilters = true;
     return $scope.showHistoryFilters = false;
   };
-  
+
 
   $scope.getPLgraphData = reqParam => reportService.profitLossData(reqParam).then($scope.getPLgraphDataSuccess, $scope.getPLgraphDataFailure);
 
@@ -524,7 +524,7 @@ let reportsController = function($scope, $rootScope, localStorageService, toastr
     $scope.formatPLgraphData($scope.plGraphData);
     return $scope.chartDataAvailable = true;
   };
-    
+
   $scope.getPLgraphDataFailure = function(res) {
     $scope.chartDataAvailable = true;
     return toastr.error(res.data.message);
@@ -535,9 +535,9 @@ let reportsController = function($scope, $rootScope, localStorageService, toastr
       'cUname': $rootScope.selectedCompany.uniqueName,
       'fromDate': $filter('date')($scope.fromPLDate.date,'dd-MM-yyyy'),
       'toDate': $filter('date')($scope.toPLDate.date, "dd-MM-yyyy"),
-      'interval': $scope.selected.interval 
+      'interval': $scope.selected.interval
     };
-    $scope.getPLgraphData(reqParam); 
+    $scope.getPLgraphData(reqParam);
     return $scope.chartDataAvailable = false;
   };
 
@@ -591,9 +591,9 @@ let reportsController = function($scope, $rootScope, localStorageService, toastr
       'cUname': $rootScope.selectedCompany.uniqueName,
       'fromDate': $filter('date')($scope.fromNWDate.date,'dd-MM-yyyy'),
       'toDate': $filter('date')($scope.toNWDate.date, "dd-MM-yyyy"),
-      'interval': $scope.selected.interval 
+      'interval': $scope.selected.interval
     };
-    $scope.getNWgraphData(reqParam); 
+    $scope.getNWgraphData(reqParam);
     return $scope.chartDataAvailable = false;
   };
 
@@ -616,7 +616,7 @@ let reportsController = function($scope, $rootScope, localStorageService, toastr
     $scope.nwChartData.push(monthlyBalances, yearlyBalances);
     return $scope.chartDataAvailable = true;
   };
-  
+
    //---------get flat accounts list------#
 //  $rootScope.getFlatAccountList($rootScope.selectedCompany.uniqueName)
 //  $scope.flatAccList = {
@@ -647,11 +647,19 @@ let reportsController = function($scope, $rootScope, localStorageService, toastr
     reqParam.companyUniqueName = $rootScope.selectedCompany.uniqueName;
     if (str.length > 2) {
       reqParam.q = str;
-      return groupService.getFlatAccList(reqParam).then($scope.getFlatAccountListListSuccess, $scope.getFlatAccountListFailure);
+      if (!isElectron) {
+        return groupService.getFlatAccList(reqParam).then($scope.getFlatAccountListListSuccess, $scope.getFlatAccountListFailure);
+      } else {
+        return groupService.getFlatAccListElectron(reqParam).then($scope.getFlatAccountListListSuccess, $scope.getFlatAccountListFailure);
+      }
     } else {
       reqParam.q = '';
       reqParam.count = 5;
-      return groupService.getFlatAccList(reqParam).then($scope.getFlatAccountListListSuccess, $scope.getFlatAccountListFailure);
+      if (!isElectron) {
+        return groupService.getFlatAccList(reqParam).then($scope.getFlatAccountListListSuccess, $scope.getFlatAccountListFailure);
+      } else {
+        return groupService.getFlatAccListElectron(reqParam).then($scope.getFlatAccountListListSuccess, $scope.getFlatAccountListFailure);
+      }
     }
   };
 

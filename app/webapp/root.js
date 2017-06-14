@@ -104,7 +104,7 @@ giddh.webApp.config(vcRecaptchaServiceProvider => {
 giddh.webApp.config(function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider) {
 
     if (!isElectron) {
-        $locationProvider.hashPrefix('');
+        // $locationProvider.hashPrefix('');
     }
     // $rootScope.prefixThis = "https://test-fs8eefokm8yjj.stackpathdns.com"
     let appendThis = "";
@@ -155,7 +155,12 @@ giddh.webApp.config(function ($stateProvider, $urlRouterProvider, $locationProvi
                 };
                 let onFailure = res => toastr.error(`Failed to retrieve company list${res.data.message}`);
                 if (window.sessionStorage.getItem('_ak')) {
-                    return companyServices.getAll().then(onSuccess, onFailure);
+                    if (!isElectron) {
+                        return companyServices.getAll().then(onSuccess, onFailure);
+                    } else {
+                        let cdt = localStorageService.get("_userDetails");
+                        return companyServices.getAllElectron(cdt.uniqueName).then(onSuccess, onFailure);
+                    }
                 } else {
                     return { data: {} }
                 }
@@ -264,9 +269,9 @@ giddh.webApp.config(function ($stateProvider, $urlRouterProvider, $locationProvi
             url: '/ledger/:unqName',
             views: {
                 'rightPanel': {
-                    templateUrl: appendThis + 'public/webapp/Ledger/ledger-wrapper.html'
-                    // controller: 'newLedgerController'
-                    // controllerAs: 'lc'
+                    templateUrl: appendThis + 'public/webapp/Ledger/ledger-wrapper.html',
+                    controller: 'ledgerController',
+                    controllerAs: 'ledgerCtrl'
                 }
             }
         }
@@ -386,7 +391,7 @@ giddh.webApp.config(function ($stateProvider, $urlRouterProvider, $locationProvi
         );
     //
     if (!isElectron) {
-        $locationProvider.html5Mode(true);
+        $locationProvider.html5Mode(false);
     }
     $urlRouterProvider.otherwise('/home');
 });
@@ -452,21 +457,25 @@ giddh.webApp.run([
         }
         $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
             $rootScope.showLedgerBox = false;
-            if (isElectron) {
-                debugger
-                if (!window.sessionStorage.getItem('_ak') && $rootScope.toState !== 'login') {
-                    $rootScope.toState = toState.name;
-                    event.preventDefault();
-                    $state.go('login').then(function () {
-                        $rootScope.toState = undefined;
-                    });
-                }
-            }
+
 
             if (_.isEmpty(toParams)) {
                 return $rootScope.selAcntUname = undefined;
             }
         });
+	$rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams){
+      $('html,body').animate({scrollTop: $('html').offset().top},'slow');
+    //   if (isElectron) {
+            if (!window.sessionStorage.getItem('_ak') && toState !== 'login') {
+                $rootScope.toState = toState.name;
+                event.preventDefault();
+                $state.go('login').then(function () {
+                    $rootScope.toState = undefined;
+                });
+            }
+        // }
+      return false;
+    });
         $rootScope.msieBrowser = function () {
             let ua = window.navigator.userAgent;
             let msie = ua.indexOf('MSIE');
@@ -507,14 +516,19 @@ giddh.webApp.factory('appInterceptor', ['$q', '$location', '$log', 'toastr', '$t
             request(request) {
                 $rootScope.superLoader = true;
                 if (isElectron) {
-                    debugger;
                     var unhandledExt = ['html', 'png', 'css', 'jpg', 'gif', 'woff', 'woff2'];
                     var requestUrl = request.url;
                     if (unhandledExt.indexOf(requestUrl.split('.').pop()) > -1) {
                         return request
                     }
-                    request.url = 'http://localhost:8000' + requestUrl
-                    request.headers['auth-key'] = window.sessionStorage.getItem('_ak')
+                    request.url = 'http://apitest.giddh.com/' + requestUrl
+                    if (window.sessionStorage.getItem('_ak'))
+                    {  request.headers['Auth-Key'] = window.sessionStorage.getItem('_ak');
+                       request.headers['X-Forwarded-For'] = '::1'
+                    }
+                    // if (window.sessionStorage.getItem('_userDetails'))
+                    //     request.headers['user-uniquename'] = window.sessionStorage.getItem('_userDetails');
+
                 }
                 return request;
 
@@ -534,14 +548,12 @@ giddh.webApp.factory('appInterceptor', ['$q', '$location', '$log', 'toastr', '$t
                         let isAuthKeyError = responseError.data.indexOf("Auth-Key");
                         //if Auth-Key Error found, redirect to login
                         if (isAuthKeyError !== -1) {
-                            debugger;
                             toastr.error('Your Session has Expired, Please Login Again.');
                             return $timeout((() => window.location.assign('/login')), 2000);
                         }
                     }
                 } else if (responseError.status === 401) {
                     if (_.isObject(responseError.data) && (responseError.data.code === "INVALID_AUTH_KEY")) {
-                        debugger
                         toastr.error('Your Session has Expired, Please Login Again.');
                         return $timeout((() => window.location.assign('/login')), 2000);
                     } else {

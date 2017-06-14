@@ -7,7 +7,7 @@ let setWizardController = function($scope, $state, $rootScope, $timeout, $http, 
   $scope.userNumber = '';
   $scope.showSuccessMsg = false;
   $scope.mobNum = {
-    countryCode: '',
+    countryCode: 91,
     number: '',
     showVerificationBox : false,
     verificationCode: ''
@@ -18,10 +18,9 @@ let setWizardController = function($scope, $state, $rootScope, $timeout, $http, 
   }
 
   $scope.addNumber = function(number) {
-    if (number.indexOf('-') !== -1) {
-      let numArr = number.split('-');
-      $scope.mobNum.countryCode = numArr[0];
-      $scope.mobNum.number = numArr[1];
+    let mobileRegex = /^[0-9]{1,10}$/;
+    if (mobileRegex.test(number) && (number.length === 10)) {
+      $scope.mobNum.number = number;
       let data = {
         "countryCode":$scope.mobNum.countryCode,
         "mobileNumber":$scope.mobNum.number

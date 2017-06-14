@@ -1,4 +1,4 @@
-let ledgerController = function($scope, $rootScope, $window,localStorageService, toastr, modalService, ledgerService,FileSaver , $filter, DAServices, $stateParams, $timeout, $location, $document, permissionService, accountService, groupService, $uibModal, companyServices, $state,idbService, $http, nzTour, $q ) {
+let ledgerController = function($scope, $rootScope, $window,localStorageService, toastr, modalService, ledgerService,FileSaver , $filter, DAServices, $stateParams, $timeout, $location, $document, permissionService, accountService, groupService, $uibModal, companyServices, $state,idbService, $http, nzTour, $q, invoiceService ) {
   let ledgerCtrl = this;
   ledgerCtrl.LedgerExport = false;
   ledgerCtrl.toggleShare = false;
@@ -23,8 +23,9 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
     draggable: false,
     position: "bottom"
   };
+  ledgerCtrl.toggleShow = false;
 // mustafa
-  
+
   ledgerCtrl.exportOptions = () => ledgerCtrl.showExportOption = !ledgerCtrl.showExportOption;
 
   ledgerCtrl.toggleShareFucntion = function() {
@@ -38,6 +39,34 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
     ledgerCtrl.LedgerExport = false;
     return ledgerCtrl.LedgerExport = !ledgerCtrl.LedgerExport;
   };
+
+
+  ledgerCtrl.createUnderstandingText = function(account, data, mode) {
+    if (mode !== 'edit') {
+      ledgerCtrl.understanding = _.findWhere(data, {accountType:account.accountType});
+      if (ledgerCtrl.understanding) {
+        ledgerCtrl.understanding.text.cr = ledgerCtrl.understanding.text.cr.replace("<accountName>", account.name);
+        return ledgerCtrl.understanding.text.dr = ledgerCtrl.understanding.text.dr.replace("<accountName>", account.name);
+      }
+    } else {
+      ledgerCtrl.understandingEditMode = _.findWhere(data, {accountType:account.accountType});
+      if (ledgerCtrl.understandingEditMode) {
+        ledgerCtrl.understandingEditMode.text.cr = ledgerCtrl.understandingEditMode.text.cr.replace("<accountName>", account.name);
+        return ledgerCtrl.understandingEditMode.text.dr = ledgerCtrl.understandingEditMode.text.dr.replace("<accountName>", account.name);
+      }
+    }
+  };
+
+
+  ledgerCtrl.getUnderstanding = function(account) {
+    this.success = function(res) {
+      ledgerCtrl.understandingJson = res.data;
+      return ledgerCtrl.createUnderstandingText(account, ledgerCtrl.understandingJson);
+    };
+
+    return $http.get('/understanding').then(this.success, this.failure);
+  };
+
 
   ledgerCtrl.voucherTypeList = [
     {
@@ -80,9 +109,13 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
     return $scope.status.isopen = !$scope.status.isopen;
   };
 
+  ledgerCtrl.ToggleClassTax = () => ledgerCtrl.toggleShowTax = !ledgerCtrl.toggleShowTax;
+
+  ledgerCtrl.ToggleClassDiscount = () => ledgerCtrl.toggleShowDiscount = !ledgerCtrl.toggleShowDiscount;
+
   ledgerCtrl.shareLedger =() =>
     ledgerCtrl.shareModalInstance = $uibModal.open({
-      templateUrl: '/public/webapp/Ledger/shareLedger.html',
+      templateUrl: 'public/webapp/Ledger/shareLedger.html',
       size: "md",
       backdrop: 'true',
       animation: true,
@@ -99,7 +132,7 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
   ledgerCtrl.isCurrentAccount =acnt => acnt.uniqueName === ledgerCtrl.accountUnq;
 
   ledgerCtrl.loadDefaultAccount = function(acc) {
-    
+
     this.success = function(res) {
       ledgerCtrl.accountUnq = 'cash';
       return ledgerCtrl.getAccountDetail(ledgerCtrl.accountUnq);
@@ -152,14 +185,17 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
     ledgerCtrl.accountToShow = $rootScope.selectedAccount;
     ledgerCtrl.accountUnq = res.body.uniqueName;
     ledgerCtrl.getTransactions(0);
+    ledgerCtrl.getBankTransactions($rootScope.selectedAccount.uniqueName);
+    $rootScope.getFlatAccountList($rootScope.selectedCompany.uniqueName);
     $state.go($state.current, {unqName: res.body.uniqueName}, {notify: false});
     if (res.body.uniqueName === 'cash') {
       $rootScope.ledgerState = true;
     }
     // ledgerCtrl.getPaginatedLedger(1)
+    ledgerCtrl.getUnderstanding(res.body);
     if ((res.body.yodleeAdded === true) && $rootScope.canUpdate) {
       //get bank transaction here
-      return $timeout(( () => ledgerCtrl.getBankTransactions(res.body.uniqueName)), 2000);
+      return $timeout(( () => ledgerCtrl.getBankTransactions($rootScope.selectedAccount.uniqueName)), 2000);
     }
   };
 
@@ -243,7 +279,7 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
 
     return ledgerService.getReconcileEntries(reqParam).then(this.success, this.failure);
   };
-  
+
   // $rootScope.$on('account-selected', ()->
   //   ledgerCtrl.getAccountDetail(ledgerCtrl.accountUnq)
   //   #ledgerCtrl.isSelectedAccount()
@@ -264,7 +300,7 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
         cancel: 'No'
       }).then(
           res => ledgerCtrl.mapBankTransaction(mappedEntry.uniqueName, bankEntry.transactionId),
-          function(res) {} 
+          function(res) {}
       )
   ;
   ledgerCtrl.mapBankTransaction = function(entryUnq, transactionId) {
@@ -324,7 +360,7 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
         if (txn.type === 'DEBIT') {
           ledger.voucher.name = "Receipt";
           ledger.voucher.shortCode = "rcpt";
-        } else { 
+        } else {
           ledger.voucher.name = "Payment";
           ledger.voucher.shortCode = "pay";
         }
@@ -373,24 +409,27 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
   ledgerCtrl.removeBankTransactions = function() {
     let withoutBankTxn = [];
     _.each(ledgerCtrl.cLedgerContainer.ledgerData, function(ledger) {
-      if (ledger.isBankTransaction) { 
+      if (ledger.isBankTransaction) {
         return ledgerCtrl.cLedgerContainer.remove(ledger);
       }
     });
     _.each(ledgerCtrl.dLedgerContainer.ledgerData, function(ledger) {
-      if (ledger.isBankTransaction) { 
+      if (ledger.isBankTransaction) {
         return ledgerCtrl.dLedgerContainer.remove(ledger);
       }
     });
     return ledgerCtrl.showEledger = true;
   };
-  if (ledgerCtrl.accountUnq) {
-    ledgerCtrl.getAccountDetail(ledgerCtrl.accountUnq);
-  } else {
-    ledgerCtrl.loadDefaultAccount(); 
-  }
+
 
   /*date range picker */
+  ledgerCtrl.resetDates = () =>
+    $scope.cDate = {
+      startDate: moment().subtract(30, 'days')._d,
+      endDate: moment()._d
+    }
+  ;
+
   $scope.cDate = {
     startDate: moment().subtract(30, 'days')._d,
     endDate: moment()._d
@@ -464,7 +503,7 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
       type:""
     }],
     unconfirmedEntry:false,
-    isInclusiveTax: false,
+    isInclusiveTax: true,
     uniqueName:"",
     voucher:{
       name:"Sales",
@@ -494,7 +533,7 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
       transactions:[],
       unconfirmedEntry:false,
       uniqueName:"",
-      isInclusiveTax: false,
+      isInclusiveTax: true,
       voucher:{
         name:"Sales",
         shortCode:"sal"
@@ -539,7 +578,7 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
       name:'',
       uniqueName:''
     },
-    amount : 0,
+    amount : '',
     type: 'DEBIT'
   };
 
@@ -549,7 +588,7 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
       name:'',
       uniqueName:''
     },
-    amount : 0,
+    amount : '',
     type: 'CREDIT'
   };
 
@@ -692,8 +731,11 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
 
   ledgerCtrl.getSharedList = function() {
     $scope.setShareableRoles($rootScope.selectedCompany);
-    return $scope.getSharedUserList($rootScope.selectedCompany.uniqueName);
+    if ($rootScope.canUpdate) {
+      return $scope.getSharedUserList($rootScope.selectedCompany.uniqueName);
+    }
   };
+
   ledgerCtrl.getSharedList();
   // generate magic link
   ledgerCtrl.getMagicLink = function() {
@@ -739,7 +781,7 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
     adminCondensed:"admin-condensed"
   };
   ledgerCtrl.ledgerEmailData.emailType = ledgerCtrl.ledgerEmailData.viewDetailed;
-  
+
 // ledger send email
   ledgerCtrl.sendLedgEmail = function(emailData, emailType) {
     let data = emailData;
@@ -809,7 +851,7 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
   //   ledgerCtrl.isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0
   //   if $rootScope.msieBrowser()
   //     $rootScope.openWindow(res.body.filePath)
-  //   else if ledgerCtrl.isSafari       
+  //   else if ledgerCtrl.isSafari
   //     modalInstance = $uibModal.open(
   //       template: '<div>
   //           <div class="modal-header">
@@ -851,62 +893,225 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
   //     scope: $scope
   //   )
 
+  ledgerCtrl.hideSideMenu=()=> $rootScope.flyAccounts=false;
+
   ledgerCtrl.getMagicLinkFailure = res => toastr.error(res.data.message);
 
   ledgerCtrl.prevTxn = null;
   ledgerCtrl.selectBlankTxn = function(ledger, txn, index ,e) {
-    if (txn.inventory && txn.inventory.quantity) {
-      txn.rate = txn.amount/txn.inventory.quantity;
-    }
-    if (txn.particular.stock) {
-      txn.rate = txn.particular.stock.rate;
-    }
+
+    // hide side menu
+    ledgerCtrl.hideSideMenu();
+
     ledgerCtrl.selectedTxn = txn;
     if (ledgerCtrl.prevTxn !== null) {
       ledgerCtrl.prevTxn.isOpen = false;
     }
     ledgerCtrl.selectedTxn.isOpen = true;
-    ledgerCtrl.prevTxn = txn;
-    ledgerCtrl.clearTaxSelection(txn, ledger);
-    ledgerCtrl.clearDiscounts(ledger);
-    // ledgerCtrl.addBlankRow(ledger, txn)
-    // ledgerCtrl.removeBlankRowFromPrevLedger(ledgerCtrl.prevLedger, ledger)
-    ledger.isCompoundEntry = true;
-    if (ledgerCtrl.prevLedger && (ledgerCtrl.prevLedger.uniqueName !== ledger.uniqueName)) {
-      ledgerCtrl.prevLedger.isCompoundEntry = false;
-    }
-    ledgerCtrl.prevLedger = ledger;
-    // ledgerCtrl.calculateEntryTotal(ledger)
-    ledgerCtrl.showLedgerPopover = true;
-    ledgerCtrl.matchInventory(ledgerCtrl.selectedLedger);
-    ledgerCtrl.ledgerBeforeEdit = {};
-    angular.copy(ledger,ledgerCtrl.ledgerBeforeEdit);
-    ledgerCtrl.isTransactionContainsTax(ledger);
     ledgerCtrl.selectedLedger = ledger;
-    ledgerCtrl.selectedLedger.index = index;
-    ledgerCtrl.selectedLedger.panel = ledgerCtrl.selectedLedger.panel || {};
-    if (ledgerCtrl.accountToShow.stocks !== null) {
-      //ledgerCtrl.selectedLedger.panel.quantity = ledgerCtrl.accountToShow.stock.stockUnit.quantityPerUnit
-      ledgerCtrl.selectedLedger.panel.price = ledgerCtrl.accountToShow.stocks[0].rate;
-    }
-    ledgerCtrl.selectedLedger.panel.amount = ledgerCtrl.getPanelAmount(ledgerCtrl.selectedLedger);
-    ledgerCtrl.selectedLedger.panel.total = ledgerCtrl.selectedLedger.panel.amount;
-    ledgerCtrl.selectedLedger.panel.discount = ledgerCtrl.getTotalDiscount(ledgerCtrl.selectedLedger);
-    ledgerCtrl.selectedLedger.panel.tax = ledgerCtrl.getTotalTax(ledgerCtrl.selectedLedger);
-    // ledgerCtrl.selectedLedger.panel.total = ledgerCtrl.getEntryTotal(ledgerCtrl.selectedLedger)
-    // if ledger.uniqueName != '' || ledger.uniqueName != undefined || ledger.uniqueName != null
-    // ledgerCtrl.checkCompEntry(txn)
-    // ledgerCtrl.blankCheckCompEntry(ledger)
-    ledgerCtrl.prevLedger = ledger;
+    // ledgerCtrl.clearTaxSelection(txn, ledger)
+    // ledgerCtrl.clearDiscounts(ledger)
+    ledgerCtrl.isTransactionContainsTax(ledgerCtrl.selectedLedger);
+    ledgerCtrl.createNewPanel(ledgerCtrl.selectedTxn, ledgerCtrl.selectedLedger);
+    // ledgerCtrl.matchInventory(ledgerCtrl.selectedLedger)
+    ledgerCtrl.prevTxn = txn;
     return e.stopPropagation();
   };
 
 
+  ledgerCtrl.getNewPanelDiscount = function(ledger) {
+    let discount = 0;
+    if (ledgerCtrl.discountAccount !== undefined) {
+      _.each(ledgerCtrl.discountAccount.accountDetails, function(account) {
+        _.each(ledger.transactions, function(txn) {
+          if (txn.particular.uniqueName === account.uniqueName) {
+            return account.amount = txn.amount;
+          }
+        });
+        if (account.amount) {
+          return discount += Number(account.amount);
+        }
+      });
+    }
+    return discount;
+  };
+
+  ledgerCtrl.getNewPanelTax = function(txn, ledger) {
+    let totalTax = 0;
+    if (ledgerCtrl.taxList.length > 0) {
+      _.each(ledgerCtrl.taxList, function(tax) {
+        if (ledgerCtrl.isTaxApplicable(tax) && tax.isChecked) {
+          let taxAmount = (txn.panel.amount * ledgerCtrl.getApplicableTaxRate(tax)) /100;
+          return totalTax += taxAmount;
+        }
+      });
+    }
+    let taxPercentage = ledgerCtrl.cutToTwoDecimal((totalTax/txn.panel.amount)*100);
+    txn.panel.total = ledgerCtrl.cutToTwoDecimal((txn.panel.amount - txn.panel.discount) + ((taxPercentage*(txn.panel.amount-txn.panel.discount))/100));
+    return ledgerCtrl.cutToTwoDecimal(taxPercentage) || 0;
+  };
+
+  ledgerCtrl.createNewPanel = function(txn, ledger) {
+    let panel = {};
+    if ((typeof(txn.particular) === 'object') && (txn.particular.uniqueName.length < 1) && _.isEmpty(txn.amount)) {
+      txn.panel = {
+        tax : 0,
+        total: 0,
+        discount: 0,
+        amount: 0,
+        price: 0,
+        unit: null,
+        quantity: 0,
+        units: []
+      };
+    }
+
+    panel.getQuantity = function() {
+      if (txn.panel.quantity !== undefined) {
+        return ledgerCtrl.cutToTwoDecimal(panel.getAmount()/panel.getPrice());
+      }
+    };
+
+    panel.getPrice = function() {
+      if (txn.particular.stock) {
+        let units = panel.getUnits();
+        if (txn.panel.unit) {
+          return txn.panel.unit.rate;
+        } else if (units.length > 0) {
+          return units[0].rate;
+        }
+      } else {
+        return 0;
+      }
+    };
+
+    panel.getUnits = function() {
+      if (txn.particular.stock && (txn.particular.stock.accountStockDetails.unitRates.length > 0)) {
+        return txn.particular.stock.accountStockDetails.unitRates;
+      } else if ((txn.particular.uniqueName.length > 0) && txn.particular.stock) {
+        txn.particular.stock.stockUnit.rate = 0;
+        txn.particular.stock.stockUnit.stockUnitCode = txn.particular.stock.stockUnit.code;
+        return [txn.particular.stock.stockUnit];
+      } else {
+        return txn.panel.units;
+      }
+    };
+
+    panel.getAmount = function() {
+      if (txn.panel.quantity > 0) {
+        return txn.panel.quantity * txn.panel.price;
+      } else {
+        return Number(txn.amount);
+      }
+    };
+
+    panel.getDiscount = function() {
+      let discount;
+      return discount = ledgerCtrl.getNewPanelDiscount(ledger);
+    };
+
+    panel.getTax = function() {
+      let tax = ledgerCtrl.getNewPanelTax(txn, ledger);
+      return tax;
+    };
+
+    panel.getTotal = function() {
+      let amount = txn.panel.amount - txn.panel.discount;
+      return txn.panel.total = ledgerCtrl.cutToTwoDecimal(amount + ((amount*txn.panel.tax)/100));
+    };
+
+    txn.panel.quantity = panel.getQuantity();
+    txn.panel.price = panel.getPrice();
+    txn.panel.units = panel.getUnits();
+    txn.panel.unit = txn.panel.units[0];
+    txn.panel.amount = panel.getAmount();
+    txn.panel.disocunt = panel.getDiscount();
+    txn.panel.tax = panel.getTax();
+    return txn.panel.total = panel.getTotal();
+  };
+
+
+  ledgerCtrl.onNewPanelChange = function() {
+    let change = this;
+
+    change.quantity = function(txn, ledger) {
+      txn.panel.amount = ledgerCtrl.cutToTwoDecimal(txn.panel.quantity * txn.panel.price);
+      return change.getTotal(txn, ledger);
+    };
+
+    change.unit = function(txn, ledger) {
+      txn.panel.price = ledgerCtrl.cutToFourDecimal(txn.panel.unit.rate);
+      return txn.panel.quantity = ledgerCtrl.cutToTwoDecimal(txn.panel.amount / txn.panel.price);
+    };
+      //change.price(txn, ledger)
+
+    change.price = function(txn, ledger) {
+      txn.panel.amount = ledgerCtrl.cutToTwoDecimal(txn.panel.quantity * txn.panel.price);
+      change.getTotal(txn, ledger);
+      return change.tax(txn, ledger);
+    };
+
+    change.amount = function(txn, ledger) {
+      txn.panel.price = ledgerCtrl.cutToFourDecimal(txn.panel.amount / txn.panel.quantity);
+      txn.amount = txn.panel.amount;
+      return change.getTotal(txn, ledger);
+    };
+
+    change.discount = function(txn, ledger) {
+      txn.panel.discount = ledgerCtrl.getNewPanelDiscount(ledger);
+      return change.getTotal(txn, ledger);
+    };
+
+    change.tax = function(txn, ledger) {
+      txn.panel.tax = ledgerCtrl.getNewPanelTax(txn, ledger);
+      return change.getTotal(txn, ledger);
+    };
+
+    change.txnAmount = function(txn, ledger) {
+      txn.panel.amount = Number(txn.amount);
+      change.tax(txn, ledger);
+      // if txn.panel.quantity == undefined || txn.panel.quantity == 0
+      return txn.panel.quantity = ledgerCtrl.cutToTwoDecimal(txn.panel.amount/txn.panel.price);
+    };
+
+    change.getTotal = function(txn, ledger) {
+      let amount = txn.panel.amount - txn.panel.discount;
+      txn.panel.total = amount + ((amount*txn.panel.tax)/100);
+      return txn.amount = txn.panel.amount;
+    };
+
+    change.total = function(txn, ledger) {
+      let amount;
+      if (!txn.panel.discount) {
+        amount = (100*txn.panel.total)/(100+(txn.panel.tax||0));
+      } else {
+        amount = ((100*txn.panel.total)/(100+(txn.panel.tax||0))) + txn.panel.discount;
+      }
+      return txn.panel.amount = Number(amount.toFixed(2));
+    };
+    return change;
+  };
+
+
+  ledgerCtrl.addApplicableTaxes = function(account) {
+    if (account.applicableTaxes.length > 0) {
+      _.each(ledgerCtrl.taxList, function(tax) {
+        //taxInAccount = _.findWhere(account.applicableTaxes, tax.uniqueName)
+        if (account.applicableTaxes.indexOf(tax.uniqueName) !== -1) {
+          tax.isChecked = true;
+          return ledgerCtrl.selectedLedger.taxList.push(tax);
+        }
+      });
+      ledgerCtrl.selectedLedger.applyApplicableTaxes = true;
+    } else {
+      ledgerCtrl.selectedLedger.taxList = [];
+      ledgerCtrl.selectedLedger.applyApplicableTaxes = false;
+    }
+    return ledgerCtrl.onNewPanelChange().tax(ledgerCtrl.selectedTxn, ledgerCtrl.blankLedger);
+  };
+
+
   ledgerCtrl.selectTxn = function(ledger, txn, index ,e) {
-    // if txn.inventory && txn.inventory.quantity
-    //   txn.rate = txn.amount/txn.inventory.quantity
-    // if txn.particular.stock
-    //   txn.rate = txn.particular.stock.rate
     ledgerCtrl.selectedTxn = txn;
     if (ledgerCtrl.prevTxn !== null) {
       ledgerCtrl.prevTxn.isOpen = false;
@@ -924,19 +1129,19 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
     //   ledgerCtrl.prevLedger.isCompoundEntry = false
     // # ledgerCtrl.calculateEntryTotal(ledger)
     // ledgerCtrl.showLedgerPopover = true
-    ledgerCtrl.matchInventory(ledgerCtrl.selectedLedger);
-    ledgerCtrl.ledgerBeforeEdit = {};
-    angular.copy(ledger,ledgerCtrl.ledgerBeforeEdit);
-    // ledgerCtrl.isTransactionContainsTax(ledger)
+    // ledgerCtrl.matchInventory(ledgerCtrl.selectedLedger)
+    // ledgerCtrl.ledgerBeforeEdit = {}
+    // angular.copy(ledger,ledgerCtrl.ledgerBeforeEdit)
+    // # ledgerCtrl.isTransactionContainsTax(ledger)
     ledgerCtrl.selectedLedger = ledger;
-    ledgerCtrl.selectedLedger.index = index;
-    ledgerCtrl.createPanel(ledgerCtrl.selectedLedger);
+    // ledgerCtrl.selectedLedger.index = index
+    //ledgerCtrl.createPanel(ledgerCtrl.selectedLedger)
 
     //ledgerCtrl.selectedLedger.panel.total = ledgerCtrl.getEntryTotal(ledgerCtrl.selectedLedger)
     //if ledger.uniqueName != '' || ledger.uniqueName != undefined || ledger.uniqueName != null
     // ledgerCtrl.checkCompEntry(txn)
     //ledgerCtrl.blankCheckCompEntry(ledger)
-    ledgerCtrl.prevLedger = ledger;
+    // ledgerCtrl.prevLedger = ledger
     return e.stopPropagation();
   };
 
@@ -946,7 +1151,9 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
       total: 0,
       discount: 0,
       amount: 0,
-      price: 0
+      price: 0,
+      unit: '',
+      units: []
     };
     if (ledgerCtrl.accountToShow.stocks !== null) {
       ledgerCtrl.selectedLedger.panel.price = ledgerCtrl.accountToShow.stocks[0].rate;
@@ -954,8 +1161,27 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
     ledgerCtrl.selectedLedger.panel.amount = ledgerCtrl.getPanelAmount(ledgerCtrl.selectedLedger);
     ledgerCtrl.selectedLedger.panel.total = ledgerCtrl.selectedLedger.panel.amount;
     ledgerCtrl.selectedLedger.panel.discount = ledgerCtrl.getTotalDiscount(ledgerCtrl.selectedLedger);
-    return ledgerCtrl.selectedLedger.panel.tax = ledgerCtrl.getTotalTax(ledgerCtrl.selectedLedger);
+    ledgerCtrl.selectedLedger.panel.tax = ledgerCtrl.getTotalTax(ledgerCtrl.selectedLedger);
+    let stockTxn = ledgerCtrl.getStockTxn(ledger);
+    if (!_.isEmpty(stockTxn) && !stockTxn.particular.stock) {
+      let stockAccount = ledgerCtrl.getStockAccountfromFlattenAccountList(stockTxn);
+      if (stockAccount) {
+        let linkedStock = _.findWhere(stockAccount.stocks, {uniqueName:stockTxn.inventory.stock.uniqueName});
+        if (linkedStock) {
+          ledgerCtrl.selectedLedger.panel.units = linkedStock.accountStockDetails.unitRates;
+          return ledgerCtrl.selectedLedger.panel.unit = _.findWhere(ledgerCtrl.selectedLedger.panel.units, {stockUnitCode:stockTxn.inventory.unit.code});
+        }
+      }
+    }
   };
+    // else
+    //   console.log stockTxn
+
+  ledgerCtrl.getStockAccountfromFlattenAccountList = function(txn) {
+    let account = _.findWhere($rootScope.fltAccntListPaginated, {uniqueName:txn.particular.uniqueName});
+    return account;
+  };
+
 
   ledgerCtrl.addBlankRow = function(ledger, txn) {
     let dBlankRow = _.findWhere(ledger.transactions, {blankRow:'DEBIT'});
@@ -998,6 +1224,7 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
     let txn = new txnModel(type);
     let hasBlank = ledgerCtrl.checkForExistingblankTransaction(ledger, type);
     if (!hasBlank) {
+      ledgerCtrl.createNewPanel(txn, ledger);
       ledger.transactions.push(txn);
     }
     return ledgerCtrl.setFocusToBlankTxn(ledger, txn, type);
@@ -1015,10 +1242,11 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
 
   ledgerCtrl.setFocusToBlankTxn = function(ledger, txn, type) {
     ledgerCtrl.prevTxn.isOpen = false;
-    return _.each(ledger.transactions, function(txn) {
-      if ((txn.particular.uniqueName === "") && (txn.type === type)) {
-        txn.isOpen = true;
-        return ledgerCtrl.prevTxn = txn;
+    return _.each(ledger.transactions, function(trn) {
+      if ((trn.particular.uniqueName === "") && (trn.type === type)) {
+        ledgerCtrl.createNewPanel(trn, ledger);
+        trn.isOpen = true;
+        return ledgerCtrl.prevTxn = trn;
       }
     });
   };
@@ -1030,41 +1258,56 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
   };
 
   ledgerCtrl.matchInventory = function(ledger) {
-    if (ledger.transactions[0].inventory) {
-      ledger.panel.quantity = ledger.transactions[0].inventory.quantity;
-      ledger.panel.price = ledger.panel.amount / ledger.panel.quantity;
-      // add stock name to transaction.particular to show on view
-      ledger.transactions[0].particular.name += ` (${ledger.transactions[0].inventory.stock.name})`;
+    let stockTxn = ledgerCtrl.getStockTxn(ledger);
+    if (stockTxn && stockTxn.inventory) {
+      ledger.panel.quantity = stockTxn.inventory.quantity;
+      ledger.panel.price = ledgerCtrl.cutToFourDecimal(ledger.panel.amount / ledger.panel.quantity);
+      // add stock name to transaction.particular to show on view when particular is not changed
+      if ((Object.keys(stockTxn.particular).length === 2) && !stockTxn.particular.stock) {
+        stockTxn.particular.name += ` (${stockTxn.inventory.stock.name})`;
+      }
       ledger.showStock = true;
     }
-    if (ledger.transactions[0].particular.stock) {
-      ledger.panel.units = ledger.transactions[0].particular.stock.accountStockDetails.unitRates;
-      ledger.panel.unit =  ledger.panel.units[0];
+    if (stockTxn.particular && stockTxn.particular.stock) {
+      if (stockTxn.particular.stock.accountStockDetails.unitRates.length > 0) {
+        ledger.panel.units = stockTxn.particular.stock.accountStockDetails.unitRates;
+        ledger.panel.unit =  ledger.panel.units[0];
+      } else {
+        stockTxn.particular.stock.stockUnit.rate = ledgerCtrl.cutToFourDecimal(ledger.panel.amount / ledger.panel.quantity);
+        stockTxn.particular.stock.stockUnit.stockUnitCode = stockTxn.particular.stock.stockUnit.code;
+        ledger.panel.units = [stockTxn.particular.stock.stockUnit];
+        ledger.panel.unit =  ledger.panel.units[0];
+      }
       if (ledger.panel.unit) {
         ledger.panel.price = ledger.panel.unit.rate;
       } else {
         ledger.panel.price = 0;
       }
+      // add stock name to transaction.particular to show on view when particular is changed
+      stockTxn.particular.name += ` (${stockTxn.particular.stock.name})`;
       return ledger.showStock = true;
     }
   };
-    
+
     // match = _.findWhere($rootScope.fltAccntListPaginated, {uniqueName:txn.particular.uniqueName})
     // if match && match.stocks != null
     //   txn.inventory = angular.copy(match.stock, txn.inventory)
 
-
-  ledgerCtrl.isTransactionContainsTax = function(ledger) {
-    if (ledger.taxes && (ledger.taxes.length > 0)) {
-      ledger.taxList = [];
-      return _.each(ledgerCtrl.taxList, function(tax) {
-        if (ledger.taxes.indexOf(tax.uniqueName) !== -1) { 
-          tax.isChecked = true;
-          return ledger.taxList.push(tax);
-        }
-      });
+  ledgerCtrl.isDiscountTxn = function(txn) {
+    let isDiscount = false;
+    let dTxn = _.findWhere(ledgerCtrl.discountAccount.accountDetails, {uniqueName: txn.particular.uniqueName});
+    if (dTxn) {
+      isDiscount = true;
     }
+    return isDiscount;
   };
+
+
+  // ledgerCtrl.isTransactionContainsTax = (ledger) ->
+  //   if ledger.taxes and ledger.taxes.length > 0
+  //     _.each ledgerCtrl.taxList, (tax) ->
+  //       if ledger.taxes.indexOf(tax.uniqueName) != -1
+  //         tax.isChecked = true
 
   ledgerCtrl.getPanelAmount = function(ledger) {
     let amount = 0;
@@ -1074,7 +1317,7 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
         if (acc) {
           let parent = acc.parentGroups[0].uniqueName;
           let discount = _.findWhere(acc.parentGroups, {uniqueName:"discount"});
-          let parentGroup = _.findWhere($rootScope.groupWithAccountsList, {uniqueName:parent}); 
+          let parentGroup = _.findWhere($rootScope.groupWithAccountsList, {uniqueName:parent});
           if ((parentGroup.category === "income") || ((parentGroup.category === "expenses") && !txn.isTax && (txn.particular.uniqueName !== 'roundoff') && !discount)) {
             amount += Number(txn.amount);
             return ledger.panel.show = true;
@@ -1095,16 +1338,20 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
     let amounts = [];
     if (ledgerCtrl.discountAccount !== undefined) {
       _.each(ledgerCtrl.discountAccount.accountDetails, function(account) {
-        _.each(ledger.transactions, function(txn) {
+        if (account.amount) {
+          discount += Number(account.amount);
+        }
+        return _.each(ledger.transactions, function(txn) {
           if (txn.particular.uniqueName === account.uniqueName) {
-            return amounts.push(txn.amount);
+            return txn.amount = account.amount;
           }
         });
-        if (account.amount) {
-          return discount += Number(account.amount);
-        }
       });
-      _.each(amounts, amount => discount += amount);
+            // amounts.push(txn.amount)
+        // if account.amount
+      //       discount += Number(account.amount)
+      // # _.each amounts, (amount) ->
+      // #   discount += amount
       ledger.panel.total = ledgerCtrl.cutToTwoDecimal((ledger.panel.amount - discount) + ((ledger.panel.tax*(ledger.panel.amount-discount))/100));
       ledger.panel.discount = ledgerCtrl.cutToTwoDecimal(discount);
     }
@@ -1132,7 +1379,7 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
     today = today.getTime();
     let isApplicable = false;
     _.each(tax.taxDetail, function(det) {
-      if (today > ledgerCtrl.parseLedgerDate(det.date)) { 
+      if (today > ledgerCtrl.parseLedgerDate(det.date)) {
         return isApplicable = true;
       }
     });
@@ -1144,7 +1391,7 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
     let today = new Date();
     today = today.getTime();
     _.each(tax.taxDetail, function(det) {
-      if (today > ledgerCtrl.parseLedgerDate(det.date)) { 
+      if (today > ledgerCtrl.parseLedgerDate(det.date)) {
         return rate = det.taxValue;
       }
     });
@@ -1153,7 +1400,8 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
 
   ledgerCtrl.parseLedgerDate = function(date) {
     date = date.split('-');
-    date = new Date(date[2], date[1], date[0]).getTime();
+    date = date[2] + '-' + date[1] + '-' + date[0];
+    date = new Date(date).getTime();
     return date;
   };
 
@@ -1161,63 +1409,95 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
     ledgerCtrl.getTotalTax(ledger);
     ledgerCtrl.getTotalDiscount(ledger);
     if (ledgerCtrl.selectedLedger.panel.quantity > 0) {
-      return ledgerCtrl.selectedLedger.panel.price = ledgerCtrl.cutToTwoDecimal(ledgerCtrl.selectedLedger.panel.amount / ledgerCtrl.selectedLedger.panel.quantity);
+      return ledgerCtrl.selectedLedger.panel.price = ledgerCtrl.cutToFourDecimal(ledgerCtrl.selectedLedger.panel.amount / ledgerCtrl.selectedLedger.panel.quantity);
     }
   };
+
 
   ledgerCtrl.onQuantityChange = function(ledger) {
     ledgerCtrl.selectedLedger.panel.amount = ledgerCtrl.cutToTwoDecimal(ledgerCtrl.selectedLedger.panel.quantity * ledgerCtrl.selectedLedger.panel.price);
     ledgerCtrl.getTotalTax(ledger);
-    return ledgerCtrl.getTotalDiscount(ledger);
+    ledgerCtrl.getTotalDiscount(ledger);
+    return ledgerCtrl.updateTxnAmount();
   };
 
   ledgerCtrl.onPriceChange = function(ledger) {
     ledgerCtrl.selectedLedger.panel.amount = ledgerCtrl.cutToTwoDecimal(ledgerCtrl.selectedLedger.panel.quantity * ledgerCtrl.selectedLedger.panel.price);
     ledgerCtrl.getTotalTax(ledger);
-    return ledgerCtrl.getTotalDiscount(ledger);
+    ledgerCtrl.getTotalDiscount(ledger);
+    return ledgerCtrl.updateTxnAmount();
+  };
+
+  // ledgerCtrl.onstockUnitChange = (ledger) ->
+  //   ledger.panel.unit.code = ledger.panel.unit.stockUnitCode
+  //   ledger.panel.price = ledgerCtrl.selectedLedger.panel.unit.rate
+  //   ledger.panel.amount = ledgerCtrl.selectedLedger.panel.unit.rate * ledgerCtrl.selectedLedger.panel.quantity
+  //   ledgerCtrl.getTotalTax(ledger)
+  //   ledgerCtrl.getTotalDiscount(ledger)
+  //   ledgerCtrl.updateTxnAmount()
+
+  ledgerCtrl.getTxnCategory = function(txn) {
+    let category = '';
+    let account = _.findWhere($rootScope.fltAccntListPaginated, {uniqueName:txn.particular.uniqueName});
+    if (account) {
+      let parent = account.parentGroups[0].uniqueName;
+      let parentGroup = _.findWhere($rootScope.groupWithAccountsList, {uniqueName:parent});
+      ({ category } = parentGroup);
+    }
+    return category;
   };
 
   ledgerCtrl.onTxnAmountChange = function(txn){
-    ledgerCtrl.selectedLedger.panel.amount = Number(txn.amount);
-    ledgerCtrl.getTotalTax(ledgerCtrl.selectedLedger);
-    return ledgerCtrl.getTotalDiscount(ledgerCtrl.selectedLedger);
+    if (!ledgerCtrl.isDiscountTxn(txn) && ((ledgerCtrl.getTxnCategory(txn) === 'income') || (ledgerCtrl.getTxnCategory(txn) === 'expenses'))) {
+      ledgerCtrl.selectedLedger.panel.amount = Number(txn.amount);
+      ledgerCtrl.getTotalTax(ledgerCtrl.selectedLedger);
+      return ledgerCtrl.getTotalDiscount(ledgerCtrl.selectedLedger);
+    }
   };
+      // ledgerCtrl.updateTxnAmount()
 
   ledgerCtrl.onTxnTotalChange = function(txn){
     ledgerCtrl.selectedLedger.panel.amount = ledgerCtrl.calculateAmountAfterInclusiveTax();
+    let stockTxn = ledgerCtrl.getStockTxn(ledgerCtrl.selectedLedger);
+    stockTxn.amount = ledgerCtrl.selectedLedger.panel.amount;
     if (ledgerCtrl.selectedLedger.panel.quantity > 0) {
-      ledgerCtrl.selectedLedger.panel.price = ledgerCtrl.cutToTwoDecimal(ledgerCtrl.selectedLedger.panel.amount / ledgerCtrl.selectedLedger.panel.quantity);
+      ledgerCtrl.selectedLedger.panel.price = ledgerCtrl.cutToFourDecimal(ledgerCtrl.selectedLedger.panel.amount / ledgerCtrl.selectedLedger.panel.quantity);
     }
-    return _.each(ledgerCtrl.selectedLedger.transactions, function(txn) {
-      let acc = _.findWhere($rootScope.fltAccntListPaginated, {uniqueName:txn.particular.uniqueName});
-      if (acc) {
-        let parent = acc.parentGroups[0].uniqueName;
-        let parentGroup = _.findWhere($rootScope.groupWithAccountsList, {uniqueName:parent}); 
-        if ((parentGroup.category === "income") || ((parentGroup.category === "expenses") && !txn.isTax && (txn.particular.uniqueName !== 'roundoff'))) {
-          return txn.amount = ledgerCtrl.selectedLedger.panel.amount;
-        }
-      }
-    });
+    return ledgerCtrl.updateTxnAmount();
   };
+
+  ledgerCtrl.onstockUnitChange = function(ledger) {
+    ledger.panel.price = ledger.panel.unit.rate;
+    return ledger.panel.quantity = ledgerCtrl.cutToTwoDecimal(ledger.panel.amount / ledger.panel.price);
+  };
+    // ledgerCtrl.onPriceChange(ledgerCtrl.selectedLedger)
+
+  ledgerCtrl.updateTxnAmount = () =>
+    _.each(ledgerCtrl.selectedLedger.transactions, function(txn) {
+      if ((ledgerCtrl.getTxnCategory(txn) === 'income') || ((ledgerCtrl.getTxnCategory(txn) === 'expenses') && !txn.isTax && (txn.particular.uniqueName !== 'roundoff') && !ledgerCtrl.isDiscountTxn(txn))) {
+        return txn.amount = ledgerCtrl.selectedLedger.panel.amount;
+      }
+    })
+  ;
 
     // ledgerCtrl.selectedLedger.isInclusiveTax = true
     // ledgerCtrl.getTotalTax(ledgerCtrl.selectedLedger)
     // ledgerCtrl.getTotalDiscount(ledgerCtrl.selectedLedger)
 
-  ledgerCtrl.onStockUnitChange = () => ledgerCtrl.selectedLedger.panel.price = ledgerCtrl.selectedLedger.panel.unit.rate;
 
   ledgerCtrl.calculateAmountAfterInclusiveTax = function(tax) {
     let amount;
-    if (!ledgerCtrl.selectedLedger.panel.discount) { 
+    if (!ledgerCtrl.selectedLedger.panel.discount) {
       amount = (100*ledgerCtrl.selectedLedger.panel.total)/(100+(ledgerCtrl.selectedLedger.panel.tax||0));
     } else {
       amount = ((100*ledgerCtrl.selectedLedger.panel.total)/(100+(ledgerCtrl.selectedLedger.panel.tax||0))) + ledgerCtrl.selectedLedger.panel.discount;
     }
     amount = Number(amount.toFixed(2));
-    return amount;    
+    return amount;
   };
 
   ledgerCtrl.cutToTwoDecimal = function(num) {
+    num = Number(num);
     num = Number(num.toFixed(2));
     return num;
   };
@@ -1231,6 +1511,12 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
     //     num = num[0] + '.' + num[1][0]
     // num = Number(num)
     // return Math.ceil(num)
+
+  ledgerCtrl.cutToFourDecimal = function(num) {
+    num = Number(num);
+    num = Number(num.toFixed(4));
+    return num;
+  };
 
 
   ledgerCtrl.createEntry = function() {};
@@ -1257,7 +1543,7 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
     // ledgerCtrl.isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0
     // if $rootScope.msieBrowser()
     //   $rootScope.openWindow(res.body.filePath)
-    // else if ledgerCtrl.isSafari       
+    // else if ledgerCtrl.isSafari
     //   modalInstance = $uibModal.open(
     //     template: '<div>
     //         <div class="modal-header">
@@ -1279,28 +1565,6 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
     //   window.open(res.body.filePath)
 
   ledgerCtrl.exportLedgerFailure = res=> toastr.error(res.data.message, res.data.status);
-
-  ledgerCtrl.onValueChange = function(value, txn) {
-    if (((txn.particular.stock !== null) &&  (txn.particular.stock !== undefined)) || (ledgerCtrl.accountToShow.stocks !== null) || (txn.inventory && txn.inventory.stock)) {
-      switch (value) {
-        case 'qty':
-          if ((ledgerCtrl.selectedTxn.rate > 0) && ledgerCtrl.selectedTxn.inventory && ledgerCtrl.selectedTxn.inventory.quantity) {
-            return ledgerCtrl.selectedTxn.amount = ledgerCtrl.selectedTxn.rate * ledgerCtrl.selectedTxn.inventory.quantity;
-          }
-          break;
-        case 'amount':
-          if (ledgerCtrl.selectedTxn.inventory && ledgerCtrl.selectedTxn.inventory.quantity) {
-            return ledgerCtrl.selectedTxn.rate = ledgerCtrl.selectedTxn.amount/ledgerCtrl.selectedTxn.inventory.quantity;
-          }
-          break;
-        case 'rate':
-          if (ledgerCtrl.selectedTxn.inventory && ledgerCtrl.selectedTxn.inventory.quantity) {
-              return ledgerCtrl.selectedTxn.amount = ledgerCtrl.selectedTxn.rate * ledgerCtrl.selectedTxn.inventory.quantity;
-            }
-          break;
-      }
-    }
-  };
 
   ledgerCtrl.getTaxList = function() {
     ledgerCtrl.taxList = [];
@@ -1333,13 +1597,17 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
   ledgerCtrl.getDiscountGroupDetail = function() {
     this.success = res => ledgerCtrl.discountAccount = _.findWhere(res.body.results, {groupUniqueName:'discount'});
     this.failure = function(res) {};
-    
+
     let reqParam = {};
     reqParam.companyUniqueName = $rootScope.selectedCompany.uniqueName;
     reqParam.q = 'discount';
     reqParam.page = 1;
     reqParam.count = 0;
-    return groupService.getFlattenGroupAccList(reqParam).then(this.success, this.failure); 
+    if (!isElectron) {
+        return groupService.getFlattenGroupAccList(reqParam).then(this.success, this.failure);
+    } else {
+        return groupService.getFlattenGroupAccListElectron(reqParam).then(this.success, this.failure);
+    }
   };
 
   // ledgerCtrl.getGroupsList = () ->
@@ -1361,57 +1629,144 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
   };
 
 
-  ledgerCtrl.addDiscountTxns = ledger =>
-    _.each(ledgerCtrl.discountAccount.accountDetails, function(account) {
-      if (account.amount > 0) {
-        let txn = {};
-        txn.amount = account.amount;
-        txn.particular = {};
-        txn.particular.uniqueName = account.uniqueName;
-        txn.particular.name = account.name;
-        txn.type = ledgerCtrl.selectedTxn.type;
-        let hasDiscount = ledgerCtrl.checkTransactionByUniqueName(ledger.transactions,account.uniqueName);
-        if (!hasDiscount) {
-          return ledger.transactions.push(txn);
+  ledgerCtrl.addDiscountTxns = function(ledger) {
+    if (ledgerCtrl.discountAccount !== undefined) {
+      return _.each(ledgerCtrl.discountAccount.accountDetails, function(account) {
+        if (account.amount > 0) {
+          let txn = {};
+          txn.amount = account.amount;
+          txn.particular = {};
+          txn.particular.uniqueName = account.uniqueName;
+          txn.particular.name = account.name;
+          txn.type = ledgerCtrl.selectedTxn.type;
+          let hasDiscount = ledgerCtrl.checkTransactionByUniqueName(ledger.transactions,account.uniqueName);
+          if (!hasDiscount) {
+            return ledger.transactions.push(txn);
+          }
         }
-      }
-    })
-  ;
-
-  ledgerCtrl.removeBlankTransactions = ledger =>
-    _.each(ledger.transactions, function(txn, i) {
-      if (txn && txn.blankRow && (txn.particular.uniqueName === '')) {
-        return ledger.transactions.splice(i, 1);
-      }
-    })
-  ;
-
-  ledgerCtrl.addStockDetails = function(ledger) {
-    if (!ledger.transactions[0].inventory) {
-      ledger.transactions[0].inventory = {};
-      ledger.transactions[0].inventory.stock = ledger.transactions[0].particular.stocks[0];
-      ledger.transactions[0].inventory.quantity = ledger.panel.quantity;
-      ledger.transactions[0].inventory.unit = ledger.transactions[0].particular.stocks[0].stockUnit;
-      return ledger.transactions[0].amount = ledger.panel.total;
-    } else {
-      ledger.transactions[0].inventory.quantity = ledger.panel.quantity;
-      ledger.transactions[0].inventory.unit = ledger.panel.unit;
-      if (ledger.transactions[0].amount !== ledger.panel.total) {
-        return ledger.transactions[0].amount = ledger.panel.total;
-      }
+      });
     }
   };
 
+  ledgerCtrl.removeBlankTransactions = function(ledger) {
+    let transactions = [];
+    _.each(ledger.transactions, function(txn, i) {
+      if (txn && !txn.blankRow && (txn.particular.uniqueName !== '')) {
+        return transactions.push(txn);
+      }
+    });
+    return transactions;
+  };
+
+  ledgerCtrl.getStockTxn = function(ledger) {
+    let stockTxn = {};
+    _.each(ledger.transactions, function(txn) {
+      if ((txn.particular.uniqueName.length > 0) && txn.particular.stocks) {
+        stockTxn = txn;
+      }
+      if (txn.inventory) {
+        return stockTxn = txn;
+      }
+    });
+    return stockTxn;
+  };
+
+  ledgerCtrl.addStockDetails = function(ledger) {
+    let stockTxn;
+    if (ledger.transactions[0].particular.stocks) {
+      stockTxn = ledger.transactions[0];
+    } else {
+      stockTxn = ledgerCtrl.getStockTxn(ledger);
+    }
+    if (!_.isEmpty(stockTxn) && !stockTxn.inventory) {
+      stockTxn.inventory = {};
+      stockTxn.inventory.stock = stockTxn.particular.stocks[0];
+      stockTxn.inventory.quantity = ledger.panel.quantity;
+      stockTxn.inventory.unit = stockTxn.particular.stocks[0].stockUnit;
+      return stockTxn.amount = ledger.panel.total;
+    } else if (!_.isEmpty(stockTxn)) {
+      if (!stockTxn.particular.stock) {
+        stockTxn.inventory.quantity = ledger.panel.quantity;
+        if (ledger.panel.unit) {
+          stockTxn.inventory.unit = ledger.panel.unit;
+          stockTxn.inventory.unit.code = ledger.panel.unit.stockUnitCode;
+        }
+      } else {
+        stockTxn.inventory.stock = stockTxn.particular.stock;
+        stockTxn.inventory.quantity = ledger.panel.quantity;
+        stockTxn.inventory.unit = ledger.panel.unit;
+        stockTxn.inventory.unit.code = ledger.panel.unit.stockUnitCode;
+      }
+
+      if (stockTxn.amount !== ledger.panel.amount) {
+        return ledgerCtrl.updateTxnAmount();
+      }
+    }
+  };
+      // if stockTxn.amount != ledger.panel.total
+      //   stockTxn.amount = ledger.panel.total
+
+  ledgerCtrl.addStockDetailsForNewEntry = ledger =>
+    _.each(ledger.transactions, function(txn) {
+      if (txn.particular.stock) {
+        let inventory = {};
+        inventory.stock = txn.particular.stock;
+        inventory.quantity = txn.panel.quantity;
+        inventory.unit = txn.panel.unit;
+        inventory.unit.code = txn.panel.unit.stockUnitCode;
+        txn.inventory = inventory;
+        return txn.amount = txn.panel.total;
+      }
+    })
+  ;
+
+  ledgerCtrl.isNotDiscountTxn = function(txn) {
+    let particularAccount = _.findWhere($rootScope.fltAccntListPaginated, {uniqueName:txn.particular.uniqueName});
+    let hasDiscountasParent = _.findWhere(particularAccount.parentGroups, {uniqueName:'discount'});
+    if (hasDiscountasParent) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  ledgerCtrl.setAmount = ledger =>
+    _.each(ledger.transactions, function(txn) {
+      if (!txn.isTax && !ledgerCtrl.isNotDiscountTxn(txn)) {
+        return txn.amount = txn.panel.total;
+      }
+    })
+  ;
+
   ledgerCtrl.buildLedger = function(ledger) {
+    ledgerCtrl.ledgerBeforeEdit = angular.copy(ledger,{});
+    ledger.transactions = ledgerCtrl.removeBlankTransactions(ledger);
+    if (!ledger.isBlankLedger) {
+      ledgerCtrl.addStockDetails(ledger);
+    } else {
+      ledgerCtrl.addStockDetailsForNewEntry(ledger);
+      ledgerCtrl.setAmount(ledger);
+    }
     ledgerCtrl.addDiscountTxns(ledger);
-    ledgerCtrl.removeBlankTransactions(ledger);
-    ledgerCtrl.addStockDetails(ledger);
+    delete ledger.panel;
     return ledger;
+  };
+
+  ledgerCtrl.removeTaxTransactions = function(ledger) {
+    let transactions = [];
+    _.each(ledger.transactions, function(txn) {
+      if (!txn.isTax) {
+        return transactions.push(txn);
+      }
+    });
+    return transactions;
   };
 
   ledgerCtrl.lastSelectedLedger = {};
   ledgerCtrl.saveUpdateLedger = function(ledger) {
-    ledger = ledgerCtrl.buildLedger(ledger);
+    if (!ledger.isBankTransaction) {
+      ledger = ledgerCtrl.buildLedger(ledger);
+    }
     ledgerCtrl.lastSelectedLedger = ledger;
     //ledgerCtrl.formatInventoryTxns(ledger)
     if (ledgerCtrl.doingEntry === true) {
@@ -1424,7 +1779,7 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
       ledgerCtrl.btIndex = ledger.index;
     }
     delete ledger.isCompoundEntry;
-    if (!_.isEmpty(ledger.voucher.shortCode)) { 
+    if (!_.isEmpty(ledger.voucher.shortCode)) {
       let response, unqNamesObj;
       if (_.isEmpty(ledger.uniqueName)) {
         //add new entry
@@ -1467,6 +1822,8 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
       } else {
         //update entry
         //ledgerCtrl.removeEmptyTransactions(ledger.transactions)
+        ledgerCtrl.generateInvoice = ledger.generateInvoice;
+        ledger.transactions = ledgerCtrl.removeTaxTransactions(ledger);
         _.each(ledger.transactions, function(txn) {
           if (!_.isEmpty(txn.particular.uniqueName)) {
             let particular = {};
@@ -1484,6 +1841,10 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
           acntUname: ledgerCtrl.accountUnq,
           entUname: ledger.uniqueName
         };
+        if (ledgerCtrl.currentTxn.isCompoundEntry && ledgerCtrl.currentTxn.isBaseAccount) {
+          unqNamesObj.acntUname = ledgerCtrl.currentTxn.particular.uniqueName;
+        }
+
         // transactionsArray = []
         // _.every(ledgerCtrl.blankLedger.transactions,(led) ->
         //   delete led.date
@@ -1510,7 +1871,7 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
             isModified = ledgerCtrl.checkPrincipleModifications(ledger, ledgerCtrl.ledgerBeforeEdit.transactions);
           }
           if (isModified) {
-            ledgerCtrl.selectedTxn.isOpen = false;
+            // ledgerCtrl.selectedTxn.isOpen = false
             return modalService.openConfirmModal({
               title: 'Update',
               body: 'Principle transaction updated, Would you also like to update tax transactions?',
@@ -1558,7 +1919,7 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
     if (withoutTaxesLedgerTxn.length === withoutTaxesUtxnList.length) {
       _.each(withoutTaxesLedgerTxn, (txn, idx) =>
         _.each(withoutTaxesUtxnList, function(uTxn, dx) {
-          if (idx === dx) { 
+          if (idx === dx) {
             if ((txn.particular.uniqueName !== uTxn.particular.uniqueName) || (txn.amount !== uTxn.amount)) {
               return isModified = true;
             }
@@ -1580,7 +1941,7 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
           return txn.isManualTax = false;
         }
       });
-    }); 
+    });
   };
 
   ledgerCtrl.getPrincipleTxnOnly = function(txnList) {
@@ -1602,6 +1963,11 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
     });
   };
 
+  ledgerCtrl.resetTaxes = function() {};
+    // _.each(ledgerCtrl.taxList, (tax) ->
+    //   tax.isChecked = false
+    // )
+
   ledgerCtrl.updateEntryTaxes = function(txnList) {
     let transactions = [];
     if (txnList.length > 1) {
@@ -1613,7 +1979,7 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
             }
           }
         })
-      ); 
+      );
     }
               //transactions.push(txn)
               //txnList.splice(idx, 1)
@@ -1625,7 +1991,7 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
     if (ledger.taxes && (ledger.taxes.length > 0)) {
       ledger.taxList = [];
       return _.each(ledgerCtrl.taxList, function(tax) {
-        if (ledger.taxes.indexOf(tax.uniqueName) !== -1) { 
+        if (ledger.taxes.indexOf(tax.uniqueName) !== -1) {
           tax.isChecked = true;
           return ledger.taxList.push(tax);
         }
@@ -1715,7 +2081,7 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
         ledgerCtrl.newCreditTxn
       ],
       unconfirmedEntry:false,
-      isInclusiveTax: false,
+      isInclusiveTax: true,
       uniqueName:"",
       voucher:{
         name:"Sales",
@@ -1750,7 +2116,11 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
       ledgerCtrl.updateBankLedger(ledger);
     }
     //ledgerCtrl.getPaginatedLedger(ledgerCtrl.currentPage)
-    return ledgerCtrl.getTransactions(ledgerCtrl.currentPage);
+    if (ledgerCtrl.currentPage === ledgerCtrl.totalLedgerPages) {
+      return ledgerCtrl.getTransactions(0);
+    } else {
+      return ledgerCtrl.getTransactions(ledgerCtrl.currentPage);
+    }
   };
     // $timeout ( ->
     //   ledgerCtrl.pageLoader = false
@@ -1761,10 +2131,13 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
     ledgerCtrl.doingEntry = false;
     ledger.failed = true;
     toastr.error(res.data.message, res.data.status);
-    if (rejectedTransactions.length > 0) {
-      return _.each(rejectedTransactions, rTransaction => ledgerCtrl.selectedLedger.transactions.push(rTransaction));
-    }
+    ledgerCtrl.selectedLedger = angular.copy(ledgerCtrl.ledgerBeforeEdit, {});
+    return false;
   };
+    // if rejectedTransactions.length > 0
+    //   _.each(rejectedTransactions, (rTransaction) ->
+    //     ledgerCtrl.selectedLedger.transactions.push(rTransaction)
+    //   )
     // $timeout ( ->
     //   ledgerCtrl.pageLoader = false
     //   ledgerCtrl.showLoader = false
@@ -1794,32 +2167,64 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
     return _.each(ledgerCtrl.taxList, tx => tx.isChecked = false);
   };
 
+  ledgerCtrl.autoGenerateInvoice = function(ledger) {
+
+    this.success = res => ledgerCtrl.fetchEntryDetails(ledgerCtrl.currentTxn, false);
+
+    this.failure = res => toastr.error(res.data.message);
+
+    let reqParam = {
+      companyUniqueName: $rootScope.selectedCompany.uniqueName,
+      combined:false
+    };
+    let data = [
+      {
+        accountUniqueName: ledgerCtrl.baseAccount.uniqueName,
+        entries: [ledger.uniqueName]
+      }
+    ];
+    return invoiceService.generateBulkInvoice(reqParam, data).then(this.success, this.failure);
+  };
+
+
   ledgerCtrl.updateEntrySuccess = function(res, ledger) {
     ledgerCtrl.doingEntry = false;
     ledger.failed = false;
-    toastr.success("Entry updated successfully.", "Success");
-    //addThisLedger = {}
-    //_.extend(addThisLedger,ledgerCtrl.blankLedger)
-//    ledgerCtrl.ledgerData.ledgers.push(addThisLedger)
-    //ledgerCtrl.getLedgerData(false)
-    // ledgerCtrl.getPaginatedLedger(ledgerCtrl.currentPage)
-    //_.extend(ledger, res.body)
-    //ledgerCtrl.updateEntryOnUI(res.body)
-    ledgerCtrl.resetBlankLedger();
-    // ledgerCtrl.selectedLedger = ledgerCtrl.blankLedger
+    ledgerCtrl.paginatedLedgers = [res.body];
     ledgerCtrl.selectedLedger = res.body;
-    ledgerCtrl.selectedTxn.isOpen = false;
+    // ledgerCtrl.clearTaxSelection(ledgerCtrl.selectedLedger)
+    // ledgerCtrl.clearDiscounts(ledgerCtrl.selectedLedger)
+    ledgerCtrl.createPanel(ledgerCtrl.selectedLedger);
+    ledgerCtrl.entryTotal = ledgerCtrl.getEntryTotal(ledgerCtrl.selectedLedger);
+    ledgerCtrl.matchInventory(ledgerCtrl.selectedLedger);
+    if (ledgerCtrl.generateInvoice) {
+      ledgerCtrl.autoGenerateInvoice(res.body);
+    }
+    toastr.success("Entry updated successfully.", "Success");
+    // ledgerCtrl.paginatedLedgers = [res.body]
+    // ledgerCtrl.selectedLedger = res.body
+    // ledgerCtrl.clearTaxSelection(ledgerCtrl.selectedLedger)
+    // ledgerCtrl.clearDiscounts(ledgerCtrl.selectedLedger)
+    // ledgerCtrl.isTransactionContainsTax(ledgerCtrl.selectedLedger)
+    // ledgerCtrl.createPanel(ledgerCtrl.selectedLedger)
+    // ledgerCtrl.entryTotal = ledgerCtrl.getEntryTotal(ledgerCtrl.selectedLedger)
+    // ledgerCtrl.matchInventory(ledgerCtrl.selectedLedger)
+    ledgerCtrl.addBlankTransactionIfOneSideEmpty(ledgerCtrl.selectedLedger);
+    ledgerCtrl.ledgerBeforeEdit = {};
+    ledgerCtrl.ledgerBeforeEdit = angular.copy(res.body,ledgerCtrl.ledgerBeforeEdit);
+    _.each(res.body.transactions, function(txn) {
+      if (txn.particular.uniqueName === ledgerCtrl.clickedTxn.particular.uniqueName) {
+        return ledgerCtrl.selectedTxn = txn;
+      }
+    });
     if (ledgerCtrl.mergeTransaction) {
       ledgerCtrl.mergeBankTransactions(ledgerCtrl.mergeTransaction);
     }
-    //ledgerCtrl.dLedgerLimit = ledgerCtrl.dLedgerLimitBeforeUpdate
-    //ledgerCtrl.openClosePopOver(res.body.transactions[0], res.body)
-    //ledgerCtrl.updateLedgerData('update',res.body)
-    $timeout(( () => ledger.total = ledgerCtrl.updatedLedgerTotal), 2000);
-    // ledgerCtrl.getPaginatedLedger(ledgerCtrl.currentPage)
-    return ledgerCtrl.getTransactions(ledgerCtrl.currentPage);
+    ledgerCtrl.setVoucherCode(ledgerCtrl.selectedLedger);
+    ledgerCtrl.getTransactions(ledgerCtrl.currentPage);
+    return ledgerCtrl.isTransactionContainsTax(ledgerCtrl.selectedLedger);
   };
-    
+
   ledgerCtrl.updateEntryFailure = function(res, ledger) {
     ledgerCtrl.doingEntry = false;
     ledger = ledgerCtrl.ledgerBeforeEdit;
@@ -1829,7 +2234,7 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
     //   ledgerCtrl.pageLoader = false
     //   ledgerCtrl.showLoader = false
     // ), 1000
-    
+
   ledgerCtrl.createLedger = function(ledger, type) {
     let txns = [];
     let tLdr = {};
@@ -1893,7 +2298,7 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
 //    ledgerCtrl.calculateLedger(ledgerCtrl.ledgerData, "deleted")
     //ledgerCtrl.updateLedgerData('delete')
 
-  
+
   ledgerCtrl.deleteEntryFailure = res => toastr.error(res.data.message, res.data.status);
 
   ledgerCtrl.removeDeletedLedger = function(item) {
@@ -1988,7 +2393,7 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
       ok: 'Yes',
       cancel: 'No'
     }).then(
-      function(res) { 
+      function(res) {
           ledgerCtrl.selectedLedger.attachedFile = '';
           return ledgerCtrl.selectedLedger.attachedFileName = '';
         },
@@ -1999,31 +2404,46 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
   $timeout(( function() {
     ledgerCtrl.getDiscountGroupDetail();
     return ledgerCtrl.getTaxList();
-  }), 3000);
+  }), 2000);
 
   if (ledgerCtrl.accountUnq) {
     ledgerCtrl.getAccountDetail(ledgerCtrl.accountUnq);
   } else {
-    ledgerCtrl.loadDefaultAccount(); 
+    ledgerCtrl.loadDefaultAccount();
   }
 
   $rootScope.$on('company-changed', function(event,changeData) {
-    if (changeData.type === 'CHANGE') { 
+    if (changeData.type === 'CHANGE') {
+      ledgerCtrl.resetDates();
       ledgerCtrl.loadDefaultAccount();
-      return ledgerCtrl.getTaxList();
+      ledgerCtrl.getTaxList();
+      return ledgerCtrl.getDiscountGroupDetail();
     }
   });
+      //ledgerCtrl.getBankTransactions($rootScope.selectedAccount.uniqueName)
+
+  ledgerCtrl.hasParent = function(target, parent) {
+    target = $(target);
+    let hasParent = false;
+    if (target.parents(parent).length) {
+      hasParent = true;
+    }
+    return hasParent;
+  };
 
   $(document).on('click', function(e) {
-    if (ledgerCtrl.prevTxn) {
+    if ((!$(e.target).is('.account-list-item') && !$(e.target).is('.account-list-item strong') && !ledgerCtrl.hasParent(e.target, '.ledger-panel') && !$(e.target).is('.ledger-panel')) && ledgerCtrl.prevTxn) {
       ledgerCtrl.prevTxn.isOpen = false;
+    }
+    if (!$(e.target).is('.ledger-row')) {
+      ledgerCtrl.selectedTxnUniqueName = null;
     }
     return 0;
   });
 
 //########################################################
   ledgerCtrl.ledgerPerPageCount = 15;
-  ledgerCtrl.getTransactions = function(page) {
+  ledgerCtrl.getTransactions = function(page, query) {
     this.success = function(res) {
       ledgerCtrl.txnData = res.body;
       ledgerCtrl.totalLedgerPages = res.body.totalPages;
@@ -2036,6 +2456,7 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
       ledgerCtrl.showLedgers = true;
       return ledgerCtrl.calculateReckonging(ledgerCtrl.txnData);
     };
+      // ledgerCtrl.resetTaxes()
 
     this.failure = res => toastr.error(res.data.message);
 
@@ -2050,12 +2471,15 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
       count: ledgerCtrl.ledgerPerPageCount,
       page,
       sort: 'asc',
-      reversePage: false
+      reversePage: false,
+      q: query || ''
     };
     if (!_.isEmpty(ledgerCtrl.accountUnq)) {
       return ledgerService.getAllTransactions(unqNamesObj).then(this.success, this.failure);
     }
   };
+
+  ledgerCtrl.searchLedger = query => ledgerCtrl.getTransactions(0, query);
 
   ledgerCtrl.calculateReckonging = function() {
     if (ledgerCtrl.txnData.forwardedBalance.amount === 0) {
@@ -2099,30 +2523,65 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
     return entryTotal;
   };
 
-  ledgerCtrl.selectCompoundEntry = txn => ledgerCtrl.currentTxn = txn;
+  ledgerCtrl.selectCompoundEntry = function(txn, e) {
+    ledgerCtrl.currentTxn = txn;
+    ledgerCtrl.selectedTxnUniqueName = txn.entryUniqueName;
+    return e.stopPropagation();
+  };
 
-  ledgerCtrl.fetchEntryDetails = function(entry) {
+  ledgerCtrl.setVoucherCode = ledger =>
+    _.each(ledgerCtrl.voucherTypeList, function(vc, i) {
+      if (vc.shortCode === ledger.voucher.shortCode) {
+        return ledgerCtrl.paginatedLedgers[0].voucher = ledgerCtrl.voucherTypeList[i];
+      }
+  })
+  ;
+
+  ledgerCtrl.matchDiscountTxn = ledger =>
+    _.each(ledger.transactions, function(txn) {
+      let discount = _.findWhere(ledgerCtrl.discountAccount.accountDetails, {uniqueName:txn.particular.uniqueName});
+      if (discount) {
+        return discount.amount = txn.amount;
+      }
+    })
+  ;
+
+  ledgerCtrl.fetchEntryDetails = function(entry, openModal) {
     ledgerCtrl.clickedTxn = entry;
+
     this.success = function(res) {
+      //do not change order of functions
       ledgerCtrl.paginatedLedgers = [res.body];
       ledgerCtrl.selectedLedger = res.body;
       ledgerCtrl.clearTaxSelection(ledgerCtrl.selectedLedger);
       ledgerCtrl.clearDiscounts(ledgerCtrl.selectedLedger);
+      ledgerCtrl.matchDiscountTxn(ledgerCtrl.selectedLedger);
       ledgerCtrl.isTransactionContainsTax(ledgerCtrl.selectedLedger);
       ledgerCtrl.createPanel(ledgerCtrl.selectedLedger);
       ledgerCtrl.entryTotal = ledgerCtrl.getEntryTotal(ledgerCtrl.selectedLedger);
       ledgerCtrl.matchInventory(ledgerCtrl.selectedLedger);
+      ledgerCtrl.addBlankTransactionIfOneSideEmpty(ledgerCtrl.selectedLedger);
       ledgerCtrl.ledgerBeforeEdit = {};
-      angular.copy(res.body,ledgerCtrl.ledgerBeforeEdit);
+      ledgerCtrl.ledgerBeforeEdit = angular.copy(res.body,ledgerCtrl.ledgerBeforeEdit);
       _.each(res.body.transactions, function(txn) {
         if (txn.particular.uniqueName === ledgerCtrl.clickedTxn.particular.uniqueName) {
           return ledgerCtrl.selectedTxn = txn;
         }
       });
-      return ledgerCtrl.displayEntryModal();
+      ledgerCtrl.setVoucherCode(ledgerCtrl.selectedLedger);
+      if (!ledgerCtrl.selectedLedger.invoiceGenerated) {
+        ledgerCtrl.generateInvoice = false;
+      }
+      if (openModal) {
+        return ledgerCtrl.displayEntryModal();
+      }
     };
 
-    this.failure = res => console.log(res);
+    this.failure = res => toastr.error(res.data.message);
+
+    this.getBaseAccountDetailsuccess = res => ledgerCtrl.createUnderstandingText(res.body, ledgerCtrl.understandingJson, 'edit');
+    this.getBaseAccountDetailFailure = function(res) {};
+
 
     let reqParam = {
       compUname: $rootScope.selectedCompany.uniqueName,
@@ -2130,7 +2589,39 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
       entUname: entry.entryUniqueName
     };
 
-    return ledgerService.getEntry(reqParam).then(this.success,this.failure);
+    ledgerCtrl.baseAccount = ledgerCtrl.accountToShow;
+
+    if (entry.isCompoundEntry && entry.isBaseAccount) {
+      reqParam.acntUname = entry.particular.uniqueName;
+      ledgerCtrl.editModeBaseAccount = entry.particular.name;
+      ledgerCtrl.baseAccount = _.findWhere($rootScope.fltAccntListPaginated, {uniqueName:entry.particular.uniqueName});
+      let unqObj = {
+        compUname : $rootScope.selectedCompany.uniqueName,
+        acntUname : ledgerCtrl.baseAccount.uniqueName
+      };
+      accountService.get(unqObj).then(this.getBaseAccountDetailsuccess, this.getBaseAccountDetailFailure);
+    } else {
+      ledgerCtrl.editModeBaseAccount = ledgerCtrl.accountToShow.name;
+      ledgerCtrl.createUnderstandingText(ledgerCtrl.baseAccount, ledgerCtrl.understandingJson, 'edit');
+    }
+
+    ledgerService.getEntry(reqParam).then(this.success, this.failure);
+  };
+
+  ledgerCtrl.addBlankTransactionIfOneSideEmpty = function(ledger) {
+    let txn;
+    let cTxn = _.findWhere(ledger.transactions, {type:'CREDIT'});
+    let dTxn = _.findWhere(ledger.transactions, {type:'DEBIT'});
+    if (!cTxn) {
+      txn = new txnModel('CREDIT');
+      txn.blankRow = 'CREDIT';
+      ledger.transactions.push(txn);
+    }
+    if (!dTxn) {
+      txn = new txnModel('DEBIT');
+      txn.blankRow = 'DEBIT';
+      return ledger.transactions.push(txn);
+    }
   };
 
   ledgerCtrl.displayEntryModal = function() {
@@ -2195,6 +2686,224 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
   ledgerCtrl.closeShareModal = function() {
     ledgerCtrl.magicLink = '';
     return ledgerCtrl.shareModalInstance.close();
+  };
+
+  ledgerCtrl.newAccountModel = {
+    group : '',
+    account: '',
+    accUnqName: ''
+  };
+
+  ledgerCtrl.addNewAccount = function() {
+    ledgerCtrl.newAccountModel.group = '';
+    ledgerCtrl.newAccountModel.account = '';
+    ledgerCtrl.newAccountModel.accUnqName = '';
+    ledgerCtrl.selectedTxn.isOpen = false;
+    ledgerCtrl.getFlattenGrpWithAccList($rootScope.selectedCompany.uniqueName, true);
+    return ledgerCtrl.AccmodalInstance = $uibModal.open({
+      templateUrl:'/public/webapp/Ledger/createAccountQuick.html',
+      size: "sm",
+      backdrop: 'static',
+      scope: $scope
+    });
+  };
+
+  ledgerCtrl.addNewAccountConfirm = function() {
+
+    this.success = function(res) {
+      toastr.success('Account created successfully');
+      $rootScope.getFlatAccountList($rootScope.selectedCompany.uniqueName);
+      ledgerCtrl.AccmodalInstance.close();
+      return $scope.noResults = false;
+    };
+
+    this.failure = res => toastr.error(res.data.message);
+    let newAccount = {
+      email:"",
+      mobileNo:"",
+      name:ledgerCtrl.newAccountModel.account,
+      openingBalanceDate: $filter('date')(ledgerCtrl.today, "dd-MM-yyyy"),
+      uniqueName:ledgerCtrl.newAccountModel.accUnqName
+    };
+    let unqNamesObj = {
+      compUname: $rootScope.selectedCompany.uniqueName,
+      selGrpUname: ledgerCtrl.newAccountModel.group.groupUniqueName,
+      acntUname: ledgerCtrl.newAccountModel.accUnqName
+    };
+    if ((ledgerCtrl.newAccountModel.group.groupUniqueName === '') || (ledgerCtrl.newAccountModel.group.groupUniqueName === undefined)) {
+      return toastr.error('Please select a group.');
+    } else {
+      return accountService.createAc(unqNamesObj, newAccount).then(this.success, this.failure);
+    }
+  };
+
+  ledgerCtrl.genearateUniqueName = function(unqName) {
+    unqName = unqName.replace(/ |,|\//g,'');
+    unqName = unqName.toLowerCase();
+    if (unqName.length >= 1) {
+      let unq = '';
+      let text = '';
+      let chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+      let i = 0;
+      while (i < 3) {
+        text += chars.charAt(Math.floor(Math.random() * chars.length));
+        i++;
+      }
+      unq = unqName + text;
+      return ledgerCtrl.newAccountModel.accUnqName = unq;
+    } else {
+      return ledgerCtrl.newAccountModel.accUnqName = '';
+    }
+  };
+
+  ledgerCtrl.genUnq = unqName =>
+    $timeout(( () => ledgerCtrl.genearateUniqueName(unqName))
+    )
+  ;
+
+  ledgerCtrl.gwaList = {
+    page: 1,
+    count: 5000,
+    totalPages: 0,
+    currentPage : 1,
+    limit: 5
+  };
+
+  ledgerCtrl.getFlattenGrpWithAccList = function(compUname, showEmpty) {
+    this.success = function(res) {
+      ledgerCtrl.gwaList.totalPages = res.body.totalPages;
+      ledgerCtrl.flatGrpList = ledgerCtrl.markFixedGrps(res.body.results);
+      return ledgerCtrl.gwaList.limit = 5;
+    };
+    this.failure = res => toastr.error(res.data.message);
+
+    let reqParam = {
+      companyUniqueName: compUname,
+      q: '',
+      page: ledgerCtrl.gwaList.page,
+      count: ledgerCtrl.gwaList.count
+    };
+    if(showEmpty) {
+      reqParam.showEmptyGroups = true;
+    }
+    if (!isElectron) {
+        return groupService.getFlattenGroupAccList(reqParam).then(this.success, this.failure);
+    } else {
+        return groupService.getFlattenGroupAccListElectron(reqParam).then(this.success, this.failure);
+    }
+  };
+
+  ledgerCtrl.markFixedGrps = function(flatGrpList) {
+    let temp = [];
+    _.each(ledgerCtrl.detGrpList, detGrp =>
+      _.each(flatGrpList, function(fGrp) {
+        if ((detGrp.uniqueName === fGrp.groupUniqueName) && detGrp.isFixed) {
+          return fGrp.isFixed = true;
+        }
+      })
+    );
+    _.each(flatGrpList, function(grp) {
+      if (!grp.isFixed) {
+        return temp.push(grp);
+      }
+    });
+    return temp;
+  };
+
+  ledgerCtrl.getGroupsWithDetail = function() {
+    if ($rootScope.allowed === true) {
+      return groupService.getGroupsWithoutAccountsInDetail($rootScope.selectedCompany.uniqueName).then(
+        success=> ledgerCtrl.detGrpList = success.body,
+        failure => toastr.error('Failed to get Detailed Groups List'));
+    }
+  };
+
+  if ($rootScope.canUpdate) {
+    ledgerCtrl.getGroupsWithDetail();
+  }
+
+  ledgerCtrl.downloadInvoice = function(invoiceNumber, e) {
+    e.stopPropagation();
+
+    this.success = function(res) {
+      let data = ledgerCtrl.b64toBlob(res.body, "application/pdf", 512);
+      let blobUrl = URL.createObjectURL(data);
+      ledgerCtrl.dlinv = blobUrl;
+      return FileSaver.saveAs(data, ledgerCtrl.accountToShow.name+ '-' + invoiceNumber+".pdf");
+    };
+
+    this.failure = res => toastr.error(res.data.message, res.data.status);
+
+    let obj = {
+      compUname: $rootScope.selectedCompany.uniqueName,
+      acntUname: ledgerCtrl.accountUnq
+    };
+    let data= {
+      invoiceNumber: [invoiceNumber],
+      template: ''
+    };
+    return accountService.downloadInvoice(obj, data).then(this.success, this.failure);
+  };
+
+
+
+  ledgerCtrl.shareAccount = function() {
+    this.success = function(res) {
+      ledgerCtrl.getSharedWithList();
+      return toastr.success(res.body);
+    };
+    this.failure = res => toastr.error(res.data.message);
+
+    let reqParam = {};
+    reqParam.compUname = $rootScope.selectedCompany.uniqueName;
+    reqParam.acntUname = ledgerCtrl.accountToShow.uniqueName;
+    let permission = {};
+    permission.user = ledgerCtrl.shareRequest.user;
+    permission.role = ledgerCtrl.shareRequest.role;
+    return accountService.share(reqParam, permission).then(this.success,this.failure);
+  };
+
+  ledgerCtrl.getSharedWithList = function() {
+    this.success = res => ledgerCtrl.sharedUsersList = res.body;
+
+    this.failure = res => toastr.error(res.data.message);
+
+    let reqParam = {};
+    reqParam.compUname = $rootScope.selectedCompany.uniqueName;
+    reqParam.acntUname = ledgerCtrl.accountToShow.uniqueName;
+    return accountService.sharedWith(reqParam).then(this.success,this.failure);
+  };
+
+  ledgerCtrl.unshare = function(user, index) {
+    this.success = function(res) {
+      ledgerCtrl.sharedUsersList.splice(index,1);
+      return toastr.success(res.body);
+    };
+
+    this.failure = res => toastr.error(res.data.message);
+
+    let reqParam = {};
+    reqParam.compUname = $rootScope.selectedCompany.uniqueName;
+    reqParam.acntUname = ledgerCtrl.accountToShow.uniqueName;
+
+    let userObj = {};
+    userObj.user = user;
+    return accountService.unshare(reqParam, userObj).then(this.success,this.failure);
+  };
+
+  ledgerCtrl.updateSharePermission = function(user, role) {
+
+    this.success = res => ledgerCtrl.getSharedWithList();
+
+    this.failure = res => toastr.error(res.data.message);
+
+    let reqParam = {};
+    reqParam.compUname = $rootScope.selectedCompany.uniqueName;
+    reqParam.acntUname = ledgerCtrl.accountToShow.uniqueName;
+    let permission = {};
+    permission.user = user;
+    permission.role = role;
+    return accountService.share(reqParam, permission).then(this.success,this.failure);
   };
 
 

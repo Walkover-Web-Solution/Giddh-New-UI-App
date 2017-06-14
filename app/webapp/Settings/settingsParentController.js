@@ -14,12 +14,12 @@ let SettingsParentController = function($rootScope, Upload, $timeout, toastr) {
     {
       "heading": "Templates",
       "active": true,
-      "template":"/public/webapp/Settings1/invoice-temp.html"
+      "template":"public/webapp/Settings1/invoice-temp.html"
     },
     {
       "heading": "Taxes",
       "active": false,
-      "template":"/public/webapp/Settings1/tax-temp.html"
+      "template":"public/webapp/Settings1/tax-temp.html"
     }
   ];
  

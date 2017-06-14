@@ -504,7 +504,7 @@ body.lightTrans .navbar{
 }
 body.light .navbar.transparent{
 	background: transparent;
-	box-shadow: none; 
+	box-shadow: none;
 }
 
 /*affix navbar*/
@@ -696,7 +696,7 @@ body.light .navbar.transparent{
 .pr{position: relative}
 /*login page start*/
 .intro.login{
-	background: url('/public/website/images/new/login_bg.jpg') no-repeat top center scroll;
+	background: url('../images/new/login_bg.jpg') no-repeat top center scroll;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   background-size: cover;
@@ -832,7 +832,7 @@ body.light .navbar.transparent{
   100% {
     transform: rotate(360deg);
   }
-} 
+}
 
 /*end login page*/
 /*pricing page styles*/
@@ -885,10 +885,10 @@ body.light .navbar.transparent{
   width: 100%;
   height: 100%;
   position: relative;
-  background: url('/public/website/images/new/banner-grid-design.png') repeat;
+  background: url('//public/website/images/new/banner-grid-design.png') repeat;
 }
 .intro.pricing, .intro.security{
-	background: #FFF8EA url('/public/website/images/new/banner-grid-design.png') repeat;
+	background: #FFF8EA url('//public/website/images/new/banner-grid-design.png') repeat;
 }
 .intro.home .intro-body {
 	background: rgba(0, 0, 0, 0.3);
@@ -921,11 +921,11 @@ body.light .navbar.transparent{
 	line-height: 60px;
 }
 .brand-wrap{
-	/*background: url('/public/website/images/new/banner-graph.png') no-repeat center center scroll;
+	/*background: url('//public/website/images/new/banner-graph.png') no-repeat center center scroll;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   background-size: cover;
-	
+
 	height: 210px;
 	margin: 0 auto;*/
 	display: table;
@@ -961,7 +961,7 @@ body.light .navbar.transparent{
 	z-index: 13
 }
 .scroll-btn a{
-	background-image: url('/public/website/images/new/scrolling-arrow.png');
+	background-image: url('//public/website/images/new/scrolling-arrow.png');
 	background-repeat: no-repeat;
 	cursor: pointer;
 	display: block;
@@ -1122,13 +1122,13 @@ footer small{
 	color: #565B5B
 }
 footer small a{
-	color: #565B5B; 
+	color: #565B5B;
 }
 #footer-mascot{
 	position: absolute;
 	bottom: -60px;
 	left: 0;
-	background: url('/public/website/images/new/footer-mascot.png') no-repeat;
+	background: url('//public/website/images/new/footer-mascot.png') no-repeat;
 	width: 111px;
 	height: 220px;
 }
@@ -1254,7 +1254,7 @@ footer small a{
 	line-height: 36px;
 }
 #abtMascot{
-	background: url('/public/website/images/new/footer-mascot.png') no-repeat;
+	background: url('//public/website/images/new/footer-mascot.png') no-repeat;
 	width: 111px;
 	height: 220px;
 	margin: 40px auto 40px;
@@ -1293,7 +1293,7 @@ footer small a{
 	margin-bottom: 50px;
 }
 .gridBg{
-	background: #FFF8EA url('/public/website/images/new/banner-grid-design.png') repeat top left;
+	background: #FFF8EA url('//public/website/images/new/banner-grid-design.png') repeat top left;
 }
 .txtBody{
 	font-size: 18px;
@@ -1462,10 +1462,10 @@ body.unresponsive .container {
     z-index: 9999;
 }
 
-@media (min-width:1367px){		
-	.container.adjust-width{		
-		max-width: 55%;		
-	}		
+@media (min-width:1367px){
+	.container.adjust-width{
+		max-width: 55%;
+	}
 }
 
 .font-white{
@@ -1761,7 +1761,7 @@ button.toast-close-button {
     height: 100%;
     position: relative;
     top: 0;
-    left: 0;  
+    left: 0;
 }
 .feature .caption.first {
   padding: 25px 0;
@@ -1895,7 +1895,7 @@ button.toast-close-button {
 /*gst*/
 
 /*css for icons*/
-[class^="ic-"]{display:inline-block; background-image:url('/public/website/images/new/3252-grid.png'); background-repeat:no-repeat}
+[class^="ic-"]{display:inline-block; background-image:url('//public/website/images/new/3252-grid.png'); background-repeat:no-repeat}
 .ic-32{width:32px; height:32px;}
 .ic-32.view{background-position: -32px 0}
 .ic-32.tick{background-position: -64px 0}
@@ -1911,7 +1911,7 @@ button.toast-close-button {
 
 #gst p{font-size:19px;}
 #gst h3{font-size:32px;}
-#gstBanner{background:#FFF6E6 url('/public/website/images/new/banner-grid-design.png'); padding-bottom:40px;padding-top:100px;}
+#gstBanner{background:#FFF6E6 url('//public/website/images/new/banner-grid-design.png'); padding-bottom:40px;padding-top:100px;}
 
 #tryG{background:#28283C; color:#fff; padding:40px 0}
 .trBox{border:2px solid #fff; margin:80px 0 10px; padding:5px; display:inline-block;}

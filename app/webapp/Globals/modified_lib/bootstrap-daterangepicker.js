@@ -20,7 +20,7 @@
             jQuery = require('jquery');
             if (!jQuery.fn) jQuery.fn = {};
         }
-        module.exports = factory(require('moment'), jQuery);
+        module.exports = factory(window.moment, jQuery);
     } else {
         // Browser globals
         root.daterangepicker = factory(root.moment, root.jQuery);
@@ -330,7 +330,7 @@
 
                 // If the end of the range is before the minimum or the start of the range is
                 // after the maximum, don't display this range option at all.
-                if ((this.minDate && end.isBefore(this.minDate, this.timepicker ? 'minute' : 'day')) 
+                if ((this.minDate && end.isBefore(this.minDate, this.timepicker ? 'minute' : 'day'))
                   || (maxDate && start.isAfter(maxDate, this.timepicker ? 'minute' : 'day')))
                     continue;
 
@@ -1528,7 +1528,7 @@
             this.container.find('input[name="daterangepicker_start"], input[name="daterangepicker_end"]').removeClass('active');
             $(e.target).addClass('active');
 
-            // Set the state such that if the user goes back to using a mouse, 
+            // Set the state such that if the user goes back to using a mouse,
             // the calendars are aware we're selecting the end of the range, not
             // the start. This allows someone to edit the end of a date range without
             // re-selecting the beginning, by clicking on the end date input then
@@ -1764,7 +1764,8 @@
           el.daterangepicker(angular.extend(opts, {
             autoUpdateInput: false
           }), function(start, end) {
-            return $scope.$apply(function() {
+              debugger
+            return $timeout(function() {
               return $scope.model = opts.singleDatePicker ? start : {
                 startDate: start,
                 endDate: end
@@ -1820,7 +1821,7 @@
             _init();
             if (newClearable) {
               return el.on('cancel.daterangepicker', function() {
-                return $scope.$apply(function() {
+                return $timeout(function() {
                   return $scope.model = opts.singleDatePicker ? null : {
                     startDate: null,
                     endDate: null

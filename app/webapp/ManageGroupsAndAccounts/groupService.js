@@ -22,6 +22,10 @@ giddh.serviceModule.service('groupService', function($resource, $q) {
         method: 'GET',
         url: '/company/:companyUniqueName/groups/with-accounts'
       },
+      getAllWithAccountsElectron: {
+        method: 'GET',
+        url: '/company/:companyUniqueName/groups-with-accounts'
+      },
       getAllInDetail: {
         method: 'GET',
         url: '/company/:companyUniqueName/groups/detailed-groups'
@@ -34,9 +38,28 @@ giddh.serviceModule.service('groupService', function($resource, $q) {
         method: 'GET',
         url: '/company/:companyUniqueName/groups/flatten-groups-accounts?q=:q&page=:page&count=:count&showEmptyGroups=:showEmptyGroups'
       },
+      getFlattenGrpWithAccElectron: {
+        method: 'GET',
+        url: '/company/:companyUniqueName/flatten-groups-with-accounts',
+        params: {
+            q: '@q',
+            page: '@page',
+            count: '@count',
+            showEmptyGroups: '@showEmptyGroups'
+        }
+      },
       getFlatAccList: {
         method: 'GET',
         url: '/company/:companyUniqueName/groups/flatten-accounts'
+      },
+      getFlatAccListElectron: {
+        method: 'GET',
+        url: '/company/:companyUniqueName/flatten-accounts',
+        params: {
+            q: '@q',
+            page: '@page',
+            count: '@count'
+        }
       },
       postFlatAccList:{
         method: 'POST',
@@ -77,6 +100,15 @@ giddh.serviceModule.service('groupService', function($resource, $q) {
       getClosingBal: {
         method: 'GET',
         url: '/company/:companyUniqueName/groups/:groupUniqueName/closing-balance?fromDate=:date1&toDate=:date2&refresh=:refresh'
+      },
+      getClosingBalElectron: {
+        method: 'GET',
+        url: '/company/:companyUniqueName/groups/:groupUniqueName/closing-balance',
+        params: {
+            from: '@date1',
+            to: '@date2',
+            refresh: '@refresh'
+        }
       },
       deleteLogs: {
         method: 'DELETE',
@@ -130,13 +162,24 @@ giddh.serviceModule.service('groupService', function($resource, $q) {
 
 //   All groups with less detail, with account
     getGroupsWithAccountsCropped(companyUniqueName, onSuccess, onFailure) {
-      return this.handlePromise((onSuccess, onFailure) => Group.getAllWithAccounts({companyUniqueName},
-        onSuccess, onFailure) );
+      if (!isElectron) {
+        return this.handlePromise((onSuccess, onFailure) => Group.getAllWithAccounts({companyUniqueName},
+            onSuccess, onFailure) );
+      } else {
+          return this.handlePromise((onSuccess, onFailure) => Group.getAllWithAccountsElectron({companyUniqueName},
+            onSuccess, onFailure) );
+      }
     },
 
 //   Get flatten groups with accounts list
     getFlattenGroupAccList(reqParam, onSuccess, onFailure) {
       return this.handlePromise((onSuccess, onFailure) => Group.getFlattenGrpWithAcc({companyUniqueName: reqParam.companyUniqueName, q:reqParam.q, page:reqParam.page, count:reqParam.count, showEmptyGroups:reqParam.showEmptyGroups},
+        onSuccess, onFailure) );
+    },
+
+    //   Get flatten groups with accounts list with electron
+    getFlattenGroupAccListElectron(reqParam, onSuccess, onFailure) {
+      return this.handlePromise((onSuccess, onFailure) => Group.getFlattenGrpWithAccElectron({companyUniqueName: reqParam.companyUniqueName, q:reqParam.q, page:reqParam.page, count:reqParam.count, showEmptyGroups:reqParam.showEmptyGroups},
         onSuccess, onFailure) );
     },
 
@@ -157,6 +200,12 @@ giddh.serviceModule.service('groupService', function($resource, $q) {
 //   Get flat accounts list
     getFlatAccList(reqParam, onSuccess, onFailure) {
       return this.handlePromise((onSuccess, onFailure) => Group.getFlatAccList({companyUniqueName: reqParam.companyUniqueName, q:reqParam.q, page:reqParam.page, count:reqParam.count},
+        onSuccess, onFailure) );
+    },
+
+    //   Get flat accounts list Electron
+    getFlatAccListElectron(reqParam, onSuccess, onFailure) {
+      return this.handlePromise((onSuccess, onFailure) => Group.getFlatAccListElectron({companyUniqueName: reqParam.companyUniqueName, q:reqParam.q, page:reqParam.page, count:reqParam.count},
         onSuccess, onFailure) );
     },
 
@@ -219,13 +268,23 @@ giddh.serviceModule.service('groupService', function($resource, $q) {
     },
 
     getClosingBal(obj) {
-      return this.handlePromise((onSuccess, onFailure) => Group.getClosingBal({
-        companyUniqueName: obj.compUname,
-        groupUniqueName: obj.selGrpUname,
-        date1: obj.fromDate,
-        date2: obj.toDate,
-        refresh: obj.refresh
-      }, onSuccess, onFailure) );
+      if (!isElectron) {
+        return this.handlePromise((onSuccess, onFailure) => Group.getClosingBal({
+            companyUniqueName: obj.compUname,
+            groupUniqueName: obj.selGrpUname,
+            date1: obj.fromDate,
+            date2: obj.toDate,
+            refresh: obj.refresh
+        }, onSuccess, onFailure) );
+      } else {
+          return this.handlePromise((onSuccess, onFailure) => Group.getClosingBalElectron({
+            companyUniqueName: obj.compUname,
+            groupUniqueName: obj.selGrpUname,
+            from: obj.fromDate,
+            to: obj.toDate,
+            refresh: obj.refresh
+        }, onSuccess, onFailure) );
+      }
     },
 
     matchAndReturnObj(src, dest){

@@ -19,7 +19,7 @@ angular.module('perfect_scrollbar', []).directive('perfectScrollbar', [
     transclude: true,
     template: '<div><div ng-transclude></div></div>',
     replace: true,
-    link($scope, $elem, $attr) {
+    link($scope, $elem, $attr, $timeout) {
       let jqWindow = angular.element($window);
       let options = {};
       let update = function(event) {
@@ -49,7 +49,7 @@ angular.module('perfect_scrollbar', []).directive('perfectScrollbar', [
         $elem.scroll(function(event){
           let scrollTop = $elem.scrollTop();
           let scrollHeight = $elem.prop('scrollHeight') - $elem.height();
-          $scope.$apply(function() {
+          $timeout(function() {
             onScrollHandler($scope, {
               event,
               scrollTop,

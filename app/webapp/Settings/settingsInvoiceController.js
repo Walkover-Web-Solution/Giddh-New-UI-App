@@ -8,7 +8,7 @@ let SettingsInvoiceController = function($scope, $rootScope, Upload, $timeout, t
   this.toastr = toastr;
   // assign universal this for ctrl
   let $this = this;
-  
+
   this.showTemplate = false;
   this.tempTypes = [ "Image", "String", "Entry"];
   this.tempType = "String";
@@ -24,7 +24,7 @@ let SettingsInvoiceController = function($scope, $rootScope, Upload, $timeout, t
     { label: 'Mike'},
     { label: 'Diane'}
   ];
-  
+
 
   this.widgetsModel = function() {
     return this.model =  [
@@ -50,7 +50,7 @@ let SettingsInvoiceController = function($scope, $rootScope, Upload, $timeout, t
     swapping: true,
     width: 'auto',
     colWidth: 'auto',
-    rowHeight: 50, 
+    rowHeight: 50,
     margins: [5, 5], // the pixel distance between each widget
     outerMargin: true, // whether margins apply to outer edges of the grid
     sparse: false, // "true" can increase performance of dragging and resizing for big grid (e.g. 20x50)
@@ -59,19 +59,19 @@ let SettingsInvoiceController = function($scope, $rootScope, Upload, $timeout, t
     mobileModeEnabled: true, // whether or not to toggle mobile mode when screen width is less than mobileBreakPoint
     minColumns: 1, // the minimum columns the grid must have
     minRows: 2, // the minimum height of the grid, in rows
-    maxRows: 20, 
+    maxRows: 20,
     resizable: {
        enabled: true,
        handles: ['e','s', 'se', 'sw', 'nw']
     },
     draggable: {
-       enabled: true, 
+       enabled: true,
        handle: '.move-widget'
     }
   };
 
   $rootScope.placeholders = [
-    { name: 'Tyra Porcelli' }, 
+    { name: 'Tyra Porcelli' },
     { name: 'Brigid Reddish' },
     { name: 'Ashely Buckler' },
     { name: 'Teddy Whelan' }
@@ -148,7 +148,7 @@ let SettingsInvoiceController = function($scope, $rootScope, Upload, $timeout, t
       console.log($this.selectedTemplate);
       $this.showTemplate = true;
       return $timeout(( function() {
-        return $scope.$apply(this);
+        return $timeout(this);
       }),2000);
     };
     this.failure = function(res) {
@@ -281,15 +281,15 @@ let SettingsInvoiceController = function($scope, $rootScope, Upload, $timeout, t
     let getLastRow = $this.getLastRowPos();
     let getLastRowPos = getLastRow.row + getLastRow.sizeY;
     let getLastWidName = `widget_${$this.getWidgetArrLength()}`;
-    
+
     // init obj with default param
     let newWidget = { sizeX: 12, sizeY: 2, row: getLastRowPos, col: 0, name: getLastWidName, data:"", type: $this.tempType };
-    
+
     // "Image", "String", "Entry", "Tosec"
     switch ($this.tempType) {
       case 'Entry':
         // checking if already have entry widget than prevent user to add new one
-        let isHaveEntryWidgetObj = $this.checkEntryWidget();    
+        let isHaveEntryWidgetObj = $this.checkEntryWidget();
         if (!_.isUndefined(isHaveEntryWidgetObj)) {
           $this.toastr.warning("Can't add more than once Entry widget", "Warning");
           return false;
@@ -312,7 +312,7 @@ let SettingsInvoiceController = function($scope, $rootScope, Upload, $timeout, t
   };
 
   this.saveTemplate = function() {
-    
+
     this.success = function(res) {
       toastr.success(res.body);
       $this.showTemplate = false;
