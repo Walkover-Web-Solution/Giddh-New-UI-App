@@ -1,3 +1,14 @@
+import { electronUrl, webUrl } from "../app.constants";
+
+let getUrl = urlKey => {
+  if (isElectron) {
+    return electronUrl.trialBal[urlKey];
+  } else {
+    return webUrl.trialBal[urlKey];
+  }
+};
+
+
 giddh.serviceModule.service('userServices', function($resource, $q) {
   let UserSET = $resource('/users',
       {
@@ -10,108 +21,108 @@ giddh.serviceModule.service('userServices', function($resource, $q) {
       },
       {
         getUserDetails: {
-          method: 'GET', 
-          url: '/users/:uniqueName'
+          method: 'GET',
+          url: getUrl('getUserDetails')
         },
         getSetAuthKey: {
-          method: 'GET', 
-          url: '/users/auth-key/:uniqueName'
+          method: 'GET',
+          url: getUrl('getSetAuthKey')
         },
         generateAuthKey: {
           method: 'PUT',
-          url: '/users/:uniqueName/generate-auth-key'
+          url: getUrl('generateAuthKey')
         },
         getSubList: {
           method: 'GET',
-          url: '/users/:uniqueName/subscribed-companies'
+          url: getUrl('getSubList')
         },
         getUserSubList: {
           method: 'GET',
-          url: '/users/:uniqueName/transactions?page=:page'
+          url: getUrl('getUserSubList')
         },
         getWltBal: {
           method: 'GET',
-          url: '/users/:uniqueName/available-credit'
+          url: getUrl('getWltBal')
         },
         cancelAutoPay: {
           method: 'PUT',
-          url: '/users/:uniqueName/delete-payee'
+          url: getUrl('cancelAutoPay')
         },
         addBalInWallet: {
           method: 'POST',
-          url: '/users/:uniqueName/balance'
+          url: getUrl('addBalInWallet')
         },
         searchSite: {
           method: 'POST',
-          url: '/ebanks'
+          url: getUrl('searchSite')
         },
         addSiteAccount: {
           method: 'POST',
-          url: '/company/:companyUniqueName/ebanks'
+          url: getUrl('addSiteAccount')
         },
         getAccounts: {
           method: 'GET',
-          url: '/company/:companyUniqueName/ebanks'
+          url: getUrl('getAccounts')
         },
         addGiddhAccount: {
           method: 'PUT',
-          url: '/company/:companyUniqueName/ebanks/:itemAccountId'
+          url: getUrl('addGiddhAccount')
         },
         setTransactionDate: {
           method: 'PUT',
-          url: '/company/:companyUniqueName/ebanks/:itemAccountId/eledgers/:date'
+          url: getUrl('setTransactionDate')
         },
         verifyMfa: {
           method: 'POST',
-          url: '/company/:companyUniqueName/ebanks/:itemAccountId/verify-mfa'
+          url: getUrl('verifyMfa')
         },
         refreshAll: {
           method: 'GET',
-          url: '/company/:companyUniqueName/ebanks/refresh'
+          url: getUrl('refreshAll')
         },
         deleteBAccount: {
           method: 'DELETE',
-          url: '/company/:companyUniqueName/login/:loginId'
+          url: getUrl('deleteBAccount')
         },
         removeGiddhAccount: {
           method: 'DELETE',
-          url: '/company/:companyUniqueName/ebanks/:ItemAccountId/unlink'
+          url: getUrl('removeGiddhAccount')
         },
         createSubUser: {
-          method: 'POST', 
-          url: '/users/:uniqueName/sub-user'
+          method: 'POST',
+          url: getUrl('createSubUser')
         },
         deleteSubUser: {
-          method: 'DELETE', 
-          url: '/users/:uniqueName'
+          method: 'DELETE',
+          url: getUrl('deleteSubUser')
         },
         getSubUserAuthKey: {
-          method: 'GET', 
-          url: '/users/:uniqueName/auth-key/sub-user?uniqueName=:uniqueName'
+          method: 'GET',
+          url: getUrl('getSubUserAuthKey')
         },
         addMobileNumber : {
           method: 'POST',
-          url: '/users/system_admin/verify-number'
+          url: getUrl('addMobileNumber')
         },
         verifyNumber : {
           method: 'PUT',
-          url: '/users/system_admin/verify-number'
+          url: getUrl('verifyNumber')
         },
         connectBankAc: {
           method: 'GET',
-          url: '/company/:companyUniqueName/ebanks/token'
+          url: getUrl('connectBankAc')
         },
         refreshAccount: {
-          method: 'GET', 
-          url: '/company/:companyUniqueName/login/:loginId/token/refresh'
+          method: 'GET',
+          url: getUrl('refreshAccount')
         },
         reconnectAccount:{
           method: 'GET',
-          url: '/company/:companyUniqueName/login/:loginId/token/reconnect'
+          url: getUrl('reconnectAccount')
         },
         changeTwoWayAuth: {
           method: 'PUT',
-          url: '/users/:uniqueName/settings'
+          url: getUrl('/changeTwoWayAuth')
         }
       }
   );
@@ -219,4 +230,3 @@ giddh.serviceModule.service('userServices', function($resource, $q) {
   return userServices;
 });
 
-  

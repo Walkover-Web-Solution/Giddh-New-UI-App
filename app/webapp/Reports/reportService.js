@@ -1,4 +1,11 @@
 import { electronUrl, webUrl } from '../app.constants';
+let getUrl = (urlKey) => {
+        if (isElectron) {
+            return electronUrl.Report[urlKey];
+        } else {
+            return webUrl.Report[urlKey];
+        }
+    }
 giddh.serviceModule.service('reportService', function($resource, $q) {
   let Report = $resource('/company/:companyUniqueName/history',
     {
@@ -116,13 +123,7 @@ giddh.serviceModule.service('reportService', function($resource, $q) {
       }, onSuccess,  onFailure) );
     }
   };
-    let getUrl = (urlKey) => {
-        if (isElectron) {
-            return electronUrl.Report[urlKey];
-        } else {
-            return webUrl.Report[urlKey];
-        }
-    }
+
 
   return reportService;
 });

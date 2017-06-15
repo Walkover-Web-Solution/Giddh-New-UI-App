@@ -1,4 +1,11 @@
 import { electronUrl, webUrl } from '../../app.constants';
+let getUrl = (urlKey) => {
+    if (isElectron) {
+        return electronUrl.Coupon[urlKey];
+    } else {
+        return webUrl.Coupon[urlKey];
+    }
+   }
 giddh.serviceModule.service('couponServices', function($resource, $q) {
   let Coupon = $resource('/',
     {
@@ -27,13 +34,7 @@ giddh.serviceModule.service('couponServices', function($resource, $q) {
     }
   };
 
-  let getUrl = (urlKey) => {
-    if (isElectron) {
-        return electronUrl.Coupon[urlKey];
-    } else {
-        return webUrl.Coupon[urlKey];
-    }
-   }
+
 
   return couponServices;
 });

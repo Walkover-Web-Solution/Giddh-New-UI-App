@@ -1,4 +1,12 @@
 import { electronUrl, webUrl } from '../app.constants';
+ let getUrl = (urlKey) => {
+    if (isElectron) {
+        return electronUrl.Company[urlKey];
+    } else {
+        return webUrl.Company[urlKey];
+    }
+  }
+
 giddh.serviceModule.service('companyServices', function($resource, $q) {
   let Company = $resource('/company',
   {
@@ -27,7 +35,7 @@ giddh.serviceModule.service('companyServices', function($resource, $q) {
 
     getCompanyListElectron: {
       method: 'GET',
-      url: webUrl.Company.getCompanyList
+      url: electronUrl.Company.getCompanyList
     },
 
     deleteCompany: {
@@ -525,13 +533,7 @@ giddh.serviceModule.service('companyServices', function($resource, $q) {
     }
   };
 
-  let getUrl = (urlKey) => {
-    if (isElectron) {
-        return electronUrl.Company[urlKey];
-    } else {
-        return webUrl.Company[urlKey];
-    }
-  }
+
 
   return companyServices;
 });

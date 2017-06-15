@@ -61,6 +61,7 @@ let loginController = function($scope, $rootScope, $http, $timeout, $auth, local
     this.success = function(res) {
       localStorageService.set("_userDetails", res.data.body.user);
       $window.sessionStorage.setItem("_userDetails", res.data.body.user.uniqueName);
+      localStorageService.set("_ak", res.data.body.authKey);
       $window.sessionStorage.setItem("_ak", res.data.body.authKey);
     //   return window.location = "/app/#/home/";
     $state.go('/home')
@@ -164,6 +165,7 @@ let loginController = function($scope, $rootScope, $http, $timeout, $auth, local
   let loginUserSuccess = function(res) {
     localStorageService.set("_userDetails", res.data.body.user);
     $window.sessionStorage.setItem("_userDetails", res.data.body.user.uniqueName);
+    localStorageService.set("_ak", res.data.body.authKey);
     $window.sessionStorage.setItem("_ak", res.data.body.authKey);
     // return window.location = "/app/#/home/";
     $state.go('/home')
@@ -243,10 +245,10 @@ let loginController = function($scope, $rootScope, $http, $timeout, $auth, local
     $scope.verifyEmail = false;
     localStorageService.set("_userDetails", res.data.body.user);
     $window.sessionStorage.setItem("_userDetails", res.data.body.user.uniqueName);
+    localStorageService.set("_ak", res.data.body.authKey)
     $window.sessionStorage.setItem("_ak", res.data.body.authKey);
     // return window.location = '/app/#/home';
     // $timeout(function () {
-        debugger
         $state.go('/home')
     // })
   };

@@ -1,4 +1,21 @@
 import { electronUrl, webUrl } from '../app.constants';
+   let getUrl = (urlKey) => {
+        if (isElectron) {
+            return electronUrl.Ledger[urlKey];
+        } else {
+            return webUrl.Ledger[urlKey];
+        }
+    }
+
+    let getUrlOtherLedger = (urlKey) => {
+        if (isElectron) {
+            return electronUrl.otherLedger[urlKey];
+        } else {
+            return webUrl.otherLedger[urlKey];
+        }
+    }
+
+
 giddh.serviceModule.service('ledgerService', function($resource, $q) {
   let Ledger = $resource('/company/:companyUniqueName/accounts',
     {
@@ -204,21 +221,6 @@ giddh.serviceModule.service('ledgerService', function($resource, $q) {
     }
   };
 
-    let getUrl = (urlKey) => {
-        if (isElectron) {
-            return electronUrl.Ledger[urlKey];
-        } else {
-            return webUrl.Ledger[urlKey];
-        }
-    }
-
-    let getUrlOtherLedger = (urlKey) => {
-        if (isElectron) {
-            return electronUrl.otherLedger[urlKey];
-        } else {
-            return webUrl.otherLedger[urlKey];
-        }
-    }
 
   return ledgerService;
 });

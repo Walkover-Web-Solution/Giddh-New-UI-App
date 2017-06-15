@@ -407,6 +407,11 @@ giddh.webApp.run([
     'groupService',
     '$http',
     function ($rootScope, $state, $stateParams, $location, $window, toastr, localStorageService, DAServices, groupService, $http) {
+
+        if (localStorageService.get('_ak')) {
+            window.sessionStorage.setItem('_ak', localStorageService.get('_ak'))
+        }
+
         $rootScope.magicLinkPage = false;
         $rootScope.whiteLinks = false;
         $rootScope.loginPage = false;

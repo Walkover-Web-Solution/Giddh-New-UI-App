@@ -1,4 +1,11 @@
 import { electronUrl, webUrl } from '../app.constants';
+let getUrl = (urlKey) => {
+    if (isElectron) {
+        return electronUrl.Group[urlKey];
+    } else {
+        return webUrl.Group[urlKey];
+    }
+  }
 giddh.serviceModule.service('groupService', function($resource, $q) {
   let Group = $resource('/company/:companyUniqueName/groups',
     {
@@ -450,14 +457,6 @@ giddh.serviceModule.service('groupService', function($resource, $q) {
       }, onSuccess, onFailure) );
     }
   };
-
-  let getUrl = (urlKey) => {
-    if (isElectron) {
-        return electronUrl.Group[urlKey];
-    } else {
-        return webUrl.Group[urlKey];
-    }
-  }
 
   return groupService;
 });

@@ -1,4 +1,12 @@
 import { electronUrl, webUrl } from '../app.constants';
+let getUrl = (urlKey) => {
+    if (isElectron) {
+        return electronUrl.Inventory[urlKey];
+    } else {
+        return webUrl.Inventory[urlKey]
+    }
+  }
+
 angular.module('inventoryServices', [])
 	.service('stockService', ['$resource', '$q', function($resource, $q){
 		var stock = $resource('/company/:companyUniqueName/stock-group', {
@@ -261,12 +269,4 @@ angular.module('inventoryServices', [])
 		}
 		return stockService
 }])
-
-let getUrl = (urlKey) => {
-    if (isElectron) {
-        return electronUrl.Inventory[urlKey];
-    } else {
-        return webUrl.Inventory[urlKey]
-    }
-  }
 

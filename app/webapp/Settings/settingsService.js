@@ -1,3 +1,12 @@
+import { electronUrl, webUrl } from '../app.constants';
+   let getUrl = (urlKey) => {
+        if (isElectron) {
+            return electronUrl.setService[urlKey];
+        } else {
+            return webUrl.setService[urlKey];
+        }
+    }
+
 giddh.serviceModule.service('settingsService', function($resource, $q) {
   let setService = $resource('/company/:companyUniqueName/templates',
     {
@@ -8,23 +17,23 @@ giddh.serviceModule.service('settingsService', function($resource, $q) {
     {
       save: {
         method: 'POST',
-        url: '/company/:companyUniqueName/templates'
+        url: getUrl('save')
       },
       update: {
         method: 'PUT',
-        url: '/company/:companyUniqueName/templates/update/:templateUniqueName'
+        url: getUrl('update')
       },
       getAllTemplates: {
         method: 'GET',
-        url: '/company/:companyUniqueName/templates/all'
+        url: getUrl('getAllTemplates')
       },
       getTemplate: {
         method: 'GET',
-        url: '/company/:companyUniqueName/templates/:templateUniqueName?operation=:operation'
+        url: getUrl('getUrl')
       },
       deleteTemplate: {
         method: 'DELETE',
-        url: '/company/:companyUniqueName/templates/:templateUniqueName'
+        url: getUrl('deleteTemplate')
       }
     });
 

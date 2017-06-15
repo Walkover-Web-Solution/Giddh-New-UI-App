@@ -1,4 +1,11 @@
 import { electronUrl, webUrl } from '../app.constants';
+let getUrl = (urlKey) => {
+        if (isElectron) {
+            return electronUrl.recEntry[urlKey];
+        } else {
+            return webUrl.recEntry[urlKey];
+        }
+    }
 angular.module('recurringEntryService', [])
 
 .service('recurringEntryService',function($resource, $q){
@@ -93,13 +100,7 @@ angular.module('recurringEntryService', [])
 	    }
 	}
 
-    let getUrl = (urlKey) => {
-        if (isElectron) {
-            return electronUrl.recEntry[urlKey];
-        } else {
-            return webUrl.recEntry[urlKey];
-        }
-    }
+
 
 	return recurringEntryService;
 

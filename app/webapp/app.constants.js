@@ -168,6 +168,54 @@ export const webUrl = {
     },
     Coupon: {
         Detail: '/coupon/get-coupon'
+    },
+    setService: {
+        save: '/company/:companyUniqueName/templates',
+        update: '/company/:companyUniqueName/templates/update/:templateUniqueName',
+        getAllTemplates: '/company/:companyUniqueName/templates/all',
+        getTemplate: '/company/:companyUniqueName/templates/:templateUniqueName?operation=:operation',
+        deleteTemplate: '/company/:companyUniqueName/templates/:templateUniqueName'
+    },
+    trialBal: {
+        getAll: '/company/:companyUniqueName/trial-balance',
+        getBalSheet: '/company/:companyUniqueName/trial-balance/balance-sheet',
+        getPL: '/company/:companyUniqueName/trial-balance/profit-loss',
+        downloadTBExcel: '/company/:companyUniqueName/trial-balance/excel-export'
+    },
+    balanceSheet: {
+        downloadBSExcel: '/company/:companyUniqueName/balance-sheet/balance-sheet-collapsed-download'
+    },
+    profitLoss: {
+        downloadPLExcel: '/company/:companyUniqueName/profit-loss/profit-loss-collapsed-download'
+    },
+    UserSET: {
+        getUserDetails: '/users/:uniqueName',
+        getSetAuthKey: '/users/auth-key/:uniqueName',
+        generateAuthKey: '/users/:uniqueName/generate-auth-key',
+        getSubList: '/users/:uniqueName/subscribed-companies',
+        getUserSubList: '/users/:uniqueName/transactions?page=:page',
+        getWltBal: '/users/:uniqueName/available-credit',
+        cancelAutoPay: '/users/:uniqueName/delete-payee',
+        addBalInWallet: '/users/:uniqueName/balance',
+        searchSite: '/ebanks',
+        addSiteAccount: '/company/:companyUniqueName/ebanks',
+        getAccounts: '/company/:companyUniqueName/ebanks',
+        addGiddhAccount: '/company/:companyUniqueName/ebanks/:itemAccountId',
+        setTransactionDate: '/company/:companyUniqueName/ebanks/:itemAccountId/eledgers/:date',
+        verifyMfa: '/company/:companyUniqueName/ebanks/:itemAccountId/verify-mfa',
+        refreshAll: '/company/:companyUniqueName/ebanks/refresh',
+        deleteBAccount: '/company/:companyUniqueName/login/:loginId',
+        removeGiddhAccount: '/company/:companyUniqueName/ebanks/:ItemAccountId/unlink',
+        createSubUser: '/users/:uniqueName/sub-user',
+        deleteSubUser: '/users/:uniqueName',
+        getSubUserAuthKey: '/users/:uniqueName/auth-key/sub-user?uniqueName=:uniqueName',
+        addMobileNumber: '/users/system_admin/verify-number',
+        verifyNumber: '/users/system_admin/verify-number',
+        connectBankAc: '/company/:companyUniqueName/ebanks/token',
+        refreshAccount: '/company/:companyUniqueName/login/:loginId/token/refresh',
+        reconnectAccount: '/company/:companyUniqueName/login/:loginId/token/reconnect',
+        changeTwoWayAuth: '/users/:uniqueName/settings'
+
     }
 };
 
@@ -340,5 +388,54 @@ export const electronUrl = {
     },
     Coupon: {
         Detail: '/coupon/get-coupon'
+    },
+    setService: {
+        save: '/company/:companyUniqueName/templates',
+        update: '/company/:companyUniqueName/templates/:templateUniqueName',
+        getAllTemplates: '/company/:companyUniqueName/templates/all',
+        getTemplate: '/company/:companyUniqueName/templates/:templateUniqueName',
+        deleteTemplate: '/company/:companyUniqueName/templates/:templateUniqueName'
+    },
+    trialBal: {
+        getAll: '/company/:companyUniqueName/trial-balance',
+        getBalSheet: '/company/:companyUniqueName/balance-sheet',
+        getPL: '/company/:companyUniqueName/profit-loss',
+        downloadTBExcel: '/company/:companyUniqueName/trial-balance-export'
+
+    },
+    balanceSheet: {
+        downloadBSExcel: '/company/:companyUniqueName/balance-sheet-collapsed-download'
+    },
+    profitLoss: {
+        downloadPLExcel: '/company/:companyUniqueName/profit-loss-collapsed-download'
+    },
+    UserSET: {
+        getUserDetails: '/users/:uniqueName',
+        getSetAuthKey: '/users/auth-key/:uniqueName',
+        generateAuthKey: '/users/:uniqueName/generate-auth-key',
+        getSubList: '/users/:uniqueName/subscribed-companies',
+        getUserSubList: '/users/:uniqueName/transactions',
+        getWltBal: '/users/:uniqueName/available-credit',
+        cancelAutoPay: '/users/:uniqueName/delete-payee',
+        addBalInWallet: '/users/:uniqueName/balance',
+        searchSite: '/ebanks',
+        addSiteAccount: '/company/:companyUniqueName/ebanks',
+        getAccounts: '/company/:companyUniqueName/ebanks',
+        addGiddhAccount: '/company/:companyUniqueName/ebanks/:itemAccountId',
+        setTransactionDate: '/company/:companyUniqueName/ebanks/:itemAccountId/eledgers/:date',
+        verifyMfa: '/company/:companyUniqueName/ebanks/:itemAccountId/verify-mfa',
+        refreshAll: '/company/:companyUniqueName/ebanks/refresh',
+        deleteBAccount: '/company/:companyUniqueName/login/:loginId',
+        removeGiddhAccount: '/company/:companyUniqueName/ebanks/:ItemAccountId/unlink',
+        createSubUser: '/users/:uniqueName/sub-user',
+        deleteSubUser: '/users/:uniqueName',
+        getSubUserAuthKey: '/users/:uniqueName/auth-key/sub-user',
+        addMobileNumber: '/users/system_admin/verify-number',
+        verifyNumber: '/users/system_admin/verify-number',
+        connectBankAc: '/company/:companyUniqueName/ebanks/token',
+        refreshAccount: '/company/:companyUniqueName/login/:loginId/token/refresh',
+        reconnectAccount: '/company/:companyUniqueName/login/:loginId/token/reconnect',
+        changeTwoWayAuth: '/users/:uniqueName/settings'
+
     }
 };
