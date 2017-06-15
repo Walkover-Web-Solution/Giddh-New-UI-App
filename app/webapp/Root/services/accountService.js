@@ -1,3 +1,4 @@
+import { electronUrl, webUrl } from '../../app.constants';
 giddh.serviceModule.service('accountService', function($resource, $q) {
   let createAccount = $resource('/company/:companyUniqueName/groups/:groupUniqueName/accounts',
     {
@@ -7,10 +8,10 @@ giddh.serviceModule.service('accountService', function($resource, $q) {
       'toDate': this.toDate,
       'fromDate': this.fromDate
     },
-    { 
+    {
       create: {
         method: 'POST'
-      } 
+      }
     }
   );
 
@@ -25,108 +26,108 @@ giddh.serviceModule.service('accountService', function($resource, $q) {
     {
       update: {
         method: 'PUT',
-        url: '/company/:companyUniqueName/accounts/:accountsUniqueName'
+        url: getUrl('update')
       },
       share: {
         method: 'PUT',
-        url: '/company/:companyUniqueName/accounts/:accountsUniqueName/share'
+        url: getUrl('share')
       },
 
       unshare: {
         method: 'PUT',
-        url: '/company/:companyUniqueName/accounts/:accountsUniqueName/unshare'
+        url: getUrl('unshare')
       },
 
       merge: {
         method: 'PUT',
-        url: '/company/:companyUniqueName/accounts/:accountsUniqueName/merge'
+        url: getUrl('merge')
       },
 
       // unMerge : {method: 'PUT', url: '/company/:companyUniqueName/accounts/:accountsUniqueName/merge'}
 
       unMergeDelete : {
         method: 'POST',
-        url: '/company/:companyUniqueName/accounts/:accountsUniqueName/un-merge'
+        url: getUrl('unMergeDelete')
       },
 
       sharedWith: {
         method: 'GET',
-        url: '/company/:companyUniqueName/accounts/:accountsUniqueName/shared-with'
+        url: getUrl('sharedWith')
       },
-      
+
       delete: {
         method: 'DELETE',
-        url: '/company/:companyUniqueName/accounts/:accountsUniqueName'
+        url: getUrl('delete')
       },
       get: {
         method: 'GET',
-        url: '/company/:companyUniqueName/accounts/:accountsUniqueName'
+        url: getUrl('get')
       },
       move: {
         method: 'PUT',
-        url: '/company/:companyUniqueName/accounts/:accountsUniqueName/move'
+        url: getUrl('move')
       },
 
       export: {
         method: 'GET',
-        url: '/company/:companyUniqueName/accounts/:accountsUniqueName/export-ledger'
+        url: getUrl('export')
       },
-      
+
       getlist: {
         method: 'GET',
-        url: '/company/:companyUniqueName/accounts/:accountsUniqueName/xls-imports'
+        url: getUrl('getlist')
       },
-      
+
       emailLedger: {
         method: 'POST',
-        url: '/company/:companyUniqueName/accounts/:accountsUniqueName/mail-ledger'
+        url: getUrl('emailLedger')
       },
 
       getInvList: {
         method: 'GET',
-        url: '/company/:companyUniqueName/accounts/:accountsUniqueName/invoices?fromDate=:fromDate&toDate=:toDate'
+        url: getUrl('getInvList')
       },
 
       prevInvoice: {
         method: 'POST',
-        url: '/company/:companyUniqueName/accounts/:accountsUniqueName/invoices/preview'
+        url: getUrl('prevInvoice')
       },
 
       genInvoice: {
         method: 'POST',
-        url: '/company/:companyUniqueName/accounts/:accountsUniqueName/invoices/generate'
+        url: getUrl('genInvoice')
       },
 
       downloadInvoice: {
         method: 'POST',
-        url: '/company/:companyUniqueName/accounts/:accountsUniqueName/invoices/download'
+        url: getUrl('downloadInvoice')
       },
 
       prevOfGenInvoice: {
         method: 'GET',
-        url: '/company/:companyUniqueName/accounts/:accountsUniqueName/invoices/:invoiceUniqueID/preview'
+        url: getUrl('prevOfGenInvoice')
       },
 
       mailInvoice: {
         method: 'POST',
-        url: '/company/:companyUniqueName/accounts/:accountsUniqueName/invoices/mail'
+        url: getUrl('mailInvoice')
       },
 
       updateInvoice: {
         method: 'PUT',
-        url: '/company/:companyUniqueName/invoices'
+        url: getUrl('updateInvoice')
       },
 
       generateMagicLink: {
         method: 'POST',
-        url: '/company/:companyUniqueName/accounts/:accountsUniqueName/magic-link?fromDate=:fromDate&toDate=:toDate'
+        url: getUrl('generateMagicLink')
       },
 
       getTaxHierarchy: {
         method: 'GET',
-        url: '/company/:companyUniqueName/accounts/:accountUniqueName/tax-hierarchy'
+        url: getUrl('getTaxHierarchy')
       }
-      
+
     });
 
   let accountService = {
@@ -308,6 +309,14 @@ giddh.serviceModule.service('accountService', function($resource, $q) {
       }, onSuccess, onFailure) );
     }
   };
+
+   let getUrl = (urlKey) => {
+        if (isElectron) {
+            return electronUrl.Report[urlKey];
+        } else {
+            return webUrl.Report[urlKey];
+        }
+    }
 
   return accountService;
 });

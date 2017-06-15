@@ -1,3 +1,4 @@
+import { electronUrl, webUrl } from '../app.constants';
 angular.module('inventoryServices', [])
 	.service('stockService', ['$resource', '$q', function($resource, $q){
 		var stock = $resource('/company/:companyUniqueName/stock-group', {
@@ -14,75 +15,75 @@ angular.module('inventoryServices', [])
 		{
 			get: {
 				method: 'GET',
-				url: '/company/:companyUniqueName/stock-group/groups-with-stocks-flatten'
+				url: getUrl('get')
 			},
 			getHeirarchy: {
 				method: 'GET',
-				url: '/company/:companyUniqueName/stock-group/groups-with-stocks-hierarchy-min'
+				url: getUrl('getHeirarchy')
 			},
 			addGroup: {
 				method: 'POST',
-				url: '/company/:companyUniqueName/stock-group'
+				url: getUrl('addGroup')
 			},
 			updateGroup: {
 				method: 'PUT',
-				url: '/company/:companyUniqueName/stock-group/:stockGroupUniqueName'
+				url: getUrl('updateGroup')
 			},
 			getStockGroups: {
 				method: 'GET',
-				url: '/company/:companyUniqueName/stock-group/:stockGroupUniqueName/stocks'
+				url: getUrl('getStockGroups')
 			},
 			createStock: {
 				method: 'POST',
-				url: '/company/:companyUniqueName/stock-group/:stockGroupUniqueName/stock'
+				url: getUrl('createStock')
 			},
 			deleteStock: {
 				method: 'DELETE',
-				url: '/company/:companyUniqueName/stock-group/delete-stock'
+				url: getUrl('deleteStock')
 			},
 			updateStockItem: {
 				method: 'PUT',
-				url: '/company/:companyUniqueName/stock-group/update-stock-item'
+				url: getUrl('updateStockItem')
 			},
 			getAllStocks: {
 				method: 'GET',
-				url: '/company/:companyUniqueName/stock-group/stocks'
+				url: getUrl('getAllStocks')
 			},
 			getStockDetail: {
 				method: 'GET',
-				url: '/company/:companyUniqueName/stock-group/:stockGroupUniqueName'
+				url: getUrl('getStockDetail')
 			},
 			getStockType: {
 				method: 'GET',
-				url: '/company/:companyUniqueName/stock-group/unit-types'
+				url: getUrl('getStockType')
 			},
 			createStockUnit: {
 				method: 'POST',
-				url: '/company/:companyUniqueName/stock-group/unit-types'
+				url: getUrl('createStockUnit')
 			},
 			updateStockUnit: {
 				method: 'PUT',
-				url: '/company/:companyUniqueName/stock-group/unit-types'
+				url: getUrl('updateStockUnit')
 			},
 			deleteStockUnit: {
 				method: 'DELETE',
-				url: '/company/:companyUniqueName/stock-group/unit-types'
+				url: getUrl('deleteStockUnit')
 			},
 			getFilteredStockGroups: {
 				method: 'GET',
-				url: '/company/:companyUniqueName/stock-group/hierarchical-stock-groups'
+				url: getUrl('getFilteredStockGroups')
 			},
 			getStockItemDetails: {
 				method: 'GET',
-				url: '/company/:companyUniqueName/stock-group/get-stock-detail'
+				url: getUrl('getStockItemDetails')
 			},
 			getStockReport: {
 				method: 'GET',
-				url: '/company/:companyUniqueName/stock-group/get-stock-report'
+				url: getUrl('getStockReport')
 			},
 			deleteStockGrp: {
 				method: 'DELETE',
-				url: '/company/:companyUniqueName/stock-group/delete-stockgrp'
+				url: getUrl('deleteStockGrp')
 			}
 
 		})
@@ -261,4 +262,11 @@ angular.module('inventoryServices', [])
 		return stockService
 }])
 
+let getUrl = (urlKey) => {
+    if (isElectron) {
+        return electronUrl.Inventory[urlKey];
+    } else {
+        return webUrl.Inventory[urlKey]
+    }
+  }
 

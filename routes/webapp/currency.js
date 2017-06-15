@@ -3,8 +3,8 @@ let router = settings.express.Router();
 
 router.get('/', function(req, res) {
   let hUrl = settings.envUrl + 'currency';
-  let args = { 
-  	headers: { 
+  let args = {
+  	headers: {
   		'Content-Type': 'application/json',
   		'X-Forwarded-For': res.locales.remoteIp
 }

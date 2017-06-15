@@ -1,3 +1,4 @@
+import { electronUrl, webUrl } from '../app.constants';
 giddh.serviceModule.service('reportService', function($resource, $q) {
   let Report = $resource('/company/:companyUniqueName/history',
     {
@@ -10,31 +11,31 @@ giddh.serviceModule.service('reportService', function($resource, $q) {
     {
       historicData: {
         method: 'POST',
-        url: '/company/:companyUniqueName/history?fromDate=:date1&toDate=:date2&interval=:interval'
+        url: getUrl('historicData')
       },
       newHistoricData: {
         method: 'POST',
-        url: '/company/:companyUniqueName/group-history?fromDate=:date1&toDate=:date2&interval=:interval&refresh=:refresh'
+        url: getUrl('newHistoricData')
       },
       plHistoricData: {
         method: 'GET',
-        url: '/company/:companyUniqueName/profit-loss-history?fromDate=:date1&toDate=:date2&interval=:interval'
+        url: getUrl('plHistoricData')
       },
       profitLossData: {
         method: 'GET',
-        url: '/company/:companyUniqueName/profit-loss?fromDate=:date1&toDate=:date2&interval=:interval'
+        url: getUrl('profitLossData')
       },
       nwHistoricData: {
         method: 'GET',
-        url: '/company/:companyUniqueName/networth-history?fromDate=:date1&toDate=:date2&interval=:interval'
+        url: getUrl('nwHistoricData')
       },
       networthData: {
         method: 'GET',
-        url: '/company/:companyUniqueName/networth?fromDate=:date1&toDate=:date2&interval=:interval'
+        url: getUrl('networthData')
       },
       combinedData:{
         method: 'GET',
-        url: '/company/:companyUniqueName/dashboard?fromDate=:date1&toDate=:date2&interval=:interval'
+        url: getUrl('combinedData')
       }
       // historicData: {
       //   method: 'PUT'
@@ -115,6 +116,13 @@ giddh.serviceModule.service('reportService', function($resource, $q) {
       }, onSuccess,  onFailure) );
     }
   };
+    let getUrl = (urlKey) => {
+        if (isElectron) {
+            return electronUrl.Report[urlKey];
+        } else {
+            return webUrl.Report[urlKey];
+        }
+    }
 
   return reportService;
 });

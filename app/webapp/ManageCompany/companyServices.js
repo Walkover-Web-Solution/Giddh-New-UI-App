@@ -1,3 +1,4 @@
+import { electronUrl, webUrl } from '../app.constants';
 giddh.serviceModule.service('companyServices', function($resource, $q) {
   let Company = $resource('/company',
   {
@@ -21,243 +22,243 @@ giddh.serviceModule.service('companyServices', function($resource, $q) {
 
     getCompanyList: {
       method: 'GET',
-      url: '/company/all'
+      url: webUrl.Company.getCompanyList
     },
 
     getCompanyListElectron: {
       method: 'GET',
-      url: '/users/:uniqueName/companies'
+      url: webUrl.Company.getCompanyList
     },
 
     deleteCompany: {
       method: 'DELETE',
-      url: '/company/:uniqueName'
+      url: getUrl('deleteCompany')
     },
 
     updateCompany: {
       method: 'PUT',
-      url: '/company/:uniqueName'
+      url: getUrl('updateCompany')
     },
 
     shareCompany: {
       method: 'PUT',
-      url: '/company/:uniqueName/share'
+      url: getUrl('shareCompany')
     },
 
     getSharedList: {
       method: 'GET',
-      url: '/company/:uniqueName/shared-with'
+      url: getUrl('getSharedList')
     },
 
     getCmpRolesList: {
       method: 'GET',
-      url: '/company/:uniqueName/shareable-roles'
+      url: getUrl('getCmpRolesList')
     },
 
     unSharedUser: {
       method: 'PUT',
-      url: '/company/:uniqueName/unshare'
+      url: getUrl('unSharedUser')
     },
 
     getUploadListDetails: {
       method: 'GET',
-      url: '/company/:uniqueName/imports'
+      url: getUrl('getUploadListDetails')
     },
 
     getProfitLoss: {
       method:'GET',
-      url: '/company/:uniqueName/profit-loss'
+      url: getUrl('getProfitLoss')
     },
 
     switchUser: {
       method: 'GET',
-      url: '/company/:uniqueName/switchUser'
+      url: getUrl('switchUser')
     },
 
     getCompTrans: {
       method:'GET',
-      url: '/company/:uniqueName/transactions?page=:page'
+      url: getUrl('getCompTrans')
     },
 
     updtCompSubs: {
       method: 'PUT',
-      url: '/company/:uniqueName/subscription-update'
+      url: getUrl('updtCompSubs')
     },
 
     payBillViaWallet: {
       method: 'POST',
-      url: '/company/:uniqueName/pay-via-wallet'
+      url: getUrl('payBillViaWallet')
     },
 
     retryXmlUpload: {
       method: 'PUT',
-      url: '/company/:uniqueName/retry'
+      url: getUrl('retryXmlUpload')
     },
 
     getInvTemplates: {
       method: 'GET',
-      url: '/company/:uniqueName/templates'
+      url: getUrl('getInvTemplates')
     },
 
     setDefltInvTemplt: {
       method: 'PUT',
-      url: '/company/:uniqueName/templates/:tempUname'
+      url: getUrl('setDefltInvTemplt')
     },
 
     updtInvTempData: {
       method: 'PUT',
-      url: '/company/:uniqueName/templates'
+      url: getUrl('updtInvTempData')
     },
 
     delInv: {
       method: 'DELETE',
-      url: '/company/:uniqueName/invoices/:invoiceUniqueID'
+      url: getUrl('delInv')
     },
 
     getTax: {
       method:'GET',
-      url: '/company/:uniqueName/tax'
+      url: getUrl('getTax')
     },
 
     addTax: {
       method: 'POST',
-      url: '/company/:uniqueName/tax'
+      url: getUrl('addTax')
     },
 
     deleteTax: {
       method: 'DELETE',
-      url: '/company/:uniqueName/tax/:taxUniqueName'
+      url: getUrl('deleteTax')
     },
 
     editTax: {
       method: 'PUT',
-      url: '/company/:uniqueName/tax/:taxUniqueName/:updateEntries'
+      url: getUrl('editTax')
     },
 
     saveSmsKey: {
       method: 'POST',
-      url: '/company/:companyUniqueName/sms-key'
+      url: getUrl('saveSmsKey')
     },
 
     saveEmailKey: {
       method: 'POST',
-      url: '/company/:companyUniqueName/email-key'
+      url: getUrl('saveEmailKey')
     },
 
     getSmsKey: {
       method: 'GET',
-      url: '/company/:companyUniqueName/sms-key'
+      url: getUrl('getSmsKey')
     },
 
     getEmailKey: {
       method: 'GET',
-      url: '/company/:companyUniqueName/email-key'
+      url: getUrl('getEmailKey')
     },
 
     sendEmail: {
       method: 'POST',
-      url: '/company/:companyUniqueName/accounts/bulk-email?from=:from&to=:to'
+      url: getUrl('sendEmail')
     },
 
     sendSms: {
       method: 'POST',
-      url: '/company/:companyUniqueName/accounts/bulk-sms?from=:from&to=:to'
+      url: getUrl('sendSms')
     },
 
     getFY: {
       method: 'GET',
-      url: '/company/:companyUniqueName/financial-year'
+      url: getUrl('getFY')
     },
 
     updateFY: {
       method: 'PUT',
-      url: '/company/:companyUniqueName/financial-year'
+      url: getUrl('updateFY')
     },
 
     switchFY: {
       method: 'PATCH',
-      url: '/company/:companyUniqueName/active-financial-year'
+      url: getUrl('switchFY')
     },
 
     lockFY: {
       method: 'PATCH',
-      url: '/company/:companyUniqueName/financial-year-lock'
+      url: getUrl('lockFY')
     },
 
     unlockFY: {
       method: 'PATCH',
-      url: '/company/:companyUniqueName/financial-year-unlock'
+      url: getUrl('unlockFY')
     },
 
     addFY: {
       method: 'POST',
-      url: '/company/:companyUniqueName/financial-year'
+      url: getUrl('addFY')
     },
 
     getMagicLink: {
       method: 'POST',
-      url: '/company/:companyUniqueName/accounts/:accountUniqueName/magic-link?from=:from&to=:to'
+      url: getUrl('getMagicLink')
     },
 
     assignTax: {
       method: 'POST',
-      url: '/company/:companyUniqueName/tax/assign'
+      url: getUrl('assignTax')
     },
 
     saveInvoiceSetting: {
       method: 'PUT',
-      url: '/company/:companyUniqueName/invoice-setting'
+      url: getUrl('saveInvoiceSetting')
     },
 
     getCroppedAcnt: {
       method: 'GET',
-      url: '/company/:companyUniqueName/cropped-flatten-account'
+      url: getUrl('getCroppedAcnt')
     },
 
     postCroppedAcnt: {
       method: 'POST',
-      url: '/company/:companyUniqueName/cropped-flatten-account'
+      url: getUrl('postCroppedAcnt')
     },
 
 
     getAllSettings: {
       method: 'GET',
-      url: '/company/:companyUniqueName/settings'
+      url: getUrl('getAllSettings')
     },
 
     updateAllSettings: {
       method: 'PUT',
-      url: '/company/:companyUniqueName/settings'
+      url: getUrl('updateAllSettings')
     },
 
     createWebhook: {
       method: 'POST',
-      url: '/company/:companyUniqueName/settings/webhooks'
+      url: getUrl('createWebhook')
     },
 
     deleteWebhook: {
       method: 'DELETE',
-      url: '/company/:companyUniqueName/settings/webhooks/:webhookUniqueName'
+      url: getUrl('deleteWebhook')
     },
 
     getRazorPayDetail: {
       method: 'GET',
-      url: '/company/:companyUniqueName/razorpay'
+      url: getUrl('getRazorPayDetail')
     },
 
     addRazorPayDetail: {
       method: 'POST',
-      url: '/company/:companyUniqueName/razorpay'
+      url: getUrl('addRazorPayDetail')
     },
 
     updateRazorPayDetail: {
       method: 'PUT',
-      url: '/company/:companyUniqueName/razorpay'
+      url: getUrl('updateRazorPayDetail')
     },
 
     deleteRazorPayDetail: {
       method: 'DELETE',
-      url: '/company/:companyUniqueName/razorpay'
+      url: getUrl('deleteRazorPayDetail')
     }
   });
 
@@ -523,6 +524,14 @@ giddh.serviceModule.service('companyServices', function($resource, $q) {
       }, onSuccess, onFailure) );
     }
   };
+
+  let getUrl = (urlKey) => {
+    if (isElectron) {
+        return electronUrl.Company[urlKey];
+    } else {
+        return webUrl.Company[urlKey];
+    }
+  }
 
   return companyServices;
 });

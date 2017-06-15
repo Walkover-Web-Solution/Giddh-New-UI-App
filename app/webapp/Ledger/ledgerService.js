@@ -1,3 +1,4 @@
+import { electronUrl, webUrl } from '../app.constants';
 giddh.serviceModule.service('ledgerService', function($resource, $q) {
   let Ledger = $resource('/company/:companyUniqueName/accounts',
     {
@@ -14,45 +15,45 @@ giddh.serviceModule.service('ledgerService', function($resource, $q) {
     {
       get: {
         method: 'GET',
-        url: '/company/:companyUniqueName/accounts/:accountsUniqueName/ledgers'
+        url: getUrl('get')
       },
       create: {
         method: 'POST',
-        url: '/company/:companyUniqueName/accounts/:accountsUniqueName/ledgers/'
+        url: getUrl('create')
       },
       update: {
         method: 'PUT',
-        url: '/company/:companyUniqueName/accounts/:accountsUniqueName/ledgers/:entryUniqueName'
+        url: getUrl('update')
       },
       getEntry: {
         method: 'GET',
-        url: '/company/:companyUniqueName/accounts/:accountsUniqueName/ledgers/:entryUniqueName'
+        url: getUrl('getEntry')
       },
       delete: {
         method: 'DELETE',
-        url: '/company/:companyUniqueName/accounts/:accountsUniqueName/ledgers/:entryUniqueName'
+        url: getUrl('delete')
       },
       getEntrySettings: {
         method: 'GET',
-        url: '/company/:companyUniqueName/entry-settings'
+        url: getUrl('getEntrySettings')
       },
       updateEntrySettings: {
         method: 'PUT',
-        url: '/company/:companyUniqueName/update-entry-settings'
+        url: getUrl('updateEntrySettings')
       },
       getInvoiceFile: {
         method: 'GET',
-        url: '/company/:companyUniqueName/accounts/:accountsUniqueName/ledgers/invoice-file'
+        url: getUrl('getInvoiceFile')
       },
       getReconcileEntries: {
         method: 'GET',
-        url: '/company/:companyUniqueName/accounts/:accountsUniqueName/ledgers/reconcile'
+        url: getUrl('getReconcileEntries')
       },
       getAllTransactions: {
         method: 'GET',
-        url: '/company/:companyUniqueName/accounts/:accountsUniqueName/ledgers/transactions'
+        url: getUrl('getAllTransactions')
       }
-      
+
     }
   );
 
@@ -63,22 +64,22 @@ giddh.serviceModule.service('ledgerService', function($resource, $q) {
       'transactionId': this.transactionId
       // 'refresh': @refresh
     },
-    { 
+    {
       getTransactions: {
         method: 'GET',
-        url: '/company/:companyUniqueName/accounts/:accountsUniqueName/eledgers'
+        url: getUrlOtherLedger('getTransactions')
       },
       getFreshTransactions: {
         method: 'GET',
-        url: '/company/:companyUniqueName/accounts/:accountsUniqueName/eledgers?refresh=true'
+        url: getUrlOtherLedger('getFreshTransactions')
       },
       trashTransaction: {
         method: 'DELETE',
-        url: '/company/:companyUniqueName/accounts/:accountsUniqueName/eledgers/:transactionId'
+        url: getUrlOtherLedger('trashTransaction')
       },
       mapEntry: {
         method: 'PUT',
-        url: '/company/:companyUniqueName/accounts/:accountsUniqueName/eledgers/map/:transactionId'
+        url: getUrlOtherLedger('mapEntry')
       }
     }
   );
@@ -202,6 +203,22 @@ giddh.serviceModule.service('ledgerService', function($resource, $q) {
       },data, onSuccess, onFailure) );
     }
   };
+
+    let getUrl = (urlKey) => {
+        if (isElectron) {
+            return electronUrl.Ledger[urlKey];
+        } else {
+            return webUrl.Ledger[urlKey];
+        }
+    }
+
+    let getUrlOtherLedger = (urlKey) => {
+        if (isElectron) {
+            return electronUrl.otherLedger[urlKey];
+        } else {
+            return webUrl.otherLedger[urlKey];
+        }
+    }
 
   return ledgerService;
 });

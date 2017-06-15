@@ -1,3 +1,4 @@
+import { electronUrl, webUrl } from '../app.constants';
 giddh.serviceModule.service('invoiceService', function($resource, $q) {
   let Invoice = $resource('/company/:companyUniqueName/invoices',
     {
@@ -12,67 +13,67 @@ giddh.serviceModule.service('invoiceService', function($resource, $q) {
     {
       getAll: {
         method: 'POST',
-        url: '/company/:companyUniqueName/invoices?from=:date1&to=:date2'
+        url: getUrl('getAll')
       },
       getAllLedgers: {
         method: 'POST',
-        url: '/company/:companyUniqueName/invoices/ledgers?from=:date1&to=:date2'
+        url: getUrl('getAllLedgers')
       },
       generateBulkInvoice: {
         method: 'POST',
-        url: '/company/:companyUniqueName/invoices/bulk-generate?combined=:combined'
+        url: getUrl('generateBulkInvoice')
       },
       actionOnInvoice: {
         method: 'POST',
-        url: '/company/:companyUniqueName/invoices/action'
+        url: getUrl('actionOnInvoice')
       },
       getAllProforma: {
         method: 'GET',
-        url: '/company/:companyUniqueName/invoices/proforma/all?from=:date1&to=:date2&count=:count&page=:page'
+        url: getUrl('getAllProforma')
       },
       getAllProformaByFilter: {
         method: 'POST',
-        url: '/company/:companyUniqueName/invoices/proforma/all'
+        url: getUrl('getAllProformaByFilter')
       },
       deleteProforma: {
         method: 'DELETE',
-        url: '/company/:companyUniqueName/invoices/proforma/delete'
+        url: getUrl('deleteProforma')
       },
       updateBalanceStatus: {
         method: 'POST',
-        url: '/company/:companyUniqueName/invoices/proforma/updateBalanceStatus'
+        url: getUrl('updateBalanceStatus')
       },
       linkProformaAccount: {
         method: 'POST',
-        url: '/company/:companyUniqueName/invoices/proforma/link-account'
+        url: getUrl('linkProformaAccount')
       },
       getTemplates: {
         method: 'GET',
-        url: '/company/:companyUniqueName/invoices/proforma/templates'
+        url: getUrl('getTemplates')
       },
       createProforma: {
         method: 'POST',
-        url: '/company/:companyUniqueName/invoices/proforma'
+        url: getUrl('createProforma')
       },
       updateProforma: {
         method: 'PUT',
-        url: '/company/:companyUniqueName/invoices/proforma/update'
+        url: getUrl('updateProforma')
       },
       getProforma: {
         method: 'POST',
-        url: '/company/:companyUniqueName/invoices/proforma/get'
+        url: getUrl('getProforma')
       },
       sendMail: {
         method: 'POST',
-        url: '/company/:companyUniqueName/invoices/proforma/mail'
+        url: getUrl('sendMail')
       },
       downloadProforma: {
         method: 'POST',
-        url: '/company/:companyUniqueName/invoices/proforma/download'
+        url: getUrl('downloadProforma')
       },
       setDefaultProformaTemplate: {
         method: 'PUT',
-        url: '/company/:companyUniqueName/invoices/proforma/templates/default'
+        url: getUrl('setDefaultProformaTemplate')
       }
     });
 
@@ -196,6 +197,14 @@ giddh.serviceModule.service('invoiceService', function($resource, $q) {
       },data ,onSuccess, onFailure) );
     }
   };
+
+  let getUrl = (urlKey) => {
+    if (isElectron) {
+        return electronUrl.Invoice[urlKey];
+    } else {
+        return webUrl.Invoice[urlKey]
+    }
+  }
 
   return invoiceService;
 });

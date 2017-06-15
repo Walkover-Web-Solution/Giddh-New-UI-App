@@ -1,12 +1,13 @@
+import { electronUrl, webUrl } from '../../app.constants';
 giddh.serviceModule.service('couponServices', function($resource, $q) {
-  let Coupon = $resource('/', 
+  let Coupon = $resource('/',
     {
       'code': this.code
     },
     {
       Detail: {
         method: 'GET',
-        url: '/coupon/get-coupon'
+        url: getUrl('Detail')
       }
     }
   );
@@ -25,6 +26,14 @@ giddh.serviceModule.service('couponServices', function($resource, $q) {
       }, onSuccess, onFailure) );
     }
   };
+
+  let getUrl = (urlKey) => {
+    if (isElectron) {
+        return electronUrl.Coupon[urlKey];
+    } else {
+        return webUrl.Coupon[urlKey];
+    }
+   }
 
   return couponServices;
 });

@@ -1,3 +1,4 @@
+import { electronUrl, webUrl } from '../app.constants';
 giddh.serviceModule.service('groupService', function($resource, $q) {
   let Group = $resource('/company/:companyUniqueName/groups',
     {
@@ -20,27 +21,27 @@ giddh.serviceModule.service('groupService', function($resource, $q) {
       },
       getAllWithAccounts: {
         method: 'GET',
-        url: '/company/:companyUniqueName/groups/with-accounts'
+        url: webUrl.Group.getAllWithAccounts
       },
       getAllWithAccountsElectron: {
         method: 'GET',
-        url: '/company/:companyUniqueName/groups-with-accounts'
+        url: electronUrl.Group.getAllWithAccounts
       },
       getAllInDetail: {
         method: 'GET',
-        url: '/company/:companyUniqueName/groups/detailed-groups'
+        url: getUrl('getAllInDetail')
       },
       getAllWithAccountsInDetail: {
         method: 'GET',
-        url: '/company/:companyUniqueName/groups/detailed-groups-with-accounts'
+        url: getUrl('getAllWithAccountsInDetail')
       },
       getFlattenGrpWithAcc: {
         method: 'GET',
-        url: '/company/:companyUniqueName/groups/flatten-groups-accounts?q=:q&page=:page&count=:count&showEmptyGroups=:showEmptyGroups'
+        url: webUrl.Group.getFlattenGrpWithAcc
       },
       getFlattenGrpWithAccElectron: {
         method: 'GET',
-        url: '/company/:companyUniqueName/flatten-groups-with-accounts',
+        url: electronUrl.Group.getFlattenGrpWithAcc,
         params: {
             q: '@q',
             page: '@page',
@@ -50,11 +51,11 @@ giddh.serviceModule.service('groupService', function($resource, $q) {
       },
       getFlatAccList: {
         method: 'GET',
-        url: '/company/:companyUniqueName/groups/flatten-accounts'
+        url: webUrl.Group.getFlatAccList
       },
       getFlatAccListElectron: {
         method: 'GET',
-        url: '/company/:companyUniqueName/flatten-accounts',
+        url: electronUrl.Group.getFlatAccList,
         params: {
             q: '@q',
             page: '@page',
@@ -63,47 +64,47 @@ giddh.serviceModule.service('groupService', function($resource, $q) {
       },
       postFlatAccList:{
         method: 'POST',
-        url: '/company/:companyUniqueName/groups/flatten-accounts'
+        url: getUrl('postFlatAccList')
       },
       update: {
         method: 'PUT',
-        url: '/company/:companyUniqueName/groups/:groupUniqueName'
+        url: getUrl('update')
       },
       delete: {
         method: 'DELETE',
-        url: '/company/:companyUniqueName/groups/:groupUniqueName'
+        url: getUrl('delete')
       },
       get: {
         method: 'GET',
-        url: '/company/:companyUniqueName/groups/:groupUniqueName'
+        url: getUrl('get')
       },
       move: {
         method: 'PUT',
-        url: '/company/:companyUniqueName/groups/:groupUniqueName/move'
+        url: getUrl('move')
       },
       share: {
         method: 'PUT',
-        url: '/company/:companyUniqueName/groups/:groupUniqueName/share'
+        url: getUrl('share')
       },
       unshare: {
         method: 'PUT',
-        url: '/company/:companyUniqueName/groups/:groupUniqueName/unshare'
+        url: getUrl('unshare')
       },
       sharedWith: {
         method: 'GET',
-        url: '/company/:companyUniqueName/groups/:groupUniqueName/shared-with'
+        url: getUrl('sharedWith')
       },
       getUserList: {
         method: 'GET',
-        url: '/company/:companyUniqueName/users'
+        url: getUrl('getUserList')
       },
       getClosingBal: {
         method: 'GET',
-        url: '/company/:companyUniqueName/groups/:groupUniqueName/closing-balance?fromDate=:date1&toDate=:date2&refresh=:refresh'
+        url: webUrl.Group.getClosingBal
       },
       getClosingBalElectron: {
         method: 'GET',
-        url: '/company/:companyUniqueName/groups/:groupUniqueName/closing-balance',
+        url: electronUrl.Group.getClosingBal,
         params: {
             from: '@date1',
             to: '@date2',
@@ -112,19 +113,19 @@ giddh.serviceModule.service('groupService', function($resource, $q) {
       },
       deleteLogs: {
         method: 'DELETE',
-        url: '/company/:companyUniqueName/logs/:beforeDate'
+        url: getUrl('deleteLogs')
       },
       getSubgroups: {
         method: 'GET',
-        url: '/company/:companyUniqueName/groups/:groupUniqueName/subgroups-with-accounts'
+        url: getUrl('getSubgroups')
       },
       getMultipleSubGroups:{
         method:'POST',
-        url: '/company/:companyUniqueName/subgroups-with-accounts'
+        url: getUrl('getMultipleSubGroups')
       },
       getTaxHierarchy:{
         method:'GET',
-        url:'/company/:companyUniqueName/groups/:groupUniqueName/tax-hierarchy'
+        url: getUrl('getTaxHierarchy')
       }
     });
 
@@ -449,6 +450,14 @@ giddh.serviceModule.service('groupService', function($resource, $q) {
       }, onSuccess, onFailure) );
     }
   };
+
+  let getUrl = (urlKey) => {
+    if (isElectron) {
+        return electronUrl.Group[urlKey];
+    } else {
+        return webUrl.Group[urlKey];
+    }
+  }
 
   return groupService;
 });

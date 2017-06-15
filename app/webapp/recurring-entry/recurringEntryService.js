@@ -1,3 +1,4 @@
+import { electronUrl, webUrl } from '../app.constants';
 angular.module('recurringEntryService', [])
 
 .service('recurringEntryService',function($resource, $q){
@@ -14,23 +15,23 @@ angular.module('recurringEntryService', [])
 	{
 		create: {
 			method: 'POST',
-			url: '/company/:companyUniqueName/recurring-entry'
+			url: getUrl('create')
 		},
 		get:{
 			method: 'GET',
-			url: '/company/:companyUniqueName/recurring-entry'
+			url: getUrl('get')
 		},
 		getDuration:{
 			method: 'GET',
-			url: '/company/:companyUniqueName/recurring-entry/duration-type'
+			url: getUrl('getDuration')
 		},
 		update: {
 			method: 'PUT',
-			url: '/company/:companyUniqueName/recurring-entry/update'
+			url: getUrl('update')
 		},
 		delete:{
 			method: 'DELETE',
-			url: '/company/:companyUniqueName/recurring-entry/delete'
+			url: getUrl('delete')
 		}
 	})
 	recurringEntryService = {
@@ -91,6 +92,14 @@ angular.module('recurringEntryService', [])
 	    	})
 	    }
 	}
+
+    let getUrl = (urlKey) => {
+        if (isElectron) {
+            return electronUrl.recEntry[urlKey];
+        } else {
+            return webUrl.recEntry[urlKey];
+        }
+    }
 
 	return recurringEntryService;
 

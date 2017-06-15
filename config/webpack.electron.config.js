@@ -68,10 +68,12 @@ filesArray.push('script-loader!' + path.resolve(__dirname, '../node_modules/rxjs
 filesArray.push('script-loader!' + path.resolve(__dirname, '../node_modules/es6-shim/es6-shim.js'))
 filesArray.push('script-loader!' + path.resolve(__dirname, '../node_modules/angular2/bundles/angular2-polyfills.js'))
 filesArray.push('script-loader!' + path.resolve(__dirname, '../node_modules/angular2/bundles/angular2-all.umd.min.js'))
+filesArray.push(path.resolve(__dirname, '../app/webapp/app.constants.js'));
 filesArray.push(path.resolve(__dirname, '../app/webapp/root.js'));
 filesArray.push(...glob.sync(path.resolve(__dirname, '../app/webapp/**/*.js'), {
     ignore: [
         path.resolve(__dirname, '../app/webapp/Globals/modified_lib/**/*.js'),
+        path.resolve(__dirname, '../app/webapp/app.constants.js'),
         path.resolve(__dirname, '../app/webapp/root.js'),
         path.resolve(__dirname, '../app/webapp/ng2/**/*.js')
 
