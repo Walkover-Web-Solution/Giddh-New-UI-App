@@ -460,9 +460,10 @@ $scope.hideHeader = false
     $rootScope.getCompanyList = ()=> companyServices.getAll().then($scope.getCompanyListSuccess, $scope.getCompanyListFailure);
   } else {
     let cdt = localStorageService.get("_userDetails");
-    if (cdt) {
-        $rootScope.getCompanyList = ()=> companyServices.getAllElectron(cdt.uniqueName).then($scope.getCompanyListSuccess, $scope.getCompanyListFailure);
+    if (!cdt) {
+       cdt = { uniqueName: '' }
     }
+    $rootScope.getCompanyList = ()=> companyServices.getAllElectron(cdt.uniqueName).then($scope.getCompanyListSuccess, $scope.getCompanyListFailure);
   }
 
   //Get company list success

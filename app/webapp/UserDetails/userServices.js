@@ -2,9 +2,9 @@ import { electronUrl, webUrl } from "../app.constants";
 
 let getUrl = urlKey => {
   if (isElectron) {
-    return electronUrl.trialBal[urlKey];
+    return electronUrl.UserSET[urlKey];
   } else {
-    return webUrl.trialBal[urlKey];
+    return webUrl.UserSET[urlKey];
   }
 };
 

@@ -76,7 +76,7 @@ let userController = function($scope, $rootScope, toastr, userServices, localSto
 
   $scope.getUserTransaction = function() {
     let modalInstance = $uibModal.open({
-      templateUrl: 'prevTransDetail.html',
+      templateUrl: 'public/webapp/UserDetails/prevTransDetail.html',
       size: "liq90",
       backdrop: 'static',
       scope: $scope

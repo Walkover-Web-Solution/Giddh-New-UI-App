@@ -519,6 +519,10 @@ let invoiceController = function($scope, $rootScope, $filter, $uibModal, $timeou
     };
 
     let url = `/upload/${$rootScope.selectedCompany.uniqueName}/logo`;
+
+    if (isElectron) {
+        url = `/company/${$rootScope.selectedCompany.uniqueName}/logo`;
+    }
     return $http.post(url, formData, {
       transformRequest: angular.identity,
       headers: {'Content-Type': undefined}

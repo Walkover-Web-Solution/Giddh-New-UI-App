@@ -19,7 +19,7 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
   ledgerCtrl.showEledger = true;
   ledgerCtrl.popover = {
 
-    templateUrl: 'panel',
+    templateUrl: 'public/webapp/Ledger/panel',
     draggable: false,
     position: "bottom"
   };
@@ -2361,8 +2361,10 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
         return toastr.error('Upload failed, please check that file size is less than 1 mb');
       }
     };
-
-    let url = '/upload-invoice';
+    let url = '/upload-invoice'
+    if (isElectron) {
+      url = `/company/${$rootScope.selectedCompany.uniqueName}/ledger/upload`;
+    }
     return $http.post(url, formData, {
       transformRequest: angular.identity,
       headers: {'Content-Type': undefined}

@@ -361,7 +361,7 @@ let newLedgerController = function($scope, $rootScope, $window,localStorageServi
 
   lc.popover = {
 
-    templateUrl: 'panel',
+    templateUrl: 'public/webapp/Ledger/panel.html',
     draggable: false,
     position: "bottom"
   };
@@ -2309,7 +2309,10 @@ aria-hidden="true">&times;</span></button> \
       }
     };
 
-    let url = 'upload-invoice';
+    let url = '/upload-invoice'
+    if (isElectron) {
+      url = `/company/${$rootScope.selectedCompany.uniqueName}/ledger/upload`;
+    }
     return $http.post(url, formData, {
       transformRequest: angular.identity,
       headers: {'Content-Type': undefined}
