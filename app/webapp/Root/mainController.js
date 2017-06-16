@@ -132,6 +132,7 @@ $scope.hideHeader = false
     }
 
     $scope.userName = $rootScope.basicInfo.name;
+    debugger
     $rootScope.getCompanyList();
     if (!_.isEmpty($rootScope.selectedCompany)) {
       return $rootScope.cmpViewShow = true;
@@ -460,10 +461,11 @@ $scope.hideHeader = false
     $rootScope.getCompanyList = ()=> companyServices.getAll().then($scope.getCompanyListSuccess, $scope.getCompanyListFailure);
   } else {
     let cdt = localStorageService.get("_uniqueName");
-    if (!cdt) {
-       cdt = ''
+    $rootScope.getCompanyList = ()=> {
+        if (cdt) {
+            companyServices.getAllElectron(cdt).then($scope.getCompanyListSuccess, $scope.getCompanyListFailure);
+        }
     }
-    $rootScope.getCompanyList = ()=> companyServices.getAllElectron(cdt).then($scope.getCompanyListSuccess, $scope.getCompanyListFailure);
   }
 
   //Get company list success
