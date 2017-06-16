@@ -1,7 +1,7 @@
 angular.module('recurringEntryController', [])
 
 .controller('recurringEntryController', ['$scope','$rootScope','stockService','localStorageService','groupService' ,'toastr','$filter','companyServices','recurringEntryService' ,function($scope, $rootScope, stockService, localStorageService,groupService, toastr, $filter,companyServices,recurringEntryService){
-	
+
 	if (_.isUndefined($rootScope.selectedCompany)) $rootScope.selectedCompany = localStorageService.get('_selectedCompany')
 
 	var recEntry = this;
@@ -71,7 +71,7 @@ angular.module('recurringEntryController', [])
 	recEntry.entryTypes = [
 		'DEBIT',
 		'CREDIT'
-	]  
+	]
 
 	//tax list
 	recEntry.taxes = []
@@ -102,7 +102,7 @@ angular.module('recurringEntryController', [])
 		recEntry.selectLedger(ledger)
 	}
 
-	//blank entry model 
+	//blank entry model
 	recEntry.entryModel = function(){
 		this.model = {
 		  "transactions": [
@@ -196,7 +196,7 @@ angular.module('recurringEntryController', [])
 			toastr.error(res.data.message)
 			recEntry.showLoader = false
 		}
-		reqParam = {}
+		var reqParam = {}
 		reqParam.companyUniqueName = $rootScope.selectedCompany.uniqueName
 		recurringEntryService.getEntries(reqParam).then(this.success, this.failure)
 	}
@@ -257,7 +257,7 @@ angular.module('recurringEntryController', [])
 	}
 
 
-	//get duration types 
+	//get duration types
 	recEntry.getDuration = function(){
 		this.success = function(res){
 			recEntry.durationList = res.body.durationTypes
@@ -265,7 +265,7 @@ angular.module('recurringEntryController', [])
 		this.failure = function(res){
 			toastr.error(res.data.message)
 		}
-		reqParam = {}
+		var reqParam = {}
 		reqParam.companyUniqueName = $rootScope.selectedCompany.uniqueName
 		recurringEntryService.getDuration(reqParam).then(this.success, this.failure)
 	}
@@ -288,7 +288,7 @@ angular.module('recurringEntryController', [])
 		reqParam.companyUniqueName = $rootScope.selectedCompany.uniqueName
 		reqParam.accountUniqueName = ledger.recurringEntryDetail.account.uniqueName
 		reqParam.recurringentryUniqueName = ledger.recurringEntryDetail.uniqueName
-		delete entry.recurringEntryDetail 
+		delete entry.recurringEntryDetail
 		delete entry.updatedBy
 		delete entry.updatedAt
 		delete entry.voucher
@@ -315,7 +315,7 @@ angular.module('recurringEntryController', [])
 			reqParam.companyUniqueName = $rootScope.selectedCompany.uniqueName
 			reqParam.accountUniqueName = ledger.recurringEntryDetail.account.uniqueName
 			reqParam.recurringentryUniqueName = ledger.recurringEntryDetail.uniqueName
-			recurringEntryService.delete(reqParam).then(this.success, this.failure)			
+			recurringEntryService.delete(reqParam).then(this.success, this.failure)
 		}
 
 	}

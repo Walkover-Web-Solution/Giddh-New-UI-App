@@ -116,7 +116,7 @@
             <uib-progressbar class="progress-striped active" value="f.progress" type="success">{{f.progress}}%</uib-progressbar>
           </div>
         </div>
-        <div ng-include="'panel'" ng-if="lc.showPanel" left-margin></div>
+        <div ng-include="'public/webapp/Ledger/panel.html'" ng-if="lc.showPanel" left-margin></div>
         <div>
           <!--ledger table start-->
 
@@ -603,7 +603,7 @@
       </div>
     </section>
 </div>
-<script type="text/ng-template" id="panel">
+<!-- <script type="text/ng-template" id="panel">
     <div class="ledger-panel" ng-click="$event.stopPropagation()" ng-class="{'pop-panel':!popover.draggable, 'fixed-panel': lc.showPanel, 'top0':hideHeader}">
       <div class="wrapper">
         <div class="">
@@ -637,7 +637,7 @@
               </label>
             </div>
 
-            <!--tax list-->
+
             <div class="mrT1 clearfix" style="clear:both" ng-if="lc.taxList.length > 0 && (lc.selectedLedger.taxes.length == 0 && lc.selectedLedger.taxList.length == 0) || (lc.selectedLedger.taxes.length == 0 && lc.selectedLedger.taxList == undefined)">
               <hr class="width100">
 
@@ -675,7 +675,7 @@
                 </li>
               </ul>
             </div>
-            <!--/tax-list-->
+
 
             <hr  class="width100">
           </div>
@@ -708,7 +708,7 @@
               </div>
             </div>
             <div class="col-xs-5 pull-right" ng-if="!lc.selectedLedger.invoiceGenerated">
-                            <!--file upload-->
+
               <div class="upload_div blue" style="padding:5px;" ng-if="lc.selectedLedger.attachedFileName.length == 0">
                   <input type="file" name="invoiceFile" id="invoiceFile" ng-click="$event.stopPropagation()" onchange="angular.element(this).scope().getInvoiceFile(this.files)">
                   <label for="invoiceFile">Upload Image</label>
@@ -753,9 +753,7 @@
                 <span ng-if="(lc.selectedLedger.uniqueName != undefined && lc.selectedLedger.uniqueName != '') && (lc.selectedLedger.isBankTransaction == false || lc.selectedLedger.isBankTransaction == undefined)">Update</span>
               </button>
 
-              <!--file upload-->
 
-              <!--file upload-->
 
 
             <button ng-if="(lc.selectedLedger.uniqueName == undefined || lc.selectedLedger.uniqueName == '') && ((lc.selectedLedger.transactions[0].particular.uniqueName != '' && lc.selectedLedger.transactions[0].particular.uniqueName != undefined) || (lc.selectedLedger.transactions[1].particular.uniqueName != '' && lc.selectedLedger.transactions[1].particular.uniqueName != undefined)) && (lc.selectedLedger.isBankTransaction == false || lc.selectedLedger.isBankTransaction == undefined)" class="pull-right btn btn-sm btn-default mrL1" ng-click="lc.resetLedger()">Reset</button>
@@ -766,7 +764,7 @@
         </div>
       </div>
     </div>
-</script>
+</script> -->
 
 <script type="text/ng-template" id="accountPopUp.html">
   <a href="javascript:void(0)" class="account-list-item" set-drop-overflow style="border-bottom:1px solid #e0e0e0;">

@@ -159,7 +159,7 @@ let groupController = function($scope, $rootScope, localStorageService, groupSer
   //     toastr.error("Select company first.", "Error")
   //   else
   //     modalInstance = $uibModal.open(
-  //       templateUrl: $rootScope.prefixThis+'/public/webapp/NewManageGroupsAndAccounts/ManageGroupModal.html'
+  //       templateUrl: $rootScope.prefixThis+'public/webapp/NewManageGroupsAndAccounts/ManageGroupModal.html'
   //       size: "liq90"
   //       backdrop: 'static'
   //       scope: $scope

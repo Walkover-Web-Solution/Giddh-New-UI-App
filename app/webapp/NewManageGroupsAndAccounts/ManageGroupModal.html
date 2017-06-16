@@ -16,8 +16,8 @@
               <i class="glyphicon glyphicon-search"></i>
             </div>
 
-            <input type="text" name="grpSrch" id="grpSrch" class="form-control" ng-model="mc.keyWord" placeholder="Search accounts" ng-change="mc.searchQuery(mc.keyWord)" trial-accordion="search" ng-model-options="{debounce:700}"> <i class="fa fa-times reset" ng-click="mc.resetSearch()"></i>  
-            
+            <input type="text" name="grpSrch" id="grpSrch" class="form-control" ng-model="mc.keyWord" placeholder="Search accounts" ng-change="mc.searchQuery(mc.keyWord)" trial-accordion="search" ng-model-options="{debounce:700}"> <i class="fa fa-times reset" ng-click="mc.resetSearch()"></i>
+
 
           </div>
         </div>
@@ -39,7 +39,7 @@
         <a href=""  ng-bind-html="ass.name"></a>
          </li>
       </ul>
-      
+
       <div class="grp_wrapper">
 
         <!-- level 1 -->
@@ -98,8 +98,8 @@
         </div>
       <!--  -->
 
-        <div ng-include="'/public/webapp/NewManageGroupsAndAccounts/accountOperations.html'" ng-if="mc.selectedType == 'acc' && !mc.createNew"></div>
-        <div ng-include="'/public/webapp/NewManageGroupsAndAccounts/groupOperations.html'" ng-if="mc.selectedType == 'grp' && !mc.createNew"></div>
+        <div ng-include="'public/webapp/NewManageGroupsAndAccounts/accountOperations.html'" ng-if="mc.selectedType == 'acc' && !mc.createNew"></div>
+        <div ng-include="'public/webapp/NewManageGroupsAndAccounts/groupOperations.html'" ng-if="mc.selectedType == 'grp' && !mc.createNew"></div>
 
       </div> <!-- row -->
     </div>  <!-- col-xs-5 -->

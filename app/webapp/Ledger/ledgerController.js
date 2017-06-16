@@ -192,7 +192,7 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
       $rootScope.ledgerState = true;
     }
     // ledgerCtrl.getPaginatedLedger(1)
-    ledgerCtrl.getUnderstanding(res.body);
+    if (!isElectron) ledgerCtrl.getUnderstanding(res.body);
     if ((res.body.yodleeAdded === true) && $rootScope.canUpdate) {
       //get bank transaction here
       return $timeout(( () => ledgerCtrl.getBankTransactions($rootScope.selectedAccount.uniqueName)), 2000);
@@ -2627,7 +2627,7 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
   ledgerCtrl.displayEntryModal = function() {
     $scope.ledgerCtrl = ledgerCtrl;
     return ledgerCtrl.entryModalInstance = $uibModal.open({
-      templateUrl: '/public/webapp/Ledger/entryPopup.html',
+      templateUrl: 'public/webapp/Ledger/entryPopup.html',
       size: "liq90",
       animation: true,
       backdrop: 'static',
@@ -2701,7 +2701,7 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
     ledgerCtrl.selectedTxn.isOpen = false;
     ledgerCtrl.getFlattenGrpWithAccList($rootScope.selectedCompany.uniqueName, true);
     return ledgerCtrl.AccmodalInstance = $uibModal.open({
-      templateUrl:'/public/webapp/Ledger/createAccountQuick.html',
+      templateUrl:'public/webapp/Ledger/createAccountQuick.html',
       size: "sm",
       backdrop: 'static',
       scope: $scope

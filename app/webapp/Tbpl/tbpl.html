@@ -19,7 +19,7 @@
             <p class="input-group max150">
               <input type="text" class="form-control"
                  uib-datepicker-popup="{{format}}" required
-                 datepicker-options="dateOptions" 
+                 datepicker-options="dateOptions"
                  is-open="fromDatePickerIsOpen"
                  ng-click="fromDatePickerOpen()"
                  ng-model="fromDate.date"
@@ -58,7 +58,7 @@
             <button class="btn btn-success" ng-click="setRefresh(); filterBydate()">Refresh</button>
           </div>
         </form>
-    
+
       </div>
       <!-- end of coloumn -->
       <div class="tbplList pull-right">
@@ -104,7 +104,7 @@
               <i class="glyphicon glyphicon-remove close-icon" ng-show="showClearSearch"></i>
             </div>
           </div>
-          <div class="form-group export">  
+          <div class="form-group export">
             <a href="" title="" download="" ng-click="formatData($event)" ng-show="enableDownload"><img src="public/webapp/Globals/images/csv.png" class="csv"/></a>
             <div class="export-options" ng-show="showOptions">
               <span class="arrow"></span>
@@ -134,7 +134,7 @@
               </ul>
             </div>
           </div>
-          <div class="form-group xls-export">  
+          <div class="form-group xls-export">
             <a href="" ng-click="showTbXlsOptions($event)" ng-show="enableDownload"><img src="public/webapp/Globals/images/xls-icon.png"/></a>
             <div class="export-options" ng-show="showTbXls">
               <span class="arrow"></span>
@@ -186,10 +186,10 @@
         <section class="row row-1" ng-repeat="grp in data.groupDetails | tbsearch:keyWord.query | filter:filterTBSearch:grp | orderBy: grp.category" ng-class="grp.category"  ng-if="grp.isVisible">
           <!-- filter:filterTBSearch:index:data  -->
            <!-- |  tbsearch:keyWord | filter:filterTBSearch:tbsearch -->
-          <div class="row"  trial-accordion>  
+          <div class="row"  trial-accordion>
             <div class="col-xs-4 group" ng-bind-html=" grp.groupName | uppercase | highlight: keyWord.query "></div>
             <div class="col-xs-2 group text-right">{{ grp.forwardedBalance.amount | number:2 }} {{ grp.forwardedBalance.type | recType:grp.forwardedBalance.amount }}</div>
-            <div class="col-xs-2 group text-right">{{ grp.debitTotal | number:2 }}</div> 
+            <div class="col-xs-2 group text-right">{{ grp.debitTotal | number:2 }}</div>
             <div class="col-xs-2 group text-right">{{ grp.creditTotal | number:2 }}</div>
             <div class="col-xs-2 group text-right">{{ grp.closingBalance.amount | number:2 }} {{grp.closingBalance.type | recType:grp.closingBalance.amount}}</div>
           </div>
@@ -206,7 +206,7 @@
           </section>
 
           <section class="row isHidden" ng-if="grp.childGroups.length">
-            <div ng-include="'trialBalSubGroup'"></div>
+            <div ng-include="'public/webapp/Tbpl/trialBalSubGroup.html'"></div>
           </section>
 
         </section>
@@ -241,7 +241,7 @@
       <!-- end main content -->
 
       <!-- start template trial bal -->
-      <script type="text/ng-template" id="trialBalSubGroup">
+      <!-- <script type="text/ng-template" id="trialBalSubGroup">
         <section class="row row-2" ng-repeat="grp in grp.childGroups"  ng-if="grp.isVisible">
           <div class="row" trial-accordion>
             <div class="col-xs-4 group" ng-style="{'padding-left':padLeft + 10}" ng-bind-html="grp.groupName | uppercase : (grp.childGroups.length && grp.accounts.length) | highlight: keyWord.query"></div>
@@ -249,7 +249,7 @@
             <div class="col-xs-2 group text-right">{{ grp.debitTotal | number:2 }}</div>
             <div class="col-xs-2 group text-right">{{ grp.creditTotal | number:2 }}</div>
             <div class="col-xs-2 group text-right">{{ grp.closingBalance.amount | number:2 }} {{ grp.closingBalance.type | recType: grp.closingBalance.amount }}</div>
-          </div>  
+          </div>
           <section class="row account isHidden" ng-if="grp.accounts.length && account.isVisible" ng-repeat="account in grp.accounts | orderBy: 'name'">
             <div class="row">
               <div class="col-xs-4" ng-style="{'padding-left':padLeft + 20}" ng-bind-html=" account.name | lowercase | highlight: keyWord.query">
@@ -264,7 +264,7 @@
             <div ng-include="'trialBalSubGroup'"></div>
           </section>
         </section>
-      </script>      
+      </script> -->
       <!-- end template -->
     </div>
     </div>
@@ -289,7 +289,7 @@
                 </ui-select-choices>
             </ui-select>
 
-          </div>    
+          </div>
           <div class="form-group">
             <button type="button" class="btn btn-success mrL1" ng-click="getProfitLossData()">
               Apply
@@ -299,7 +299,7 @@
             <button class="btn btn-success" ng-click="setRefreshForProfitLoss(); getProfitLossData()">Refresh</button>
           </div>
         </form>
-    
+
       </div>
 
       <!-- loader -->
@@ -314,12 +314,12 @@
       </div>
 
       <div ng-if="!showPLLoader">
-        <div class="form-group xls-export">  
+        <div class="form-group xls-export">
           <a href="" title="" download="" ng-click="downloadPLExcel()" ng-show="enableDownload"><img src="public/webapp/Globals/images/xls-icon.png" class="xls"/></a>
         </div>
  <!--        <div class="row pdL1">
 
-          <div class="form-group export pull-left">  
+          <div class="form-group export pull-left">
             <a href="" title="" download="" ng-click="showPLoptions($event)"><img src="public/webapp/Globals/images/csv.png" class="csv"/></a>
             <div class="export-options left" ng-show="plShowOptions">
               <span class="arrow"></span>
@@ -357,7 +357,7 @@
               <!--Grid-->
 
               <section class="row row-1" ng-repeat="expGrp in plData.expArr">
-                <div class="row" trial-accordion>  
+                <div class="row" trial-accordion>
                   <div class="col-xs-6  group" ng-bind-html=" expGrp.groupName | uppercase"></div>
                   <!-- ng-bind-html="expGrp.closingBalance.amount | uppercase" -->
                   <div class="col-xs-6  group text-right">
@@ -408,7 +408,7 @@
               <!--Grid-->
 
               <section class="row row-1" ng-repeat="incGrp in plData.incArr">
-                <div class="row"  trial-accordion>  
+                <div class="row"  trial-accordion>
                   <div class="col-xs-6  group" ng-bind-html=" incGrp.groupName | uppercase"></div>
                   <div class="col-xs-6  group text-right">
                     <!-- ng-bind-html=" incGrp.closingBalance.amount | uppercase" -->
@@ -494,7 +494,7 @@
     <div class="clearfix pd15">
    <!--      <div class="row pdL1">
 
-          <div class="form-group export pull-left">  
+          <div class="form-group export pull-left">
             <a href="" title="" download="" ng-click="showPLoptions($event)"><img src="public/webapp/images/csv.png" class="csv"/></a>
             <div class="export-options left" ng-show="plShowOptions">
               <span class="arrow"></span>
@@ -509,7 +509,7 @@
          <div class="form-group pdf-export pull-left">
             <a href="" export-plpdf><img src="public/webapp/images/pdf-icon.png" /></a>
           </div>
-        </div> --> 
+        </div> -->
 
       <div class="mrL1">
         <form class="form-inline" name="" novalidate>
@@ -525,7 +525,7 @@
                 </ui-select-choices>
             </ui-select>
 
-          </div>    
+          </div>
           <div class="form-group">
             <button type="button" class="btn btn-success mrL1" ng-click="getBalanceSheetData()">
               Apply
@@ -535,7 +535,7 @@
             <button class="btn btn-success" ng-click="setRefreshForBalanceSheet(); getBalanceSheetData()">Refresh</button>
           </div>
         </form>
-    
+
       </div>
 
       <!-- loader -->
@@ -550,7 +550,7 @@
       </div>
 
       <div ng-if="!showBSLoader">
-        <div class="form-group xls-export">  
+        <div class="form-group xls-export">
             <a href="" title="" download="" ng-click="downloadBSExcel()" ng-show="enableDownload"><img src="public/webapp/Globals/images/xls-icon.png" class="xls"/></a>
         </div>
         <div class="row mrB1">
@@ -575,7 +575,7 @@
               <!--Grid-->
 
               <section class="row row-1" ng-repeat="expGrp in balSheet.liabilities">
-                <div class="row" trial-accordion>  
+                <div class="row" trial-accordion>
                   <div class="col-xs-6  group" ng-bind-html=" expGrp.groupName | uppercase"></div>
                   <!-- ng-bind-html="expGrp.closingBalance.amount | uppercase" -->
                   <div class="col-xs-6  group text-right">
@@ -626,7 +626,7 @@
               <!--Grid-->
 
               <section class="row row-1" ng-repeat="incGrp in balSheet.assets">
-                <div class="row"  trial-accordion>  
+                <div class="row"  trial-accordion>
                   <div class="col-xs-6  group" ng-bind-html=" incGrp.groupName | uppercase"></div>
                   <div class="col-xs-6  group text-right">
                     <!-- ng-bind-html=" incGrp.closingBalance.amount | uppercase" -->

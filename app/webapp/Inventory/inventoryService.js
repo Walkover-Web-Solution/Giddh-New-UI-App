@@ -96,7 +96,7 @@ angular.module('inventoryServices', [])
 
 		})
 
-		stockService = {
+		var stockService = {
 			handlePromise: function(func) {
 	      var deferred, onFailure, onSuccess;
 	      deferred = $q.defer();

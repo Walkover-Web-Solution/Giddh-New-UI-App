@@ -1,6 +1,6 @@
 angular.module('inventoryController', [])
 .controller('stockController', ['$scope','$rootScope','stockService','localStorageService','groupService' ,'toastr','$filter', '$state',  function($scope, $rootScope, stockService, localStorageService, groupService, toastr, $filter, $state ){
-	
+
 	var vm = this;
 	vm.$state = $state
 
@@ -11,7 +11,7 @@ angular.module('inventoryController', [])
 	vm.addNewGroup = false
 	vm.addStockForm = false
 	vm.showSidebar = true
-    	
+
 	vm.sideBarOn = function(e){
 		e.stopPropagation();
 		vm.showSidebar = true;
@@ -23,7 +23,7 @@ angular.module('inventoryController', [])
     	$state.go('inventory', {}, {reload: true, notify: true});
 		}
   });
-	
+
 	// get flattten stock groups
 	vm.stockGroup = {}
 	vm.stockGroup.list = [];
@@ -65,7 +65,7 @@ angular.module('inventoryController', [])
 		stockService.getStockGroupsFlatten(reqParam).then(this.success, this.failure)
 	}
 	vm.getStockGroupsFlatten('', 1,'get');
-	
+
 	// get heirarchical stock groups
 	vm.getHeirarchicalStockGroups = function(){
 
@@ -86,7 +86,7 @@ angular.module('inventoryController', [])
 	vm.getHeirarchicalStockGroups()
 
 
-	//close other stock groups on click 
+	//close other stock groups on click
 	vm.closeOtherStockGroups = function(stockGroup, parent){
 		_.each(vm.groupListHr, function(grp){
 			if(grp.uniqueName != stockGroup.uniqueName && vm.parentGroupsList.indexOf(parent.uniqueName) == -1){
@@ -141,7 +141,7 @@ angular.module('inventoryController', [])
 		this.failure = function(res){
 			toastr.error(res.data.message)
 		}
-		
+
 		var reqParam = {
 			companyUniqueName: $rootScope.selectedCompany.uniqueName
 		}
@@ -166,7 +166,7 @@ angular.module('inventoryController', [])
 		this.failure = function(res){
 			toastr.error(res.data.message)
 		}
-		
+
 		var reqParam = {
 			companyUniqueName: $rootScope.selectedCompany.uniqueName,
 			stockGroupUniqueName: $state.params.grpId
@@ -199,7 +199,7 @@ angular.module('inventoryController', [])
 		this.failure = function(res){
 			toastr.error(res.data.message)
 		}
-		reqParam = {
+		var reqParam = {
 			companyUniqueName: $rootScope.selectedCompany.uniqueName
 		}
 		if(query && query.length > 1){
@@ -256,7 +256,7 @@ angular.module('inventoryController', [])
 
 	}
 
-	
+
 
 	// check whether to move selected stock grp to another
 	vm.modificationState = "Modify"
@@ -303,7 +303,7 @@ angular.module('inventoryController', [])
 		vm.showSidebar = false;
 	});
 
-	//set mode 
+	//set mode
 	vm.groupEditMode = false
 	if(!_.isEmpty($state.params) && angular.isDefined($state.params.grpId) && $state.params.grpId !== ''){
 		vm.groupEditMode =  true

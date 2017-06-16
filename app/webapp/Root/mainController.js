@@ -392,7 +392,7 @@ $scope.hideHeader = false
   $scope.createNewCompany = () => $scope.runSetupWizard();
     // Open modal here and ask for company details
     // modalInstance = $uibModal.open(
-    //   templateUrl: '/public/webapp/Globals/modals/createCompanyModal.html',
+    //   templateUrl: 'public/webapp/Globals/modals/createCompanyModal.html',
     //   size: "sm",
     //   backdrop: 'static',
     //   scope: $scope
@@ -400,7 +400,7 @@ $scope.hideHeader = false
     // modalInstance.result.then($scope.onCompanyCreateModalCloseSuccess, $scope.onCompanyCreateModalCloseFailure)
    // if $rootScope.hasOwnCompany
    //   modalInstance = $uibModal.open(
-   //     templateUrl: '/public/webapp/Globals/modals/createCompanyModal.html',
+   //     templateUrl: 'public/webapp/Globals/modals/createCompanyModal.html',
    //     size: "sm",
    //     backdrop: 'static',
    //     scope: $scope
@@ -651,7 +651,7 @@ $scope.hideHeader = false
     } else {
       let modalInstance;
       return modalInstance = $uibModal.open({
-        templateUrl:'/public/webapp/NewManageGroupsAndAccounts/ManageGroupModal.html',
+        templateUrl:'public/webapp/NewManageGroupsAndAccounts/ManageGroupModal.html',
         size: "liq90",
         backdrop: 'static',
         scope: $scope

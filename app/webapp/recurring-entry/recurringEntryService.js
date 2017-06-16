@@ -41,7 +41,7 @@ angular.module('recurringEntryService', [])
 			url: getUrl('delete')
 		}
 	})
-	recurringEntryService = {
+	var recurringEntryService = {
 		handlePromise: function(func) {
 		        var deferred, onFailure, onSuccess;
 		        deferred = $q.defer();

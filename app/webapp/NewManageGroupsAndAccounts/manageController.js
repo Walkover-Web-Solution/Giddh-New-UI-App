@@ -75,7 +75,7 @@ let manageController = function($scope, $rootScope, localStorageService, groupSe
   //     toastr.error("Select company first.", "Error")
   //   else
   //     modalInstance = $uibModal.open(
-  //       templateUrl: $rootScope.prefixThis+'/public/webapp/NewManageGroupsAndAccounts/ManageGroupModal.html'
+  //       templateUrl: $rootScope.prefixThis+'public/webapp/NewManageGroupsAndAccounts/ManageGroupModal.html'
   //       size: "liq90"
   //       backdrop: 'static'
   //       scope: $scope
@@ -629,7 +629,7 @@ let manageController = function($scope, $rootScope, localStorageService, groupSe
 // share group
   mc.shareGrpModal = () =>
     $uibModal.open({
-      templateUrl: '/public/webapp/NewManageGroupsAndAccounts/shareGroup.html',
+      templateUrl: 'public/webapp/NewManageGroupsAndAccounts/shareGroup.html',
       size: "md",
       backdrop: 'true',
       animation: true,
@@ -1110,7 +1110,7 @@ let manageController = function($scope, $rootScope, localStorageService, groupSe
 
   mc.shareAccModal = () =>
     $uibModal.open({
-      templateUrl: '/public/webapp/NewManageGroupsAndAccounts/shareacc.html',
+      templateUrl: 'public/webapp/NewManageGroupsAndAccounts/shareacc.html',
       size: "md",
       backdrop: 'true',
       animation: true,
