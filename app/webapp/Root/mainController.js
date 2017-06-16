@@ -361,8 +361,8 @@ $scope.hideHeader = false
     if (!isElectron) {
         companyServices.getAll().then($scope.refreshcompanyListSuccess, $scope.getCompanyListFailure);
     } else {
-        let cdt = localStorageService.get("_userDetails");
-        companyServices.getAllElectron(cdt.uniqueName).then($scope.refreshcompanyListSuccess, $scope.getCompanyListFailure);
+        let cdt = localStorageService.get("_uniqueName");
+        companyServices.getAllElectron(cdt).then($scope.refreshcompanyListSuccess, $scope.getCompanyListFailure);
     }
     return e.stopPropagation();
   };
@@ -459,11 +459,11 @@ $scope.hideHeader = false
   if (!isElectron) {
     $rootScope.getCompanyList = ()=> companyServices.getAll().then($scope.getCompanyListSuccess, $scope.getCompanyListFailure);
   } else {
-    let cdt = localStorageService.get("_userDetails");
+    let cdt = localStorageService.get("_uniqueName");
     if (!cdt) {
-       cdt = { uniqueName: '' }
+       cdt = ''
     }
-    $rootScope.getCompanyList = ()=> companyServices.getAllElectron(cdt.uniqueName).then($scope.getCompanyListSuccess, $scope.getCompanyListFailure);
+    $rootScope.getCompanyList = ()=> companyServices.getAllElectron(cdt).then($scope.getCompanyListSuccess, $scope.getCompanyListFailure);
   }
 
   //Get company list success

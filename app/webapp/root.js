@@ -158,8 +158,8 @@ giddh.webApp.config(function ($stateProvider, $urlRouterProvider, $locationProvi
                     if (!isElectron) {
                         return companyServices.getAll().then(onSuccess, onFailure);
                     } else {
-                        let cdt = localStorageService.get("_userDetails");
-                        return companyServices.getAllElectron(cdt.uniqueName).then(onSuccess, onFailure);
+                        let cdt = localStorageService.get("_uniqueName");
+                        return companyServices.getAllElectron(cdt).then(onSuccess, onFailure);
                     }
                 } else {
                     return { data: {} }
