@@ -217,18 +217,30 @@ $scope.hideHeader = false
     return win.close();
   };
 
-  $scope.logout = () =>
-    $http.post('/logout').then((function(res) {
-      // don't need to clear below
-      // _userDetails, _currencyList
-      localStorageService.remove('_userDetails');
-      localStorageService.remove('_roles');
-      localStorageService.remove('_currencyList');
-      localStorageService.remove('_selectedAccount');
-      localStorageService.remove('_ledgerData');
-      window.sessionStorage.clear();
-      return window.location = "https://www.giddh.com";
-    }), function(res) {})
+  $scope.logout = () => {
+    if (!isElectron) {
+        $http.post('/logout').then((function(res) {
+        // don't need to clear below
+        // _userDetails, _currencyList
+        localStorageService.remove('_userDetails');
+        localStorageService.remove('_roles');
+        localStorageService.remove('_currencyList');
+        localStorageService.remove('_selectedAccount');
+        localStorageService.remove('_ledgerData');
+        window.sessionStorage.clear();
+        return window.location = "https://www.giddh.com";
+        }), function(res) {})
+    } else {
+        localStorageService.remove('_ak');
+        localStorageService.remove('_userDetails');
+        localStorageService.remove('_roles');
+        localStorageService.remove('_currencyList');
+        localStorageService.remove('_selectedAccount');
+        localStorageService.remove('_ledgerData');
+        window.sessionStorage.clear();
+        $state.go('login')
+    }
+  }
   ;
 
   // for ledger
