@@ -1299,7 +1299,8 @@ let companyController = function(
     $scope.taxEditData.isEditable = false;
     $scope.getTax();
     toastr.success(res.status, "Tax updated successfully.");
-    return $scope.updateTax.modalInstance.close();
+    if ($scope.updateTax.modalInstance) return $scope.updateTax.modalInstance.close();
+    return true;
   };
 
   $scope.updateTaxFailure = function(res) {
