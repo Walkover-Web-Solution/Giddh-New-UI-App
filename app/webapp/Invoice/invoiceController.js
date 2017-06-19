@@ -963,7 +963,7 @@ let invoiceController = function($scope, $rootScope, $filter, $uibModal, $timeou
     //           <button onClick="window.open(\'data:application/pdf;base64, '+res.body+'\')" class="btn btn-primary">Download</button>
     //         </div>
     //         <div class="modal-footer">
-    //           <button class="btn btn-default" ng-click="$dismiss()">Cancel</button>
+    //           <button class="btn btn-default" ng-click="$close()">Cancel</button>
     //         </div>
     //     </div>'
     //     size: "sm"

@@ -753,7 +753,7 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
     // modalInstance = $uibModal.open(
     //   template: '<div>
     //       <div class="modal-header">
-    //         <button type="button" class="close" data-dismiss="modal" ng-click="$dismiss()" aria-label="Close"><span
+    //         <button type="button" class="close" data-dismiss="modal" ng-click="$close()" aria-label="Close"><span
     //     aria-hidden="true">&times;</span></button>
     //       <h3 class="modal-title">Magic Link</h3>
     //       </div>
@@ -862,7 +862,7 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
   //             <button onClick="window.open(\''+res.body.filePath+'\')" class="btn btn-primary">Download</button>
   //           </div>
   //           <div class="modal-footer">
-  //             <button class="btn btn-default" ng-click="$dismiss()">Cancel</button>
+  //             <button class="btn btn-default" ng-click="$close()">Cancel</button>
   //           </div>
   //       </div>'
   //       size: "sm"
@@ -877,7 +877,7 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
   //   modalInstance = $uibModal.open(
   //     template: '<div>
   //         <div class="modal-header">
-  //           <button type="button" class="close" data-dismiss="modal" ng-click="$dismiss()" aria-label="Close"><span
+  //           <button type="button" class="close" data-dismiss="modal" ng-click="$close()" aria-label="Close"><span
   //       aria-hidden="true">&times;</span></button>
   //         <h3 class="modal-title">Magic Link</h3>
   //         </div>
@@ -1554,7 +1554,7 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
     //           <button onClick="window.open(\''+res.body.filePath+'\')" class="btn btn-primary">Download</button>
     //         </div>
     //         <div class="modal-footer">
-    //           <button class="btn btn-default" ng-click="$dismiss()">Cancel</button>
+    //           <button class="btn btn-default" ng-click="$close()">Cancel</button>
     //         </div>
     //     </div>'
     //     size: "sm"
@@ -2262,7 +2262,7 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
       cancel: 'No'
     }).then(
       res => ledgerCtrl.deleteEntry(ledger),
-      res => $dismiss())
+      res => $close())
   ;
 
   ledgerCtrl.deleteEntry = function(ledger) {
@@ -2399,7 +2399,7 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
           ledgerCtrl.selectedLedger.attachedFile = '';
           return ledgerCtrl.selectedLedger.attachedFileName = '';
         },
-      res => $dismiss())
+      res => $close())
   ;
 
 
@@ -2652,7 +2652,7 @@ let ledgerController = function($scope, $rootScope, $window,localStorageService,
       cancel: 'No'
     }).then(
       res => ledgerCtrl.deleteEntry(),
-      res => $dismiss())
+      res => $close())
   ;
 
   ledgerCtrl.deleteEntry = function() {

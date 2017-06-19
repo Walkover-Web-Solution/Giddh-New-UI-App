@@ -1,7 +1,7 @@
 // "use strict"
 
 // ledgerController = ($scope, $rootScope, localStorageService, toastr, modalService, $state, ledgerService, $filter, DAServices, $stateParams, $timeout, $location, $document, permissionService, accountService, Upload, groupService, $uibModal, companyServices) ->
-//   $scope.ledgerData = undefined 
+//   $scope.ledgerData = undefined
 //   $scope.accntTitle = undefined
 //   $scope.selectedGroupUname = undefined
 //   $scope.selectedLedgerAccount = undefined
@@ -79,7 +79,7 @@
 //     templateUrl: 'myPopoverTemplate.html',
 //     title: 'Title'
 //   }
-  
+
 //   $scope.dateOptions = {
 //     'year-format': "'yy'",
 //     'starting-day': 1,
@@ -111,11 +111,11 @@
 
 //   $scope.trashEntrySuccess = (res) ->
 //     toastr.success("Entry deleted successfully", "Success")
-    
+
 //     $scope.eLedgerDrData = _.reject($scope.eLedgerDrData, (entry) ->
 //       res.body.transactionId is entry.sharedData.transactionId
 //     )
-  
+
 //     $scope.eLedgerCrData = _.reject($scope.eLedgerCrData, (entry) ->
 //       res.body.transactionId is entry.sharedData.transactionId
 //     )
@@ -124,7 +124,7 @@
 //     $scope.removeClassInAllEle("eLedgEntryForm", "highlightRow")
 //     $scope.removeLedgerDialog('.eLedgerPopDiv')
 //     $scope.calculateELedger()
-    
+
 
 //   $scope.trashEntryFailure = (res) ->
 //     toastr.error(res.data.message, res.data.status)
@@ -152,7 +152,7 @@
 //           edata.transactions.push(obj.transactions[0])
 //       )
 //     else
-//       _.extend(edata.transactions, item.transactions)  
+//       _.extend(edata.transactions, item.transactions)
 
 //     # change entry direction
 //     if edata.transactions.length <= 1
@@ -191,7 +191,7 @@
 //           obj.multiEntry = true
 //         else
 //           obj.multiEntry = false
-        
+
 //         sharedData = _.omit(obj, 'transactions')
 //         sharedData.total = 0
 //         sharedData.entryDate = obj.date
@@ -321,7 +321,7 @@
 //             $scope.getOtherTransactionsSuccess(res, gData, acData)
 //           ,(error)->
 //             $scope.getOtherTransactionsFailure(error)
-//         )    
+//         )
 
 //   $scope.loadLedgerSuccess = (res) ->
 //     $scope.ledgerDataArray = {}
@@ -335,7 +335,7 @@
 //         ledger.multiEntry = true
 //       else
 //         ledger.multiEntry = false
-      
+
 //       sharedData = _.omit(ledger, 'transactions')
 //       sharedData.total = 0
 //       _.each(ledger.transactions, (transaction, index) ->
@@ -505,7 +505,7 @@
 //   $scope.updateEntry = (data) ->
 //     edata = {}
 //     _.extend(edata, data.sharedData)
-    
+
 //     if not _.isUndefined(data.sharedData.voucher)
 //       edata.voucherType = data.sharedData.voucher.shortCode
 
@@ -597,7 +597,7 @@
 //     $scope.ledgerOnlyCreditData = _.reject($scope.ledgerOnlyCreditData, (entry) ->
 //       item.sharedData.uniqueName is entry.sharedData.uniqueName
 //     )
-    
+
 //     $scope.calculateLedger($scope.ledgerData, "deleted")
 
 //   $scope.deleteEntryFailure = (res) ->
@@ -613,7 +613,7 @@
 //       angular.element(el).addClass('newMultiEntryRow')
 //     else
 //       angular.element(ele).addClass('newMultiEntryRow')
-    
+
 //   $scope.addEntryInCredit =(data)->
 //     arLen = $scope.ledgerOnlyCreditData.length-1
 //     lastRow  = _.last($scope.ledgerOnlyCreditData)
@@ -632,7 +632,7 @@
 //     wt.id = wt.id + arLen
 //     _.extend(_.last($scope.ledgerOnlyCreditData), wt)
 
-  
+
 //   $scope.addEntryInDebit =(data)->
 //     arLen = $scope.ledgerOnlyDebitData.length-1
 //     lastRow  = _.last($scope.ledgerOnlyDebitData)
@@ -650,7 +650,7 @@
 //     wt = _.omit(data, 'transactions')
 //     wt.id = wt.id + arLen
 //     _.extend(_.last($scope.ledgerOnlyDebitData), wt)
-    
+
 //   $scope.sameMethodForDrCr =(arLen, name)->
 //     formEle =  document.querySelectorAll(name)
 //     tdEle = angular.element(formEle[arLen]).find('td')[1]
@@ -717,7 +717,7 @@
 //     if  !_.isUndefined($scope.ledgerData)
 //       ledgerDebLength = $scope.ledgerOnlyDebitData.length
 //       ledgerCrdLength = $scope.ledgerOnlyCreditData.length
-//       if ledgerDebLength > 50 || ledgerCrdLength > 50 
+//       if ledgerDebLength > 50 || ledgerCrdLength > 50
 //         if sp + 200 >= tsS
 //           event.preventDefault()
 //           event.stopPropagation()
@@ -742,7 +742,7 @@
 //     $scope.isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0
 //     if $scope.msieBrowser()
 //       $scope.openWindow(res.body.filePath)
-//     else if $scope.isSafari       
+//     else if $scope.isSafari
 //       modalInstance = $uibModal.open(
 //         template: '<div>
 //             <div class="modal-header">
@@ -753,7 +753,7 @@
 //               <button onClick="window.open(\''+res.body.filePath+'\')" class="btn btn-primary">Download</button>
 //             </div>
 //             <div class="modal-footer">
-//               <button class="btn btn-default" ng-click="$dismiss()">Cancel</button>
+//               <button class="btn btn-default" ng-click="$close()">Cancel</button>
 //             </div>
 //         </div>'
 //         size: "sm"
@@ -804,7 +804,7 @@
 //     if newDate > toDate
 //       $scope.toDate.date =  newDate
 //   )
-  
+
 //   $scope.showImportList =() ->
 //     modalService.openImportListModal()
 //     unqNamesObj = {
@@ -813,7 +813,7 @@
 //       acntUname: $rootScope.selAcntUname
 //     }
 //     accountService.ledgerImportList(unqNamesObj).then($scope.ledgerImportListSuccess, $scope.ledgerImportListFailure)
-    
+
 //   $scope.ledgerImportListSuccess = (res) ->
 //     $rootScope.showImportListData = true
 //     $rootScope.importList = res.body
@@ -856,7 +856,7 @@
 
 //     accountService.emailLedger(unqNamesObj, sendData).then($scope.emailLedgerSuccess, $scope.emailLedgerFailure)
 
-  
+
 
 //   $scope.emailLedgerSuccess = (res) ->
 //     toastr.success(res.body, res.status)
@@ -877,7 +877,7 @@
 //       tax.isSelected = false
 //       if tax.account == null
 //         tax.account = {}
-//         tax.account.uniqueName = 0 
+//         tax.account.uniqueName = 0
 //       $scope.taxList.push(tax)
 
 
@@ -894,7 +894,7 @@
 //   someEventHandle = $scope.$on('reloadFromAuto', ->
 //     $scope.reloadLedger()
 //   )
-  
+
 //   # generate magic link
 //   $scope.getMagicLink = () ->
 //     accUname = $location.path()
@@ -912,7 +912,7 @@
 //     modalInstance = $uibModal.open(
 //       template: '<div>
 //           <div class="modal-header">
-//             <button type="button" class="close" data-dismiss="modal" ng-click="$dismiss()" aria-label="Close"><span
+//             <button type="button" class="close" data-dismiss="modal" ng-click="$close()" aria-label="Close"><span
 //         aria-hidden="true">&times;</span></button>
 //           <h3 class="modal-title">Magic Link</h3>
 //           </div>

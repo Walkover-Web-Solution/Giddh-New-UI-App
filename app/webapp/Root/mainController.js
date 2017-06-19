@@ -232,6 +232,7 @@ let mainController = function ($scope, $state, $rootScope, $timeout, $http, $uib
                 localStorageService.remove('_currencyList');
                 localStorageService.remove('_selectedAccount');
                 localStorageService.remove('_ledgerData');
+                localStorageService.remove('_uniqueName');
                 window.sessionStorage.clear();
                 return window.location = "https://www.giddh.com";
             }), function (res) { })
@@ -242,6 +243,7 @@ let mainController = function ($scope, $state, $rootScope, $timeout, $http, $uib
             localStorageService.remove('_currencyList');
             localStorageService.remove('_selectedAccount');
             localStorageService.remove('_ledgerData');
+            localStorageService.remove('_uniqueName');
             window.sessionStorage.clear();
             $state.go('login')
         }

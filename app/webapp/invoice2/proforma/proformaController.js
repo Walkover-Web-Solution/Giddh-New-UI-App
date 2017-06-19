@@ -286,7 +286,7 @@ let proformaController = function($scope, $rootScope, localStorageService,invoic
       return $scope.modalInstance = $uibModal.open({
         template: `<div> \
 <div class="modal-header"> \
-<button type="button" class="close" data-dismiss="modal" ng-click="$dismiss()" aria-label="Close"><span \
+<button type="button" class="close" data-dismiss="modal" ng-click="$close()" aria-label="Close"><span \
 aria-hidden="true">&times;</span></button> \
 <h3 class="modal-title">Update Grand Total</h3> \
 </div> \
