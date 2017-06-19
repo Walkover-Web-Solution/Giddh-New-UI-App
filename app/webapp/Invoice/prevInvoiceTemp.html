@@ -128,7 +128,7 @@ textarea:disabled, input:disabled{
 
 <div id="InvoiceTemplate" class="templateClass no-border">
   <div class="modal-header" ng-class="genPrevMode ? 'genPrevMode': ''">
-    <button type="button" class="close" data-dismiss="modal" ng-click="$dismiss(); closePop()" aria-label="Close"><i aria-hidden="true">&times;</i></button>
+    <button type="button" class="close" data-dismiss="modal" ng-click="$close(); closePop()" aria-label="Close"><i aria-hidden="true">&times;</i></button>
     
     <span ng-if="!editMode && !genPrevMode">
       <a ng-if="withSampleData" ng-click="switchTempData()" class="btn btn-default btn-sm" href="javascript:void(0)">View as your data</a>

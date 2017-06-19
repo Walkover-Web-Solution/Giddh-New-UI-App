@@ -1,7 +1,8 @@
 angular.module('perfect_scrollbar', []).directive('perfectScrollbar', [
   '$parse',
   '$window',
-  function($parse, $window) {
+  '$timeout',
+  function($parse, $window, $timeout) {
     let psOptions = [
       'wheelSpeed',
       'wheelPropagation',
@@ -19,15 +20,15 @@ angular.module('perfect_scrollbar', []).directive('perfectScrollbar', [
     transclude: true,
     template: '<div><div ng-transclude></div></div>',
     replace: true,
-    link($scope, $elem, $attr, $timeout) {
+    link($scope, $elem, $attr) {
       let jqWindow = angular.element($window);
       let options = {};
       let update = function(event) {
         $scope.$evalAsync(function() {
           if (($attr.scrollDown === 'true') && (event !== 'mouseenter')) {
-            setTimeout((function() {
+            $timeout((function() {
               $($elem).scrollTop($($elem).prop('scrollHeight'));
-            }), 100);
+            }));
           }
           $elem.perfectScrollbar('update');
         });

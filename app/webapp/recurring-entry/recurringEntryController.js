@@ -234,7 +234,7 @@ angular.module('recurringEntryController', [])
 	 	_.each(transactions,function(txn){
 	 		var tx = new recEntry.txnModel()
 	 		tx = _.extendOwn(tx, txn)
-	 		particular = {}
+	 		var particular = {}
 	 		particular.name = tx.particular.name
 	 		particular.uniqueName = tx.particular.uniqueName
 	 		tx.particular = particular

@@ -104,7 +104,7 @@ angular.module('inventoryController', [])
 			toastr.error(res.data.message)
 		}
 		if(query.length > 2){
-			reqParam = {
+			let reqParam = {
 				companyUniqueName: $rootScope.selectedCompany.uniqueName,
 				q : query,
 				page: 1,
@@ -247,7 +247,7 @@ angular.module('inventoryController', [])
 		this.failure = function(res){
 			toastr.error(res.data.message)
 		}
-		reqParam = {
+		let reqParam = {
 			companyUniqueName : $rootScope.selectedCompany.uniqueName,
 			stockGroupUniqueName: $state.params.grpId
 		}

@@ -122,7 +122,7 @@ giddh.serviceModule.service('userServices', function($resource, $q) {
         },
         changeTwoWayAuth: {
           method: 'PUT',
-          url: getUrl('/changeTwoWayAuth')
+          url: getUrl('changeTwoWayAuth')
         }
       }
   );

@@ -56,7 +56,7 @@ let tbplController = function($scope, $rootScope, trialBalService, localStorageS
     assetTotal : 0,
     liabTotal : 0
   };
-  
+
   $scope.fy = {
     fromYear: '',
     toYear: ''
@@ -90,7 +90,7 @@ let tbplController = function($scope, $rootScope, trialBalService, localStorageS
         }
       }
     });
-    return $scope.tempFYIndex; 
+    return $scope.tempFYIndex;
   };
 
   $scope.getFYs = function(companyUniqueName) {
@@ -100,7 +100,7 @@ let tbplController = function($scope, $rootScope, trialBalService, localStorageS
       return $scope.activePLFYIndex = tb.getActiveFinancialYearIndex($scope.activeFinancialYear, $scope.financialYears);
     };
     this.fyFailure = res => toastr.error(res.data.message);
-    return companyServices.getFY(companyUniqueName).then(this.fySuccess, this.fyFailure);    
+    return companyServices.getFY(companyUniqueName).then(this.fySuccess, this.fyFailure);
   };
 
   $scope.activeBSFYIndex = 0;
@@ -114,7 +114,7 @@ let tbplController = function($scope, $rootScope, trialBalService, localStorageS
   $scope.getDateObj = function(date) {
     let dateArray = date.split('-');
     date = new Date(dateArray[2], dateArray[1] - 1, dateArray[0]);
-    return date; 
+    return date;
   };
 
   $scope.checkFY = function(reqParam) {
@@ -193,7 +193,7 @@ let tbplController = function($scope, $rootScope, trialBalService, localStorageS
           return others.push(grp);
       }
     });
-    _.each(others, obj => filterPlData.othArr.push(obj)); 
+    _.each(others, obj => filterPlData.othArr.push(obj));
     _.each(income, inc => filterPlData.incArr.push(inc));
     _.each(expenses, exp => filterPlData.expArr.push(exp));
     return filterPlData;
@@ -219,7 +219,7 @@ let tbplController = function($scope, $rootScope, trialBalService, localStorageS
       return $scope.plData.incomeTotal += $scope.plData.closingBalance;
     }
   };
-    
+
 
   $scope.exportPLdataHorizontal = function(e) {
     let { plData } =  $scope;
@@ -235,11 +235,11 @@ let tbplController = function($scope, $rootScope, trialBalService, localStorageS
       "dd-MM-yyyy") + '\r\n';
     csv += header + '\r\n' + title;
 
-    
+
     _.each(zippedData, function(row) {
       let index = 1;
       return _.each(row, function(val) {
-        csv += val.groupName + ',' + val.closingBalance.amount + ',' + '' + ','; 
+        csv += val.groupName + ',' + val.closingBalance.amount + ',' + '' + ',';
         if ((index % 2) === 0) {
           csv += '\r\n';
         }
@@ -256,7 +256,7 @@ let tbplController = function($scope, $rootScope, trialBalService, localStorageS
     csv += `Total,${plData.expenseTotal},,Total,${plData.incomeTotal}`;
 
     csv += row + '\r\n';
-    
+
     $scope.csvPL = csv;
 
     $scope.profitLoss = `data:text/csv;charset=utf-8,${escape(csv)}`;
@@ -280,7 +280,7 @@ let tbplController = function($scope, $rootScope, trialBalService, localStorageS
     let companyDetails = $rootScope.selectedCompany;
     header = companyDetails.name + '\r\n' + '"'+companyDetails.address+'"' + '\r\n' + companyDetails.city + '-' + companyDetails.pincode + '\r\n' + 'Profit and Loss' + ': ' + $filter('date')($scope.fromDate.date,'dd-MM-yyyy') + ' to ' + $filter('date')($scope.toDate.date,
       "dd-MM-yyyy") + '\r\n';
-    
+
     //add income details
     _.each(plData.incArr, function(inc) {
       incRow += inc.groupName + ',' + inc.closingBalance.amount + '\r\n';
@@ -290,7 +290,7 @@ let tbplController = function($scope, $rootScope, trialBalService, localStorageS
     });
 
     incTotal += `Total,${plData.incomeTotal}\r\n`;
- 
+
 
     //add expenses details
     _.each(plData.expArr, function(exp) {
@@ -301,7 +301,7 @@ let tbplController = function($scope, $rootScope, trialBalService, localStorageS
     });
 
     expTotal += `Total,${plData.expenseTotal}\r\n`;
-    
+
     if (plData.closingBalance >= 0) {
       total += `Profit,${plData.closingBalance}`;
     } else {
@@ -309,7 +309,7 @@ let tbplController = function($scope, $rootScope, trialBalService, localStorageS
     }
 
     csv += header + '\r\n' + incTitle + '\r\n' + incRow + incTotal + '\r\n' + '\r\n' + expTitle + '\r\n' + expRow + expTotal + '\r\n' + total;
-    
+
     $scope.csvPL = csv;
 
     $scope.profitLoss = `data:text/csv;charset=utf-8,${escape(csv)}`;
@@ -357,7 +357,7 @@ let tbplController = function($scope, $rootScope, trialBalService, localStorageS
         dateStr = dd + '-' + mm + '-' + year;
         date = Date.parse(dateStr.replace(/-/g,"/"));
       }
-      return date;  
+      return date;
     };
     return {date: getDate()};
   };
@@ -386,7 +386,7 @@ let tbplController = function($scope, $rootScope, trialBalService, localStorageS
     };
 //    console.log($scope.hardRefresh)
     if ($scope.hardRefresh === true) {
-      reqParam = {
+      let reqParam = {
         'companyUniqueName': $rootScope.selectedCompany.uniqueName,
         'fromDate': data.fromDate,
         'toDate': data.toDate,
@@ -825,7 +825,7 @@ let tbplController = function($scope, $rootScope, trialBalService, localStorageS
 
         if (obj.childGroups.length > 0) {
           //group.childGroups = obj.childGroups
-          
+
           _.each(obj.childGroups, function(grp) {
             var childGroup = childGroup ||{
               childGroups: [],
@@ -982,8 +982,8 @@ let tbplController = function($scope, $rootScope, trialBalService, localStorageS
   };
 
   $scope.downloadTBExcelFailure = res => toastr.error(res.data.message, res.data.status);
-    
-    
+
+
   $(document).on('click', e =>
     $timeout((function() {
       $scope.showOptions = false;
@@ -1031,12 +1031,12 @@ let tbplController = function($scope, $rootScope, trialBalService, localStorageS
       }
     });
     _.each(liabilities, liability => orderedGroups.push(liability));
-    _.each(assets, asset => orderedGroups.push(asset)); 
+    _.each(assets, asset => orderedGroups.push(asset));
     _.each(income, inc => orderedGroups.push(inc));
     _.each(expenses, exp => orderedGroups.push(exp));
     return orderedGroups;
   };
-  
+
   $scope.$watch('fromDate.date', function(newVal,oldVal) {
     let oldDate = new Date(oldVal).getTime();
     let newDate = new Date(newVal).getTime();
@@ -1122,7 +1122,7 @@ let tbplController = function($scope, $rootScope, trialBalService, localStorageS
   $timeout((() => $scope.getBalanceSheetData()), 1000);
 
   $timeout((() => $scope.getProfitLossData()), 1000);
-  
+
   $scope.changeBSFYIdx = item =>
     _.each($scope.financialYears, function(fy, index) {
       if(fy.uniqueName === item.uniqueName) {
@@ -1196,7 +1196,7 @@ let tbplController = function($scope, $rootScope, trialBalService, localStorageS
       offset += sliceSize;
     }
     let blob = new Blob(byteArrays, {type: contentType});
-    return blob;  
+    return blob;
   };
 
   return $scope.$on('company-changed' , function(event, data) {
@@ -1205,6 +1205,6 @@ let tbplController = function($scope, $rootScope, trialBalService, localStorageS
     }
   });
 };
- 
+
 
 giddh.webApp.controller('tbplController', tbplController);

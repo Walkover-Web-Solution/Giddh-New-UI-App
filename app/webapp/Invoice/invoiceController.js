@@ -35,7 +35,7 @@ let invoiceController = function($scope, $rootScope, $filter, $uibModal, $timeou
   // default Template data
   $scope.tempDataDef= {
     logo: {
-      path: 'public/website/images/logo.png'
+      path: '/public/webapp/Globals/images/logo.png'
     },
     invoiceDetails: {
       invoiceNumber: '##########',
@@ -1097,7 +1097,6 @@ let invoiceController = function($scope, $rootScope, $filter, $uibModal, $timeou
   }
 
   ,10);
-
   $scope.redirectToState = state => $state.go(state);
 
   return $scope.$on('company-changed', function(event,changeData) {

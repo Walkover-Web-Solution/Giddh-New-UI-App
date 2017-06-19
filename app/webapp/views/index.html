@@ -58,6 +58,7 @@
   <% if (htmlWebpackPlugin.options.metadata.isElectron) { %>
       <script> window.$ = window.jQuery = require('jquery') </script>
   <% } %>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <script src="public/webapp/core_bower.min.js"></script>
   <script src="public/webapp/app.js"></script>
 

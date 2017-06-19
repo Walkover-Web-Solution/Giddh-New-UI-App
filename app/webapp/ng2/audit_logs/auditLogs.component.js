@@ -15,12 +15,11 @@
       this.update.next(req);
     }
   };
-
   var AuditLogs =
     ng.core.Component({
       selector: 'audit-logs',
       providers: [ng.http.HTTP_PROVIDERS, httpService,sharedService],
-      templateUrl: 'public/webapp/ng2/audit_logs/audit-logs.html',
+      templateUrl: 'public/webapp/ng2/audit_logs/audit-logs.html'
     })
     .Class({
       constructor:[ng.http.Http, httpService,sharedService, function( http, service, shared) {
@@ -70,7 +69,7 @@
       var self = this;
       setTimeout(function(){
         var reqBody = {};
-        options = app.logs.filterOptions;
+        let options = app.logs.filterOptions;
         reqBody.fromDate = options.selectedFromDate;
         reqBody.toDate = options.selectedToDate;
         reqBody.operation = options.selectedOption;
@@ -101,7 +100,7 @@
 
         var reqProps = Object.keys(reqBody);
 
-        for(i=0; i<reqProps.length; i++){
+        for(var i=0; i<reqProps.length; i++){
           if (reqBody[reqProps[i]] != "" && reqBody[reqProps[i]]  != undefined && reqBody[reqProps[i]]  != null && reqBody[reqProps[i]] != 'All'){
             req.body[reqProps[i]] = reqBody[reqProps[i]]
           }
@@ -129,7 +128,6 @@
     }
 
   });
-
   var loadMore = ng.core.Component({
     selector: 'load-more',
     providers: [ng.http.HTTP_PROVIDERS, httpService,sharedService],

@@ -646,7 +646,7 @@ router.get('/:uniqueName/templates', function(req, res) {
     return res.send(data);
   });
 });
-    
+
 // set default template
 router.put('/:uniqueName/templates/:tempUname', function(req, res) {
   let hUrl = settings.envUrl+'company/'+req.params.uniqueName+'/invoices/templates/'+req.params.tempUname;

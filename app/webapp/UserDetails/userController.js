@@ -16,10 +16,15 @@ let userController = function($scope, $rootScope, toastr, userServices, localSto
   let selectedUser = localStorageService.get('_userDetails');
   //$scope.twoWayAuth = selectedUser.authenticateTwoWay
   $scope.getUserAuthKey = function() {
-    this.success = res => $scope.userAuthKey = res.data;
-    this.failure = res => toastr.error(res.data);
+    if (isElectron) {
+        let ak = localStorageService.get('_ak');
+        $scope.userAuthKey = ak;
+    } else {
+        this.success = res => $scope.userAuthKey = res.data;
+        this.failure = res => toastr.error(res.data);
 
-    return $http.get('/userak').then(this.success, this.failure);
+        return $http.get('/userak').then(this.success, this.failure);
+    }
   };
 
 

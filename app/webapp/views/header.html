@@ -9,7 +9,7 @@
 <!-- end of super loader -->
 
 <header class="clearfix">
-  <div class="container-fluid">
+  <div class="container-fluid" style="margin: 0px;padding: 0px">
     <nav class="navbar navbar-inverse">
       <ul class="nav navbar-nav" ng-controller="groupController">
         <li class="hamburger_menu" uib-dropdown style="margin-left:-15px;" ng-show="canManageComp || canViewSpecificItems">
@@ -163,7 +163,7 @@
                 </li> -->
               </ul>
                 </perfect-scrollbar>
-              </div> 
+              </div>
             </li>
           </ul>
         </li>
@@ -187,8 +187,8 @@
                     <!-- <input type="text" name="searchGroup" class="form-control" ng-model="acntSrch" placeholder="Search accounts" ng-keyup="setScrollToTop(acntSrch, 'accountList');" ng-change="checkLength(acntSrch)" ng-model-options="{debounce: 200}"> -->
 
                     <input id="accountSearch" type="text" name="searchGroup" class="form-control" ng-model="search.acnt" placeholder="Search accounts" ng-change="searchGrpWithAccounts(search.acnt)" ng-click="showAccounts($event)" ng-model-options="{debounce:1000}">
-                      
-                    
+
+
                     <div ng-hide="showSubMenus" class="input-group-addon cp" ng-click="toggleAcMenus(true); $event.stopPropagation()" tooltip-placement="right" uib-tooltip="Expand all" >
                         <span class="icon-plus" aria-hidden="true"></span>
                     </div>
@@ -225,11 +225,11 @@
                 </button>
             </div>
         </li>
-      
+
 <!--       <li class="header-btn fixedDate">
         <span class="dateblock">
           <input ng-if="showUnivdate" date-range-picker class="form-control date-picker date-range-picker" type="text" ng-model="cDate" options="fixedDateOptions" required/>
-        <span ng-if="!showUnivdate" ng-click="showUnivdate = true" class="fix_date" tooltip-placement="bottom" uib-tooltip="Set fix date" ng-click="showUnivdate = false"><i class="fa fa-calendar" aria-hidden="true"></i> 1-04-17 - 31-03-18</span>  
+        <span ng-if="!showUnivdate" ng-click="showUnivdate = true" class="fix_date" tooltip-placement="bottom" uib-tooltip="Set fix date" ng-click="showUnivdate = false"><i class="fa fa-calendar" aria-hidden="true"></i> 1-04-17 - 31-03-18</span>
         </span>
       </li> -->
 
@@ -268,13 +268,14 @@
 
 
         <li uib-dropdown
-          tooltip-placement="left" 
+          tooltip-placement="left"
           uib-tooltip="{{basicInfo.email}}"
         >
-          <a  
+          <a
             href
-            id="user-dropdown" 
+            id="user-dropdown"
             uib-dropdown-toggle
+            style= "white-space: nowrap;overflow: hidden;text-overflow: ellipsis;"
           >
             {{userName}}
           </a>
@@ -284,7 +285,7 @@
             <li ng-if="ledgerState"><a href="javascript:void(0)" ng-click="runTour()">Run Tour</a></li>
             <li><a target="_Blank" href="https://docs.giddh.com/" ng-click="$event.stopPropagation()">Documentation</a></li>
             <li ng-if="selectedCompany.canUserSwitch"><a class="pull-left" href="javascript:void(0)" ng-click="switchUser()"><span class="pull-left">Switch User</span><span class="on-btn pull-left" ng-if="ucActive"></span></a></li>
-            <!-- <li ng-if="showSwitchUserOption"><a class="cp" ng-click="switchLedgerMode()">Switch Ledger - 
+            <!-- <li ng-if="showSwitchUserOption"><a class="cp" ng-click="switchLedgerMode()">Switch Ledger -
                 <span ng-if="ledgerMode == 'new'">Old</span><span ng-if="ledgerMode == 'old'">New</span>
               </a>
             </li> -->

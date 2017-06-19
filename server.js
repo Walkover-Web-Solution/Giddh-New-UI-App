@@ -40,7 +40,7 @@ app.set('public', __dirname + '/public/');
 app.engine('html', engines.mustache);
 app.set('view engine', 'html');
 
-app.use(favicon(settings.path.join(__dirname, 'public/webapp/globals/images/favicon.ico')));
+// app.use(favicon(settings.path.join(__dirname, 'public/webapp/globals/images/favicon.ico')));
 
 app.use(logger('dev'));
 app.use(useragent.express());

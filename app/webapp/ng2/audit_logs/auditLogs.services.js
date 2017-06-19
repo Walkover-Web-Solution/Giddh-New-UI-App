@@ -1,4 +1,5 @@
 //Service : Audit Logs : HttpService
+import { electronUrl, webUrl } from '../../app.constants';
 window.app = giddh.webApp;
 (function(app){
 
@@ -18,10 +19,15 @@ window.app = giddh.webApp;
 
 	        // Define request variables
 		  	var body = JSON.stringify(reqBody.body)
-		  	var headers = new ng.http.Headers({ 'Content-Type': 'application/json' });
+		  	var headers = new ng.http.Headers({ 'Content-Type': 'application/json', 'Auth-Key': window.sessionStorage.getItem('_ak') });
 		  	var options = new ng.http.RequestOptions({ headers: headers });
 		  	var page = reqBody.page;
-		  	var url = '/company/' + selectedCompany.uniqueName + '/logs/' + page;
+            var url = null;
+            if (isElectron) {
+                url = 'http://apitest.giddh.com/' + electronUrl.AuditLogsHttpService.getLogs.replace(':companyUniqueName', selectedCompany.uniqueName).replace(':page', page);
+            } else {
+                url = webUrl.AuditLogsHttpService.getLogs.replace(':companyUniqueName', selectedCompany.uniqueName).replace(':page', page)
+            }
 
 		    // return http request as observer
 		    return this.http.post(url,body, options)
@@ -31,6 +37,6 @@ window.app = giddh.webApp;
 	    }
 	});
 
-})(app = window.giddh.webApp || (window.giddh.webApp = {}));
+})(app = giddh.webApp || (giddh.webApp = {}));
 
 

@@ -1764,7 +1764,6 @@
           el.daterangepicker(angular.extend(opts, {
             autoUpdateInput: false
           }), function(start, end) {
-              debugger
             return $timeout(function() {
               return $scope.model = opts.singleDatePicker ? start : {
                 startDate: start,

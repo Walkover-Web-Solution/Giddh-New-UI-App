@@ -151,14 +151,13 @@ module.exports = {
     },
     plugins: [
         extractCSS,
-        new webpack.ProvidePlugin({
-            // "angular": path.resolve(__dirname, '../node_modules/angular/angular.min.js')
-            // '$': 'jquery',
-            // 'jquery': 'jquery',
-            // 'jQuery': 'jquery',
-            // 'window.jQuery': 'jquery',
-            // "window.moment": path.resolve(__dirname, '../node_modules/moment/moment.js')
-        }),
+        // new webpack.ProvidePlugin({
+        //     // '$': 'jquery',
+        //     // 'jquery': 'jquery',
+        //     // 'jQuery': 'jquery',
+        //     // 'window.jQuery': 'jquery',
+        //     // "window.moment": path.resolve(__dirname, '../node_modules/moment/moment.js')
+        // }),
         new HtmlWebpackPlugin({
             template: path.join(__dirname, '/../app/webapp/views/index.html'),
             inject: false,

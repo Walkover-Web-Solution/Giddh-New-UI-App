@@ -16,7 +16,7 @@ directive('autoHeight', ['$window', '$timeout', ($window, $timeout) =>
       let adjustHeight = function() {
         let additionalHeight = $attrs.additionalHeight || 0;
         let minHeight = $attrs.minHeight || 600;
-        if (!$element[0].parentElement) {
+        if ($element[0].parentElement) {
           let parentHeight = $window.innerHeight-$element[0].parentElement.getBoundingClientRect().top;
           $element.css('min-height',minHeight + 'px');
           return $element.css('height', (parentHeight - combineHeights(siblings($element)) - additionalHeight) + "px");
@@ -94,7 +94,7 @@ directive('autoHeight', ['$window', '$timeout', ($window, $timeout) =>
 ])
 
 // sarfaraz
-// to remove class dynamic 
+// to remove class dynamic
 // init with outside-click="YOUR_CLASS_NAME"
 
 .directive("outsideClick", ['$document','$parse', ($document, $parse)=>
@@ -107,7 +107,7 @@ directive('autoHeight', ['$window', '$timeout', ($window, $timeout) =>
           return $element.removeClass(cls);
         }
       };
-      
+
       $document.on("click", onDocumentClick);
 
       return $element.on('$destroy', ()=> $document.off("click", onDocumentClick));
@@ -330,7 +330,7 @@ directive('razorPay', ['$compile', '$filter', '$document', '$parse', '$rootScope
           amount,
           name: "Giddh",
           description: $rootScope.selectedCompany.name+ " Subscription for Giddh",
-          image: "public/website/images/logo.png",
+          image: `file:///${__dirname}/public/webapp/Globals/images/logo.png`,
           handler(response){
             // hit api after success
             console.log(response, "response after success");
@@ -526,10 +526,10 @@ angular.module('ledger', [])
 //             <div class="row">
 //               <div class="col-xs-6">
 //                 <div class="form-group">
-//                   <select 
+//                   <select
 //                     class="form-control"
 //                     name="voucherType"
-//                     ng-model="item.sharedData.voucherType" 
+//                     ng-model="item.sharedData.voucherType"
 //                     ng-options="item.shortCode as item.name for item in voucherTypeList">
 //                   </select>
 //                 </div>
@@ -686,7 +686,7 @@ angular.module('ledger', [])
 //         if e.shiftKey and (keycode1 is 0 or keycode1 is 9)
 //           e.preventDefault()
 //           scope.moveBackward(e, ths)
-    
+
 //     scope.isCurrentAc =(acnt) ->
 //       acnt.uniqueName is scope.selAcntUname
 
@@ -784,7 +784,7 @@ angular.module('ledger', [])
 //             edMmddyy = edArr[1] + '-' + edArr[0] + '-' + edArr[2]
 //             entryDate = new Date(edMmddyy).getTime()
 //             item.sharedData.eDate = entryDate
-          
+
 //           _.each scope.ledgerDataArray.ledgers, (ledger) ->
 //             if unq == ledger.uniqueName
 //               siblings = ledger.transactions
@@ -811,12 +811,12 @@ angular.module('ledger', [])
 //               dates.push(date)
 //             dates = dates.sort()
 
-//             if entryDate >= dates[0] 
+//             if entryDate >= dates[0]
 //               tax.withinDate = true
 
 //           taxes_1 = taxList_1
 //         )
-      
+
 //       manageTaxOndialog(item)
 
 //       scope.$watch('item.sharedData.entryDate', (newVal, oldVal)->
@@ -870,11 +870,11 @@ angular.module('ledger', [])
 //               <div class="row">
 //                 <div class="col-xs-6">
 //                   <div class="form-group">
-//                     <select 
+//                     <select
 //                       class="form-control"
 //                       ng-readonly="!canAddAndEdit"
 //                       name="voucherType"
-//                       ng-model="item.sharedData.voucher.shortCode" 
+//                       ng-model="item.sharedData.voucher.shortCode"
 //                       ng-options="item.shortCode as item.name for item in voucherTypeList"
 //                       ng-disabled="item.sharedData.invoiceGenerated">
 //                     </select>
@@ -1005,7 +1005,7 @@ angular.module('ledger', [])
       if (q.stocks && (q.stocks.length > 0)) {
         _.each(q.stocks, function(stock) {
           let withStock = _.extend({}, q);
-          withStock.stocks = []; 
+          withStock.stocks = [];
           withStock.stock = stock;
           withStock.stocks.push(stock);
           return result.push(withStock);

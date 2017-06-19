@@ -1,6 +1,6 @@
 {
   "name": "webpack2-express-heroku-starter",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Starter webpack 2/express app",
   "repository": {
     "type": "git",
@@ -12,14 +12,14 @@
     "productName": "giddh-app",
     "appId": "org.giddh.com",
     "files": [
-        "./main.js",
-        "./index.html",
-        "./node_modules",
-        "./public/"
+      "./main.js",
+      "./index.html",
+      "./node_modules",
+      "./public/"
     ],
     "directories": {
-        "app": "./dist/electron/",
-        "output": "build"
+      "app": "./dist/electron/",
+      "output": "build"
     },
     "asar": false
   },
@@ -70,9 +70,11 @@
     "geoip-lite": "^1.1.9",
     "git-rev": "*",
     "glob": "^7.1.2",
+    "html-pdf": "^2.1.0",
     "html-webpack-plugin": "^2.28.0",
     "html2canvas": "0.5.0-beta4",
     "international-phone-number": "0.0.11",
+    "intl-tel-input": "^11.0.14",
     "jquery": "3.2.1",
     "jquery-ui": "^1.11.4",
     "jspdf": "~1.1.135",
@@ -107,7 +109,10 @@
     "npid": "*",
     "nz-tour": "^1.2.1",
     "perfect-scrollbar": "~0.6.5",
+    "phantom-html-to-pdf": "^0.5.4",
+    "phantomjs-prebuilt": "^2.1.14",
     "prerender-node": "^2.4.0",
+    "pug": "^2.0.0-rc.1",
     "qs": "^6.1.0",
     "raven": "^1.1.1",
     "reflect-metadata": "0.1.2",
@@ -125,10 +130,6 @@
     "tinymce-mention": "^4.0.1",
     "trix": "^0.10.1",
     "ui-select": "0.19.8",
-    "html-pdf": "^2.1.0",
-    "phantom-html-to-pdf": "^0.5.4",
-    "phantomjs-prebuilt": "^2.1.14",
-    "pug": "^2.0.0-rc.1",
     "underscore": "~1.8.3",
     "v-accordion": "~1.4.1",
     "zone.js": "0.6.12"

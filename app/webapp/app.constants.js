@@ -216,6 +216,9 @@ export const webUrl = {
         reconnectAccount: '/company/:companyUniqueName/login/:loginId/token/reconnect',
         changeTwoWayAuth: '/users/:uniqueName/settings'
 
+    },
+    AuditLogsHttpService: {
+        getLogs: 'company/:companyUniqueName/logs/:page'
     }
 };
 
@@ -299,7 +302,7 @@ export const electronUrl = {
         getTax: '/company/:uniqueName/tax',
         addTax: '/company/:uniqueName/tax',
         deleteTax: '/company/:uniqueName/tax/:taxUniqueName',
-        editTax: '/company/:uniqueName/tax/:taxUniqueName/:updateEntries',
+        editTax: '/company/:uniqueName/tax/:taxUniqueName',
         saveSmsKey: '/company/:companyUniqueName/sms-key',
         saveEmailKey: '/company/:companyUniqueName/email-key',
         getSmsKey: '/company/:companyUniqueName/sms-key',
@@ -437,5 +440,8 @@ export const electronUrl = {
         reconnectAccount: '/company/:companyUniqueName/login/:loginId/token/reconnect',
         changeTwoWayAuth: '/users/:uniqueName/settings'
 
+    },
+    AuditLogsHttpService: {
+        getLogs: 'company/:companyUniqueName/logs?page=:page'
     }
 };

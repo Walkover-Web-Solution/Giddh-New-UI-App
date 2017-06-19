@@ -11,6 +11,15 @@ import './Globals/css/style-1.css';
 import './Globals/css/style-2.css';
 import './Globals/css/fjala.css';
 import './Globals/css/new-style.css';
+import './Globals/css/angular-ui-switch.min.css';
+import './Globals/css/angular-ui-tree.min.css';
+import './Globals/css/select.min.css';
+import './Globals/css/jquery.fullPage.css';
+import './Globals/css/angular-wizard.min.css';
+import './Globals/css/intlTelInput.css';
+import './Globals/css/angular-gridster.min.css';
+
+
 
 giddh.webApp = angular.module("giddhWebApp",
     [
@@ -101,11 +110,9 @@ giddh.webApp.config(vcRecaptchaServiceProvider => {
 }
 );
 
-giddh.webApp.config(function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider) {
+giddh.webApp.config(function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, $qProvider) {
+    // $qProvider.errorOnUnhandledRejections(false);
 
-    if (!isElectron) {
-        // $locationProvider.hashPrefix('');
-    }
     // $rootScope.prefixThis = "https://test-fs8eefokm8yjj.stackpathdns.com"
     let appendThis = "";
     $stateProvider.state('/home', {
@@ -154,15 +161,15 @@ giddh.webApp.config(function ($stateProvider, $urlRouterProvider, $locationProvi
                     }
                 };
                 let onFailure = res => toastr.error(`Failed to retrieve company list${res.data.message}`);
-                if (window.sessionStorage.getItem('_ak')) {
-                    if (!isElectron) {
-                        return companyServices.getAll().then(onSuccess, onFailure);
-                    } else {
+                if (!isElectron) {
+                    return companyServices.getAll().then(onSuccess, onFailure);
+                } else {
+                    if (window.sessionStorage.getItem('_ak')) {
                         let cdt = localStorageService.get("_uniqueName");
                         return companyServices.getAllElectron(cdt).then(onSuccess, onFailure);
+                    } else {
+                        return { data: {} }
                     }
-                } else {
-                    return { data: {} }
                 }
             }
         },
@@ -391,7 +398,7 @@ giddh.webApp.config(function ($stateProvider, $urlRouterProvider, $locationProvi
         );
     //
     if (!isElectron) {
-        $locationProvider.html5Mode(false);
+        // $locationProvider.html5Mode(false);
     }
     $urlRouterProvider.otherwise('/home');
 });
@@ -468,19 +475,19 @@ giddh.webApp.run([
                 return $rootScope.selAcntUname = undefined;
             }
         });
-	$rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams){
-      $('html,body').animate({scrollTop: $('html').offset().top},'slow');
-    //   if (isElectron) {
-            if (!window.sessionStorage.getItem('_ak') && toState !== 'login') {
-                $rootScope.toState = toState.name;
-                event.preventDefault();
-                $state.go('login').then(function () {
-                    $rootScope.toState = undefined;
-                });
+        $rootScope.$on('$stateChangeSuccess', function (event, toState, toParams, fromState, fromParams) {
+            $('html,body').animate({ scrollTop: $('html').offset().top }, 'slow');
+            if (isElectron) {
+                if (!window.sessionStorage.getItem('_ak') && toState !== 'login') {
+                    $rootScope.toState = toState.name;
+                    event.preventDefault();
+                    $state.go('login').then(function () {
+                        $rootScope.toState = undefined;
+                    });
+                }
             }
-        // }
-      return false;
-    });
+            return false;
+        });
         $rootScope.msieBrowser = function () {
             let ua = window.navigator.userAgent;
             let msie = ua.indexOf('MSIE');
@@ -527,9 +534,9 @@ giddh.webApp.factory('appInterceptor', ['$q', '$location', '$log', 'toastr', '$t
                         return request
                     }
                     request.url = 'http://apitest.giddh.com/' + requestUrl
-                    if (window.sessionStorage.getItem('_ak'))
-                    {  request.headers['Auth-Key'] = window.sessionStorage.getItem('_ak');
-                       request.headers['X-Forwarded-For'] = '::1'
+                    if (window.sessionStorage.getItem('_ak')) {
+                    request.headers['Auth-Key'] = window.sessionStorage.getItem('_ak');
+                    request.headers['X-Forwarded-For'] = '::1'
                     }
                     // if (window.sessionStorage.getItem('_userDetails'))
                     //     request.headers['user-uniquename'] = window.sessionStorage.getItem('_userDetails');
@@ -693,7 +700,6 @@ giddh.webApp.controller('paymentCtrl', [
         return $scope.getDetails();
     }
 ]);
-
 
 
 giddh.webApp.controller('magicCtrl', [

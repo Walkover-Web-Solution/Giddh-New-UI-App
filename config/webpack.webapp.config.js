@@ -15,8 +15,15 @@ const vendoreArray = [
     'script-loader!' + path.resolve(__dirname, '../node_modules/perfect-scrollbar/dist/js/perfect-scrollbar.min.js'),
     'script-loader!' + path.resolve(__dirname, '../node_modules/perfect-scrollbar/dist/js/perfect-scrollbar.jquery.min.js'),
     'angular',
+    'script-loader!' + path.resolve(__dirname, '../node_modules/rxjs/bundles/Rx.umd.js'),
+    'script-loader!' + path.resolve(__dirname, '../node_modules/angular2/bundles/angular2-polyfills.js'),
+    'script-loader!' + path.resolve(__dirname, '../node_modules/angular2/bundles/angular2-all.umd.dev.js'),
+    // 'reflect-metadata',
+    // 'script-loader!' + path.resolve(__dirname, '../node_modules/angular2/bundles/angular2.min.js'),
+    // 'script-loader!' + path.resolve(__dirname, '../node_modules/rxjs/bundles/Rx.umd.js'),
+    // 'script-loader!' + path.resolve(__dirname, '../node_modules/angular2/bundles/angular2-all.umd.dev.js'),
     'bootstrap',
-    'angular-ui-bootstrap',
+    'script-loader!' + path.resolve(__dirname, '../node_modules/angular-ui-bootstrap/ui-bootstrap-tpls.js'),
     'script-loader!' + path.resolve(__dirname, '../node_modules/underscore/underscore-min.js'),
     'angular-sanitize',
     'satellizer',
@@ -68,10 +75,12 @@ filesArray.push('script-loader!' + path.resolve(__dirname, '../node_modules/rxjs
 filesArray.push('script-loader!' + path.resolve(__dirname, '../node_modules/es6-shim/es6-shim.js'))
 filesArray.push('script-loader!' + path.resolve(__dirname, '../node_modules/angular2/bundles/angular2-polyfills.js'))
 filesArray.push('script-loader!' + path.resolve(__dirname, '../node_modules/angular2/bundles/angular2-all.umd.min.js'))
+filesArray.push(path.resolve(__dirname, '../app/webapp/app.constants.js'));
 filesArray.push(path.resolve(__dirname, '../app/webapp/root.js'));
 filesArray.push(...glob.sync(path.resolve(__dirname, '../app/webapp/**/*.js'), {
     ignore: [
         path.resolve(__dirname, '../app/webapp/Globals/modified_lib/**/*.js'),
+        path.resolve(__dirname, '../app/webapp/app.constants.js'),
         path.resolve(__dirname, '../app/webapp/root.js'),
         path.resolve(__dirname, '../app/webapp/ng2/**/*.js')
 
@@ -86,7 +95,7 @@ const METADATA = {
     baseUrl: '/public/webapp/',
     isProduction: false,
     isDev: true,
-    isTesting: false,
+    testingUrl: 'http://test.giddh.com',
     isWeb: true,
     isElectron: false
 }
@@ -158,7 +167,7 @@ module.exports = {
         // }),
         new HtmlWebpackPlugin({
             template: path.join(__dirname, '/../app/webapp/views/index.html'),
-            inject: 'body',
+            inject: false,
             filename: 'index.html',
             metadata: METADATA
         }),
