@@ -695,12 +695,7 @@ body.light .navbar.transparent{
 }
 .pr{position: relative}
 /*login page start*/
-.intro.login{
-	background: url('../images/new/login_bg.jpg') no-repeat top center scroll;
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  background-size: cover;
-}
+
 .login .brand-heading {
 	color: white;
 	font-size: 40px;
@@ -1967,3 +1962,16 @@ display: none;
 .datePickr table:focus {
   outline: 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+/******************* mustafa *******************/

@@ -5,13 +5,19 @@
 body {
   -webkit-overflow-scrolling: touch;
 }
+
+body.login {
+  background: url('../images/new/login_bg.jpg') no-repeat top center scroll;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  background-size: cover;
+}
+
 /*typography styles*/
 .arvo, .head3{
-	font-family: 'Arvo', serif;
 	font-weight: 400;
 }
 .arvo-b{
-	font-family: 'Arvo', serif;
 	font-weight: 700;
 }
 .inconsolata, body, input, textarea, button, select{
@@ -847,7 +853,6 @@ body.light .navbar.transparent{
   line-height: 60px;
 }
 .pricing .brand-heading span{
-	font-family: 'Arvo', serif;
 	font-weight: 700;
 	color: #EB2508
 }
@@ -861,7 +866,6 @@ body.light .navbar.transparent{
 .pBnrBtm .btn-lg{
 	width: 240px;
 	height: 60px;
-	font-family: 'Arvo', serif;
 	font-size: 28px;
 	margin-top: -10px;
 }
@@ -897,7 +901,7 @@ body.light .navbar.transparent{
   display: table-cell;
   vertical-align: middle;
   text-align: center;
-  padding: 100px 0;
+  padding: 0px 0;
   width: 100%;
   height: 100%;
   position: relative;
@@ -1044,7 +1048,7 @@ figure h1{margin-bottom:5px;}
 .secPoint{border-bottom:1px solid rgba(256,256,256,.1); padding:30px 0}
 .secPoint:first-child{padding-top:0}
 .secPoint .col-sm-8 {text-align:left}
-.secPoint h3{font-size:30px; margin-bottom:20px; font-family: 'Arvo', serif;}
+.secPoint h3{font-size:30px; margin-bottom:20px;}
 .secPoint p{color:#999; font-size:18px}
 /*end security page*/
 
@@ -1063,7 +1067,6 @@ figure h1{margin-bottom:5px;}
 }
 .headerline{
 	font-size: 30px;
-	font-family: 'Arvo', serif;
 	color: white;
 }
 #contact p{
@@ -1245,7 +1248,6 @@ footer small a{
 	font-size: 8em;
 	letter-spacing: 5px;
 	line-height: 80px;
-	font-family: 'Arvo', serif;
 	font-weight: 700;
 	margin-bottom: 30px;
 }
