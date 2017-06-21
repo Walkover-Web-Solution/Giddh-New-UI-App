@@ -183,8 +183,11 @@ module.exports = {
             }),
         new CopyWebpackPlugin([
             {
-                from: 'app/webapp/Globals/images',
-                to: './Globals/images/'
+                from: 'app/webapp/Globals',
+                to: './Globals/',
+                ignore: [
+                    '*.js'
+                ]
             }
         ])
     ]

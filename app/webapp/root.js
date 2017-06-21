@@ -5,19 +5,19 @@ import * as daterangepicker from 'bootstrap-daterangepicker';
 window.daterangepicker = daterangepicker
 giddh.serviceModule = angular.module("serviceModule", ["LocalStorageModule", "ngResource", "ui.bootstrap"]);
 
-import './Globals/css/bootstrap.css';
-import './Globals/css/font-awesome.css';
-import './Globals/css/style-1.css';
-import './Globals/css/style-2.css';
-import './Globals/css/fjala.css';
-import './Globals/css/new-style.css';
-import './Globals/css/angular-ui-switch.min.css';
-import './Globals/css/angular-ui-tree.min.css';
-import './Globals/css/select.min.css';
-import './Globals/css/jquery.fullPage.css';
-import './Globals/css/angular-wizard.min.css';
-import './Globals/css/intlTelInput.css';
-import './Globals/css/angular-gridster.min.css';
+// import './Globals/css/bootstrap.css';
+// import './Globals/css/font-awesome.css';
+// import './Globals/css/style-1.css';
+// import './Globals/css/style-2.css';
+// import './Globals/css/fjala.css';
+// import './Globals/css/new-style.css';
+// import './Globals/css/angular-ui-switch.min.css';
+// import './Globals/css/angular-ui-tree.min.css';
+// import './Globals/css/select.min.css';
+// import './Globals/css/jquery.fullPage.css';
+// import './Globals/css/angular-wizard.min.css';
+// import './Globals/css/intlTelInput.css';
+// import './Globals/css/angular-gridster.min.css';
 
 
 

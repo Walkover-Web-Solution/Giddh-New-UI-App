@@ -165,7 +165,7 @@
     "build:routes": "babel ./routes -d dist/public/routes --copy-files",
     "build:server": "babel ./server.js -d dist/ --copy-files",
     "build:electron": "babel ./main.js -d dist/electron/",
-    "bundle:dev:electron": "npm run build:electron && webpack --config ./config/webpack.electron.config.js --env=development --progress --profile --colors --display-error-details",
+    "bundle:dev:electron": "npm run build:electron && webpack --config ./config/webpack.electron.config.js --env=development --progress --profile --watch --colors --display-error-details",
     "bundle:dev": "webpack --config ./config/webpack.webapp.config.js --env=development --progress --profile --colors --display-error-details",
     "lint": "eslint ./{server,app,config}/**/*{config,''}.js",
     "start": "node server",
