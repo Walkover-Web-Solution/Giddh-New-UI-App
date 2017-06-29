@@ -66,6 +66,8 @@ let mainController = function ($scope, $state, $rootScope, $timeout, $http, $uib
     $rootScope.sharedEntity = "";
     $rootScope.croppedAcntList = [];
 
+    $scope.hasUserloggedIn = false
+
     //#Date range picker###
     // $scope.fixedDate = {
     //   startDate: moment().subtract(30, 'days')._d,
@@ -124,6 +126,7 @@ let mainController = function ($scope, $state, $rootScope, $timeout, $http, $uib
     let getUserSuccess = function (res) {
         localStorageService.set('_userDetails', res.data.body);
         $rootScope.basicInfo = res.data.body;
+        $scope.hasUserloggedIn = true
         // bug fixed by ghlabs team
         // if user don't have space in name then previous logic will fail
         if ($rootScope.basicInfo.name.match(/\s/g)) {
@@ -245,6 +248,7 @@ let mainController = function ($scope, $state, $rootScope, $timeout, $http, $uib
             localStorageService.remove('_ledgerData');
             localStorageService.remove('_uniqueName');
             window.sessionStorage.clear();
+            $scope.hasUserloggedIn = false
             $state.go('login')
         }
     }

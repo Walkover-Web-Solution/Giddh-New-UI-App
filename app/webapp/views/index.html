@@ -39,7 +39,7 @@
 <link rel="stylesheet" href="public/webapp/Globals/css/angular-gridster.min.css">
 
 </head>
-<body class="unresponsive login" ng-controller="mainController" >
+<body class="unresponsive" ng-controller="mainController" ng-class="{'login': !hasUserloggedIn }">
   <!-- @if NODE_ENV='PRODUCTION' -->
     <noscript>
       <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K2L9QG" height="0" width="0" style="display:none;visibility:hidden"></iframe>
